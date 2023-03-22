@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello UserPageController!
+{% endblock %}
+
+{% block body %}
+	<div class="example-wrapper">
+		{% if is_granted('IS_AUTHENTICATED_FULLY') %}
+			<div class='text-center mt-5'>
+				<img src="{{ asset('users_data/' ~ username ~ '/avatar.jpg') }}" alt="ACME logo" class="img-fluid img-thumbnail rounded" width='100px'>
+				<h1>
+					{{ username }}</h1>
+			</div>
+		{% else %}
+			<i class="bi bi-person-circle">ss</i>
+		{% endif %}
+	</div>
+	{% for message in app.flashes('success') %}
+		<div class='alert alert-success'>
+			{{ message }}
+		</div>
+	{% endfor %}
+	{% for message in app.flashes('error') %}
+		<div class='alert alert-danger'>
+			{{ message }}
+		</div>
+	{% endfor %}
+{% endblock %}
