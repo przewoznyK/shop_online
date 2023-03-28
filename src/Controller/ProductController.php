@@ -2,41 +2,62 @@
 
 namespace App\Controller;
 
-use App\Entity\Category;
+use App\Entity\User;
 use App\Entity\Product;
-use DateTimeImmutable;
+use App\Form\AddProductFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ProductController extends AbstractController
 {
     #[Route('/product', name: 'app_product')]
-    public function index(EntityManagerInterface $entityManager): Response
+    public function index(EntityManagerInterface $entityManager, Request $request): Response
     {
-        $category = new Category();
-        $category->setName('Computer Peripherals');
+        // $category = new Category();
+        // $category->setName('Computer Peripherals');
 
+        // $product = new Product();
+
+
+        // $entityManager->persist($category);
+        // $entityManager->persist($product);
+        // $entityManager->flush();
+        /** @var $user User */
+        $user = $this->getUser();
         $product = new Product();
-        $product->setName('Keyboard');
-        $product->setPrice(19.99);
-        $product->setDescription('Ergonomic and stylish!');
+        $form = $this->createForm(AddProductFormType::class, $product);
+        $form->handleRequest($request);
+        if ($user) {
+            $id = $user->getId();
+            if ($form->isSubmitted() && $form->isValid()) {
+                $product->setName(
+                    $form->get('category')->getData()
+                );
+                $product->setDescription(
+                    $form->get('description')->getData()
+                );
+                $product->setPrice(
+                    $form->get('price')->getData()
+                );
+                $product->setCategory(
+                    $form->get('category')->getData()
+                );
 
-        $product->setCreatedAt(new \DateTime());
-        $product->setUpdatedAt(new \DateTime());
+                $product->setCreatedAt(new \DateTime());
+                $product->setUpdatedAt(new \DateTime());
+                $product->setUserId($id);
+                $product->setCategoryId(1);
+                $entityManager->persist($product);
+                $entityManager->flush();
+            }
+        }
 
-        $product->setCategory($category);
-        $product->setCategoryId(1);
 
-        $entityManager->persist($category);
-        $entityManager->persist($product);
-        $entityManager->flush();
-
-
-        return new Response(
-            'Saved new product with id: '.$product->getId()
-            .' and new category with id: '.$category->getId()
-        );
+        return $this->render('product/index.html.twig', [
+            'AddProductFormType' => $form->createView(),
+        ]);
     }
 }
