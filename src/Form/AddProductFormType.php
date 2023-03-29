@@ -2,10 +2,14 @@
 
 namespace App\Form;
 
+use App\Entity\Category;
 use App\Entity\Product;
-
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -20,7 +24,6 @@ class AddProductFormType extends AbstractType
             ->add('description', TextType::class)
             ->add('price', NumberType::class, [
                 'scale' => 2,
-                'constraints' => [new Length(['min' => 3])],
                 'attr' => [
                     'step' => '0.01',
                     'min' => '0'
@@ -29,7 +32,26 @@ class AddProductFormType extends AbstractType
             //->add('category_id')
             //->add('created_at')
             //->add('updated_at')
-            ->add('category')
+            ->add('category', EntityType::class, [
+                'class' => Category::class
+            ])
+            ->add('my_files', FileType::class, [
+                'mapped' => false,
+                'label' => 'Upload Images',
+                'multiple' => true,
+                'required' => $options['image_required']
+            ])
+            ->add('is_public', CheckboxType::class,[
+                'attr' => ['class' => 'form-check-input'],
+                'required' => false
+            ])
+            ->add('quantity', IntegerType::class,[
+                'attr' => [
+                      'min' => '1'
+                ]
+              
+            ])
+            ->add('location', TextType::class)
         ;
     }
 
@@ -37,6 +59,10 @@ class AddProductFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Product::class,
+            'image_required' => true,
+            'validation_groups' => ['Default'],
         ]);
+
+        $resolver->setAllowedTypes('validation_groups', ['string', 'array']);
     }
 }

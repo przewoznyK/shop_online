@@ -3,18 +3,8 @@
 {% block title %}Hello UserPageController!
 {% endblock %}
 
-{% block body %}
-	<div class="example-wrapper">
-		{% if is_granted('IS_AUTHENTICATED_FULLY') %}
-			<div class='text-center mt-5'>
-				<img src="{{ asset('users_data/' ~ username ~ '/avatar.jpg') }}" alt="ACME logo" class="img-fluid img-thumbnail rounded" width='100px'>
-				<h1>
-					{{ username }}</h1>
-			</div>
-		{% else %}
-			<i class="bi bi-person-circle">ss</i>
-		{% endif %}
-	</div>
+{% block body %}	
+
 	{% for message in app.flashes('success') %}
 		<div class='alert alert-success'>
 			{{ message }}
@@ -25,4 +15,65 @@
 			{{ message }}
 		</div>
 	{% endfor %}
+	<div class="example-wrapper">
+		{% if is_granted('IS_AUTHENTICATED_FULLY') %}
+			<div class='text-center mt-5'>
+			{% if myPageBool %}
+			{{ form_start(editProfile) }}
+				{{ form_row(editProfile.description) }}
+				{{ form_row(editProfile.avatar) }}
+				<button type="submit" class="btn">Save</button>
+			{{ form_end(editProfile) }}
+			{% endif %}
+				<img src="{{ asset('users_data/' ~ userId ~ '/avatar/avatar.jpg') }}" alt="ACME logo" class="img-fluid img-thumbnail rounded" width='100px'>
+				<h1>{{ username }}
+				</h1>
+
+				<br><br>
+				<h2>My Offerts</h2>
+				<br>
+				<div class="d-inline-flex p-2">
+					{% set count = 0 %}
+					{% for product in productUser %}
+						<div class="card" style="width: 14rem; margin-right: 1rem">
+							<img src="{{ asset('users_data/' ~ userId ~ '/products/' ~ files[count]['dir'] ~ '/' ~ files[count]['images'][0] ) }}" class="card-img-top" alt="...">
+							<div class="card-body">
+								<h5 class="card-title">{{ product.name }}</h5>
+								<p class="card-text">Price:
+									{{ product.price }}</p>
+								<a href="{{ path('app_check_product', { 'id':  product.id }) }}" class="btn btn-primary">Check product</a>
+								{% if myPageBool %}
+								<a href="{{ path('app_user_remove_product', { 'id':  product.id }) }}" class="btn btn-error">Delete product</a>
+								{% endif %}
+							</div>
+						</div>
+						{% set count = count + 1 %}
+					{% endfor %}
+					{% if myPageBool %}
+				</div><a href="{{ path('app_create_product') }}"><p class='btn btn-primary'>Add Product</p></a>
+			</div>
+			{{ myCartsInfo|length }}
+			<br>
+			<h2>My Carts</h2>
+			<div class="d-inline-flex p-2">
+			{% set count = 0 %}
+
+					{% for cartInfo in myCartsInfo %}
+						<div class="card" style="width: 14rem; margin-right: 1rem">
+							<img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}" class="card-img-top" alt="...">
+							<div class="card-body">
+								<h5 class="card-title">{{ cartInfo.name }}</h5>
+								<p class="card-text">Price:
+									{{ cartInfo.price }}</p>
+								<a href="{{ path('app_check_product', { 'id':  cartInfo.id }) }}" class="btn btn-primary">Check product</a>
+							</div>
+						</div>
+						{% set count = count + 1 %}
+					{% endfor %}
+		{% else %}
+			<i class="bi bi-person-circle">ss</i>
+		{% endif %}
+	</div>
+
+{% endif %}
 {% endblock %}

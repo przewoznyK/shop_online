@@ -36,12 +36,13 @@ class RegistrationController extends AbstractController
                 )
             );
             $user->setRoles(['ROLE_USER']);
+            
             $entityManager->persist($user);
             $entityManager->flush();
             // do anything else you need here, like send an email
             $filesystem = new Filesystem();
-            $filesystem->mkdir('users_data/'.$user->getUsername());
-            $filesystem->copy('tools/no-avatar-image.jpg', 'users_data/'.$user->getUsername().'/no-avatar-image.jpg');
+            //$filesystem->mkdir('users_data/'.$user->getUsername());
+            $filesystem->copy('tools/avatar.jpg', 'users_data/'.$user->getId().'/avatar/avatar.jpg');
             return $userAuthenticator->authenticateUser(
                 $user,
                 $authenticator,

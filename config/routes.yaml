@@ -3,3 +3,13 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
+ajax_add_value_to_session:
+  path: /ajax/add-value-to-session
+  controller: App\Controller\SessionController::addValueToSession
+  methods: [POST]
+
+ajax_remove_cart:
+    path: /ajax/remove_cart
+    controller: App\Controller\SessionController::removeCart
+    methods: [POST]

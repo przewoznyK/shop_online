@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+{% for message in app.flashes('success') %}
+        <div class='alert alert-success'>
+            {{ message }}
+        </div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class='alert alert-danger'>
+            {{ message }}
+        </div>
+    {% endfor %}
+
+<div >
+  <div class="row  text-center mt-5">
+    <div class="col-6 col-sm-3"><h1>{{ product.name }}</h1></div>
+    <div class="col-6 col-sm-3"><img src="{{ asset('users_data/' ~ userOwnerProduct.id ~ '/avatar/avatar.jpg') }}" alt="ACME logo" class="img-fluid img-thumbnail rounded" width='100px'/></div>
+
+    <!-- Force next columns to break to new line -->
+    <div class="w-100"></div>
+
+    <div class="col-6 col-sm-3"><h2>{{ product.description }}</h2></div>
+    <div class="col-6 col-sm-3"><h1>{{ userOwnerProduct.username }}</h1>
+
+      <h5 class="mb-0"><span id="price-display">${{ product.price  }}</span></h5>
+
+</div>
+  </div>
+</div>
+  </button>
+               
+                <input min="1" max="{{ product.quantity }}" id="quantity-input" value="1" type="number"
+                  class="form-control form-control-sm" data-price="{{ product.price }}" />
+                   Max: {{ product.quantity }}
+                <button class="btn btn-link px-2"
+                  onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                  <i class="fas fa-plus"></i>
+                </button>
+<br> Max: {{ product.quantity }}
+
+
+<br>
+{% for image in imagesName %}
+<img class="w-25 p-3" src="{{ asset('users_data/' ~ userOwnerProduct.id ~ '/products/' ~ product.imagesdir ~ '/' ~ image) }}" />
+{% endfor %}
+{% if product.id in app.session.get('cartsId', '') %}
+									<button class="remove-cart-button" data-cart-id="{{ product.id }}">Remove product</button>
+								{% else %}
+									<button class="add-cart-button" data-cart-id="{{ product.id }}">Add product</button>
+								{% endif %}
+{% if myProductBool %}         
+<a href="{{ path('app_edit_product', {'id': product.id }) }}"> Edit </a>
+{% endif %}
+{% endblock %}

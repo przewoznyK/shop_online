@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+
+{% for image in imagesName %}
+<img class="w-25 p-3" src="{{ asset('users_data/' ~ userOwnerProduct.id ~ '/products/' ~ product.imagesdir ~ '/' ~ image) }}" />
+{% if imagesName|length > 1 %}
+<a href="{{ path('app_user_image_remove', { 'dir':  product.imagesdir, 'image': image }) }}" class="btn btn-primary">Delte</a>
+{% endif %}
+{% endfor %}
+     {{ form_start(AddProductFormType) }}
+        {{ form_row(AddProductFormType.name) }}
+        {{ form_row(AddProductFormType.description) }}
+        {{ form_row(AddProductFormType.price) }}
+        {{ form_row(AddProductFormType.category) }}
+        {{ form_row(AddProductFormType.my_files) }}
+        {{ form_row(AddProductFormType.is_public) }}
+        <button type="submit" class="btn">Add Product</button>
+    {{ form_end(AddProductFormType) }}
+</div>
+
+{% endblock %}

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -32,13 +34,31 @@ class Product
     #[ORM\Column]
     private ?\DateTime $updated_at = null;
 
-    #[ORM\ManyToOne(inversedBy: 'products')]
+    #[ORM\ManyToOne(inversedBy: 'product')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
 
     #[ORM\Column]
     private ?int $user_id = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $images_dir = null;
+
+    #[ORM\Column]
+    private ?bool $is_public = null;
+
+    #[ORM\Column]
+    private ?int $Quantity = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $Location = null;
+
+  
+
+
+    public function __toString() {
+        return $this->name;
+    }
     public function getId(): ?int
     {
         return $this->id;
@@ -139,4 +159,55 @@ class Product
 
         return $this;
     }
+
+    public function getImagesDir(): ?string
+    {
+        return $this->images_dir;
+    }
+
+    public function setImagesDir(string $images_dir): self
+    {
+        $this->images_dir = $images_dir;
+
+        return $this;
+    }
+
+    public function isIsPublic(): ?bool
+    {
+        return $this->is_public;
+    }
+
+    public function setIsPublic(bool $isPublic): self
+    {
+        $this->is_public = $isPublic;
+
+        return $this;
+    }
+
+    public function getQuantity(): ?int
+    {
+        return $this->Quantity;
+    }
+
+    public function setQuantity(int $Quantity): self
+    {
+        $this->Quantity = $Quantity;
+
+        return $this;
+    }
+
+    public function getLocation(): ?string
+    {
+        return $this->Location;
+    }
+
+    public function setLocation(string $Location): self
+    {
+        $this->Location = $Location;
+
+        return $this;
+    }
+
+
+    
 }
