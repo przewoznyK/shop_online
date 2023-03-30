@@ -13,3 +13,13 @@ ajax_remove_cart:
     path: /ajax/remove_cart
     controller: App\Controller\SessionController::removeCart
     methods: [POST]
+
+ajax_add_reviews_product:
+    path: /ajax/add_reviews_product
+    controller: App\Controller\SessionController::addReviewsProduct
+    methods: [POST]
+
+ajax_up_vote_product_review:
+    path: /ajax/up_vote_product_review
+    controller: App\Controller\SessionController::upVoteProductReview
+    methods: [POST]

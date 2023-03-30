@@ -2,7 +2,11 @@
 
 namespace App\Controller;
 
-use Doctrine\ORM\EntityManager;
+use App\Entity\ProductReview;
+use App\Entity\User;
+use App\Entity\Product;
+use DateTime;
+
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -66,7 +70,7 @@ class SessionController extends AbstractController
 
             $cartsIdAndQuantityArray[$keyValue[0]] = $keyValue[1];
         }
-       
+
         dump($cartsIdAndQuantityArray);
         // Delete data product
         foreach ($cartsIdAndQuantityArray as $key => $value) {
@@ -77,7 +81,7 @@ class SessionController extends AbstractController
         }
 
         $cartsIdAfterRemove = '';
-       
+
         foreach ($cartsIdAndQuantityArray as $key => $value) {
             $cartsIdAfterRemove .= $key . ':' . $value . '|';
         }
@@ -92,5 +96,128 @@ class SessionController extends AbstractController
             $entity->flush();
         }
         return new JsonResponse(['cartsCount' => $cartsCount]);
+    }
+
+    public function addReviewsProduct(Request $request, EntityManagerInterface $entityManager)
+    {
+
+        $user = $this->getUser();
+        $productId = $request->request->get('productId');
+        $product = $entityManager->find(Product::class, $productId);
+
+
+        $comment = $request->request->get('comment');
+        $productId = $request->request->get('productId');
+        $rating = $request->request->get('rating');
+        $time = new DateTime();
+
+        $newReview = new ProductReview();
+        $newReview->setAuthor($user);
+        $newReview->setProduct($product);
+        $newReview->setRating($rating);
+        $newReview->setComment($comment);
+        $newReview->setCreatedAt($time);
+        $newReview->setUpvote(0);
+        $newReview->setDownvote(0);
+
+        $entityManager->persist($newReview);
+        $entityManager->flush();
+
+        $CommentsAndRatingArray = $entityManager->getRepository(ProductReview::class)->findBy(['product' => $productId]);
+        return new JsonResponse(['CommentsAndRatingArray' => $CommentsAndRatingArray]);
+    }
+
+    public function upVoteProductReview(Request $request, EntityManagerInterface $entityManager)
+    {
+        /** @var $myUser User */
+        $myUser = $this->getUser();
+        $offDownBool = false;
+        $offUpBool = false;
+        $offValue = 0;
+        // Take data from ajax
+        $reviewId = $request->request->get('reviewId');
+        $type = $request->request->get('type');
+        // Take this review
+        $review = $entityManager->find(ProductReview::class, $reviewId);
+        $currentClass = $request->request->get('currentClass');
+        // If user add Like
+        if (($type == 'upVote') && ($currentClass == 'vote')) {
+            $newValue = $review->getUpVote() + 1;
+            $review->setUpVote($newValue);
+            $myUserVote = $myUser->getUpVoteReviews();
+            if ($myUserVote) {
+                $myUser->setUpVoteReviews($myUserVote . '|' . $reviewId);
+            } else {
+                $myUser->setUpVoteReviews($reviewId);
+            }
+            // Switch vote, undo dislike
+            $myUserSwitch = $myUser->getDownVoteReviews();
+            $myUserSwitch = explode('|', $myUserSwitch);
+            if (in_array($reviewId, $myUserSwitch)) {
+                $myUserSwitch = array_diff($myUserSwitch, array($reviewId));
+                $myUserSwitch = implode('|', $myUserSwitch);
+                $myUser->setDownVoteReviews($myUserSwitch);
+                $offDownBool = true;
+                $offValue = $review->getDownVote() - 1;
+                $review->setDownVote($offValue);
+            }
+            // If user undo like
+        } else if (($type == 'upVote') && ($currentClass == 'undoVote')) {
+            $newValue = $review->getUpVote() - 1;
+            $review->setUpVote($newValue);
+            $myUserVote = $myUser->getUpVoteReviews();
+            $undoVote = explode('|', $myUserVote);
+
+            $newUndoVote = array_diff($undoVote, array($reviewId));
+            $newUndoVote = implode('|', $newUndoVote);
+            $myUser->setUpVoteReviews($newUndoVote);
+
+
+            
+        }
+
+        // If user add dislike
+        if (($type == 'downVote') && ($currentClass == 'vote')) {
+            $newValue = $review->getDownVote() + 1;
+            $review->setDownVote($newValue);
+            $myUserVote = $myUser->getDownVoteReviews();
+            if ($myUserVote) {
+                $myUser->setDownVoteReviews($myUserVote . '|' . $reviewId);
+            } else {
+                $myUser->setDownVoteReviews($reviewId);
+            }
+            // Switch vote, undo like
+            $myUserSwitch = $myUser->getUpVoteReviews();
+
+            $myUserSwitch = explode('|', $myUserSwitch);
+            if (in_array($reviewId, $myUserSwitch)) {
+                $myUserSwitch = array_diff($myUserSwitch, array($reviewId));
+                $myUserSwitch = implode('|', $myUserSwitch);
+                $myUser->setUpVoteReviews($myUserSwitch);
+                $offUpBool = true;
+                $offValue = $review->getUpVote() - 1;
+                $review->setUpVote($offValue);
+            }
+            // If user undo dislike
+        } else if (($type == 'downVote') && ($currentClass == 'undoVote')) {
+
+
+            $newValue = $review->getDownVote() - 1;
+            $review->setDownVote($newValue);
+            $myUserVote = $myUser->getDownVoteReviews();
+            $undoVote = explode('|', $myUserVote);
+            $newUndoVote = array_diff($undoVote, array($reviewId));
+            $newUndoVote = implode('|', $newUndoVote);
+            $myUser->setDownVoteReviews($newUndoVote);
+        }
+
+        // Check 
+
+
+        $entityManager->persist($myUser);
+        $entityManager->flush();
+        $entityManager->persist($review);
+        $entityManager->flush();
+        return new JsonResponse(['success' => 1, 'newValue' => $newValue, 'type' => $type, 'offUpBool' => $offUpBool, 'offDownBool' => $offDownBool, 'offValue' => $offValue]);
     }
 }

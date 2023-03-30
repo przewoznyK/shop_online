@@ -39,6 +39,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $carts = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $upVoteReviews = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $downVoteReviews = null;
+
 
 
     public function getId(): ?int
@@ -143,6 +149,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCarts(?string $carts): self
     {
         $this->carts = $carts;
+
+        return $this;
+    }
+
+    public function getUpVoteReviews(): ?string
+    {
+        return $this->upVoteReviews;
+    }
+
+    public function setUpVoteReviews(?string $upVoteReviews): self
+    {
+        $this->upVoteReviews = $upVoteReviews;
+
+        return $this;
+    }
+
+    public function getDownVoteReviews(): ?string
+    {
+        return $this->downVoteReviews;
+    }
+
+    public function setDownVoteReviews(?string $downVoteReviews): self
+    {
+        $this->downVoteReviews = $downVoteReviews;
 
         return $this;
     }

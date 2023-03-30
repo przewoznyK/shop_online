@@ -1,0 +1,53 @@
+{# 
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Przykładowa strona HTML</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+</head>
+<body>
+ #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <form>
+      <select name="rating">
+  <option value="1">1</option>
+  <option value="2">2</option>
+  <option value="3">3</option>
+  <option value="4">4</option>
+  <option value="5">5</option>
+</select>
+      <input name='comment' type='text'><br>
+      <button id="SubmitAddReviewProduct">Add Review</button>
+    </form>
+    
+{% block javascripts %}
+    <script type="text/javascript">
+    $(function () {
+  $('#SubmitAddReviewProduct').click(function(event) {
+  // using this page stop being refreshing 
+  event.preventDefault();
+  var productId = 71;
+
+	$.ajax({
+	type: 'POST',
+	url: '{{ path('ajax_add_reviews_product') }}',
+	data: $('form').serialize() + '&productId=' + productId,
+		success: function(response) {
+  			console.log(response);
+		} 
+     
+	});
+
+  });
+});
+</script>
+{% endblock %}
+{% endblock %}
+
+{# </body>
+</html> #}

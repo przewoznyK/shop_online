@@ -4,7 +4,10 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Entity\Product;
+use App\Entity\ProductReview;
 use App\Form\AddProductFormType;
+use App\Form\AddReviewFormType;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
@@ -103,26 +106,23 @@ class ProductController extends AbstractController
     #[Route('/check_product/{id}', name: 'app_check_product')]
     public function checkProduct(EntityManagerInterface $entityManager, Request $request, int $id): Response
     { {
-
-
+   
             $imagesName = [];
             $product = $entityManager->getRepository(Product::class)->findOneBy(array('id' => $id));
             $userOwnerProduct = $entityManager->getRepository(User::class)->findOneBy(array('id' => $product->getUserId()));
 
-            $myProductBool = false;
-
             /** @var $myUser User */
             $myUser = $this->getUser();
+
+            // Checking whether the product belongs to this user 
+            $myProductBool = false;
             if($myUser)
             {
                 if ($userOwnerProduct->getId() == $myUser->getId()) {
                 $myProductBool = true;
             }
             }
-            
-            $form = $this->createForm(AddProductFormType::class, $product);
-            $form->handleRequest($request);
-
+            // Display product images
             $productImagesDirection = $product->getImagesDir();
             $dir = scandir('users_data/' . $userOwnerProduct->getId() . '/products/' . $productImagesDirection);
             foreach ($dir as $file) {
@@ -131,25 +131,27 @@ class ProductController extends AbstractController
                 }
             }
 
-            // $i = 0;
-            // $files = $productImagesDirection;
-            // foreach ($productImagesDirection as $images) {
-            //     $dir = scandir('users_data/' . $userID->getUsername() . '/products/' . $images);
-            //     foreach ($dir as $file) {
-            //         if ($file != '.' && $file != '..') {
-            //             $files[$i][] = $file;
-            //             $i++;
-            //         }
-            //     }
-            // }
-            // dump($files);
+            $CommentsAndRatingArray = $entityManager->getRepository(ProductReview::class)->findBy(['product' => $id]);
+            $CheckVoteProductReviewStatus = $entityManager->getRepository(User::class)->find($myUser->getId());
+
+            foreach($CommentsAndRatingArray as $key => $productReview) {
+                if(is_int($key)) { // upewnij się, że to jest obiekt ProductReview
+                    $upVotesCheck = $CheckVoteProductReviewStatus->getUpVoteReviews();
+                    $downVotesCheck = $CheckVoteProductReviewStatus->getDownVoteReviews();
+                    $productReview->upVotesCheck = $upVotesCheck;
+                    $productReview->downVotesCheck = $downVotesCheck;
+                    $CommentsAndRatingArray[$key] = $productReview;
+                }
+            }
+            
                 
             return $this->render('product/check_product.html.twig', [
                 'product' => $product,
                 'imagesName' => $imagesName,
                 'userOwnerProduct' => $userOwnerProduct,
                 'myProductBool' => $myProductBool,
-                'AddProductFormType' => $form->createView(),
+                'CommentsAndRatingArray' => $CommentsAndRatingArray,
+                'CheckVoteProductReviewStatus' => $CheckVoteProductReviewStatus
             ]);
         }
     }

@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
-class UserPageController extends BaseController
+class UserPageController extends AbstractController
 {
     #[Route('/user', name: 'app_user')]
 
@@ -30,72 +30,9 @@ class UserPageController extends BaseController
     }
 
     #[Route('/user/{id}', name: 'app_user_profile')]
-    public function showProfile(EntityManagerInterface $entityManager, int $id, Request $request, SessionInterface $session, CartService $cartService): Response
+    public function showProfile(EntityManagerInterface $entityManager, int $id, Request $request, SessionInterface $session): Response
     {
 
-        // $cartToRemove = $request->request->get('productId');
-        // $quantity = $request->request->get('quantity');
-
-        // $cartsId = $session->get('cartsId');
-        // $session->set('cartsId', '1:5|2:4|3:4');
-        // $cartsId = $session->get('cartsId');
-        
-        //     $cartsIdArray = explode('|', $cartsId);
-       
-        // $result = array();
-        // foreach ($cartsIdArray as $cart) {
-        //   $keyValue = explode(':', $cart);
-          
-        //   $result[$keyValue[0]] = $keyValue[1];
-        // }
-        // dump($result);
-        // foreach ($result as $key => $value) {
-        //     if ($key == '1' && $value == '5') {
-        //         unset($result[$key]);
-        //     }
-        // }
-        
-        // $cartsIdAfterRemove = '';
-        // //$session->set('cartsId', implode(',', $result));
-        // foreach ($result as $key => $value) {
-        //     $cartsIdAfterRemove .= $key . ':' . $value . '|';
-        // }
-        // dump($cartsIdAfterRemove);
-        // /** @var $myUser User */
-        // // $myUser = $this->getUser();
-        // // if ($myUser) {
-        // //     $myUser->setCarts($session->get('cartsId'));
-        // //     $entity->persist($myUser);
-        // //     $entity->flush();
-        // // }
-        // //  dump($result);
-        // die;
-
-
-
-        // $string = "5:1|2:5|1:5";
-        // $pairs = explode('|', $string);
-        
-        // $result = array();
-        // foreach ($pairs as $pair) {
-        //   $keyValue = explode(':', $pair);
-        //   $result[$keyValue[0]] = $keyValue[1];
-        // }
-
-
-        // // if (($key = array_search($result, $values)) !== false) {
-        // //     unset($values[$key]);
-        // //     $cartsCount = $session->get('cartsCount', 0) - 1;
-        // //     $session->set('cartsCount', $cartsCount);
-        // // }
-
-        // foreach ($result as $key => $value) {
-        //     if ($key == '1' && $value == '5') {
-        //         unset($result[$key]);
-        //     }
-        // }
-        // dump($result);
-        // die;
         /** @var $user User */
         $myUser = $this->getUser();
         $myId = $myUser->getId();
@@ -189,19 +126,7 @@ class UserPageController extends BaseController
             $myCartsInfo = 0;
             $myCartsDirImages = 0;
         }
-        // $i = 0;
-        // $files = $productImagesDirection;
-        // foreach ($productImagesDirection as $images) {
-        //     $dir = scandir('users_data/' . $userID->getUsername() . '/products/' . $images);
-        //     foreach ($dir as $file) {
-        //         if ($file != '.' && $file != '..') {
-        //             $files[$i][] = $file;
-        //             $i++;
-        //         }
-        //     }
-        // }
-        // dump($files);
-        $cartsCount = $cartService->getCartsCount($session);
+
         return $this->render('user_page/index.html.twig', [
             'username' => $user->getUsername(),
             'userId' => $user->getId(),
@@ -212,7 +137,6 @@ class UserPageController extends BaseController
             'myCardsId' => $myCartsId,
             'myCartsInfo' => $myCartsInfo,
             'myCartsDirImages' => $myCartsDirImages,
-            'cartsCount' => $cartsCount
         ]);
     }
     #[Route('/user/{id}/{productId}', name: 'app_user_profile_cart')]

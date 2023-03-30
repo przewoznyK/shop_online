@@ -50,7 +50,7 @@
 
 			<div class="col-sm-9">
 				{{ app.session.get('cartsId') }}
-				<span class="show-cart-count">{{ app.session.get('cartsCount') }}</span>
+				<span class="show-cart-count">{{ app.session.get('cartsCount') }}></span>
 				<div class="d-inline-flex p-2">
 					{% set count = 0 %}
 					{% for offerInfo in allOfferInfo %}

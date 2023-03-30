@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\Length;
 
-class IndexController extends BaseController
+class IndexController extends AbstractController
 {
     public function createSortForm(Request $request)
     {
@@ -40,7 +40,7 @@ class IndexController extends BaseController
     }
 
     #[Route('/', name: 'app_index')]
-    public function index(EntityManagerInterface $entityManager, CartService $cartService, SessionInterface $session, Request $request)
+    public function index(EntityManagerInterface $entityManager, SessionInterface $session, Request $request)
     {
         
        
@@ -99,12 +99,12 @@ class IndexController extends BaseController
             $allOfferInfo = 0;
             $allOfferDirImages = 0;
         }
-        $cartsCount = $cartService->getCartsCount($session);
+      //  $cartsCount = $cartService->getCartsCount($session);
         return $this->render('index/index.html.twig', [
             'allOfferId' => $allOfferId,
             'allOfferInfo' => $allOfferInfo,
             'allOfferDirImages' => $allOfferDirImages,
-            'cartsCount' => $cartsCount,
+            //'cartsCount' => $cartsCount,
             'categories' => $categories,
             'actualCategory' => null,
             'sortOptions' => $sortOptions,
@@ -113,7 +113,7 @@ class IndexController extends BaseController
     }
 
     #[Route('/carts', name: 'app_carts')]
-    public function carts(EntityManagerInterface $entityManager, CartService $cartService, SessionInterface $session)
+    public function carts(EntityManagerInterface $entityManager, SessionInterface $session)
     {
 
    
@@ -169,7 +169,6 @@ class IndexController extends BaseController
             $cartsIdAndQuantityArray = 0;
         }
 
-       // $cartsCount = $cartService->getCartsCount($session);
         
         return $this->render('index/carts.html.twig', [
 
