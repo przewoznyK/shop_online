@@ -6,6 +6,7 @@ use App\Entity\ProductReview;
 use App\Entity\User;
 use App\Entity\Product;
 use DateTime;
+use App\Controller\asset;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -101,7 +102,7 @@ class SessionController extends AbstractController
     public function addReviewsProduct(Request $request, EntityManagerInterface $entityManager)
     {
 
-        $user = $this->getUser();
+        $myUser = $this->getUser();
         $productId = $request->request->get('productId');
         $product = $entityManager->find(Product::class, $productId);
 
@@ -112,7 +113,7 @@ class SessionController extends AbstractController
         $time = new DateTime();
 
         $newReview = new ProductReview();
-        $newReview->setAuthor($user);
+        $newReview->setAuthor($myUser);
         $newReview->setProduct($product);
         $newReview->setRating($rating);
         $newReview->setComment($comment);
@@ -123,8 +124,76 @@ class SessionController extends AbstractController
         $entityManager->persist($newReview);
         $entityManager->flush();
 
+        /** @var $myUser User */
+        $myUser = $this->getUser();
+
         $CommentsAndRatingArray = $entityManager->getRepository(ProductReview::class)->findBy(['product' => $productId]);
-        return new JsonResponse(['CommentsAndRatingArray' => $CommentsAndRatingArray]);
+        foreach ($CommentsAndRatingArray as $key => $productReview) {
+            if (is_int($key)) { // upewnij się, że to jest obiekt ProductReview
+                $upVotesCheck = $myUser->getUpVoteReviews();
+                $downVotesCheck = $myUser->getDownVoteReviews();
+                $productReview->upVotesCheck = $upVotesCheck;
+                $productReview->downVotesCheck = $downVotesCheck;
+                $CommentsAndRatingArray[$key] = $productReview;
+            }
+        }
+
+        $html = '';
+        foreach ($CommentsAndRatingArray as $commentsAndRating) {
+            $html .= '
+      <section style="background-color: #e7effd;" class="reviewFull"  data="' . $commentsAndRating->getId() . '">
+        <div class="container my-5 py-5 text-dark">
+          <div class="row d-flex justify-content-center">
+            <div class="col-md-11 col-lg-9 col-xl-7">
+              <div class="d-flex flex-start mb-4">
+                <img class="rounded-circle shadow-1-strong me-3"
+                src="/users_data/' . $commentsAndRating->getAuthor()->getId() . '/avatar/avatar.jpg" alt="avatar" width="65"
+                  height="65" />
+                <div class="card w-100">
+                  <div class="card-body p-4">
+                    <div class="">
+                      <h5>' . $commentsAndRating->getAuthor()->getUsername() . ' ' . $commentsAndRating->getRating() . '</h5>';
+            if ($commentsAndRating->getAuthor()->getId() == $myUser->getId()) {
+                $html .= "<h5><i data-comment-id='" . $commentsAndRating->getId() . "' class='deleteReview fa-sharp fa-solid fa-trash position-absolute top-0 end-0 m-3 btn'></i></h5>";
+            }
+            $html .= ' <p class="small">' . $commentsAndRating->getCreatedAt()->format('d-m-Y H:i:s') . '</p>
+                      <p>
+                      ' . $commentsAndRating->getComment() . '
+                      </p>
+
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                        ';
+            // if (in_array( $commentsAndRating->getId(),$commentsAndRating->upVotesCheck))
+            if ((in_array($commentsAndRating->getId(), (explode('|', $commentsAndRating->upVotesCheck))))) {
+                // tablica zawiera wartość 1 dla tego obiektu ProductReview
+
+                $html .= '<i class="undoVote fas fa-thumbs-up me-1 btn" style="color: blue;" data-comment-id="' . $commentsAndRating->getId() . '" data-type="upVote">' . $commentsAndRating->getUpVote() . '</i>';
+            } else {
+                $html .= '<i class="vote fas fa-thumbs-up me-1 btn"  data-comment-id="' . $commentsAndRating->getId() . '" data-type="upVote">' . $commentsAndRating->getUpVote() . '</i>';
+            }
+            if ((in_array($commentsAndRating->getId(), (explode('|', $commentsAndRating->downVotesCheck))))) {
+                $html .= '<i class="undoVote fas fa-thumbs-down me-1 btn" style="color: red;" data-comment-id="' . $commentsAndRating->getId() . '" data-type="downVote">' . $commentsAndRating->getDownVote() . '</i>';
+            } else {
+                $html .= '<i class="vote fas fa-thumbs-down me-1 btn"  data-comment-id="' . $commentsAndRating->getId() . '" data-type="downVote">' . $commentsAndRating->getDownVote() . '</i>';
+            }
+            $html .= '
+                        </div>
+                        <a href="#!" class=""><i class="link-muted fas fa-reply me-1"></i> Reply</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    ';
+        }
+
+        $CommentsAndRatingArray = $entityManager->getRepository(ProductReview::class)->findBy(['product' => $productId]);
+        return new JsonResponse(['CommentsAndRatingArray' => $CommentsAndRatingArray, 'html' => $html]);
     }
 
     public function upVoteProductReview(Request $request, EntityManagerInterface $entityManager)
@@ -171,9 +240,6 @@ class SessionController extends AbstractController
             $newUndoVote = array_diff($undoVote, array($reviewId));
             $newUndoVote = implode('|', $newUndoVote);
             $myUser->setUpVoteReviews($newUndoVote);
-
-
-            
         }
 
         // If user add dislike
@@ -213,11 +279,21 @@ class SessionController extends AbstractController
 
         // Check 
 
-
         $entityManager->persist($myUser);
         $entityManager->flush();
         $entityManager->persist($review);
         $entityManager->flush();
         return new JsonResponse(['success' => 1, 'newValue' => $newValue, 'type' => $type, 'offUpBool' => $offUpBool, 'offDownBool' => $offDownBool, 'offValue' => $offValue]);
+    }
+
+
+
+    public function removeReviewsProduct(Request $request, EntityManagerInterface $entityManager)
+    {
+        $reviewId = $request->request->get('reviewId');
+         $reviewToDelete = $entityManager->getRepository(ProductReview::class)->find($reviewId);
+         $entityManager->remove($reviewToDelete);
+         $entityManager->flush();
+        return new JsonResponse(['success' => 1, 'reviewId' => $reviewId]);
     }
 }

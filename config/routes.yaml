@@ -23,3 +23,8 @@ ajax_up_vote_product_review:
     path: /ajax/up_vote_product_review
     controller: App\Controller\SessionController::upVoteProductReview
     methods: [POST]
+
+ajax_remove_reviews_product:
+    path: /ajax/remove_reviews_product
+    controller: App\Controller\SessionController::removeReviewsProduct
+    methods: [POST]

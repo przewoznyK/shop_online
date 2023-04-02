@@ -105,55 +105,68 @@ class ProductController extends AbstractController
 
     #[Route('/check_product/{id}', name: 'app_check_product')]
     public function checkProduct(EntityManagerInterface $entityManager, Request $request, int $id): Response
-    { {
-   
-            $imagesName = [];
-            $product = $entityManager->getRepository(Product::class)->findOneBy(array('id' => $id));
-            $userOwnerProduct = $entityManager->getRepository(User::class)->findOneBy(array('id' => $product->getUserId()));
+    {
 
-            /** @var $myUser User */
-            $myUser = $this->getUser();
+        $imagesName = [];
+        $product = $entityManager->getRepository(Product::class)->findOneBy(array('id' => $id));
+        $userOwnerProduct = $entityManager->getRepository(User::class)->findOneBy(array('id' => $product->getUserId()));
 
-            // Checking whether the product belongs to this user 
-            $myProductBool = false;
-            if($myUser)
-            {
+        /** @var $myUser User */
+        $myUser = $this->getUser();
+
+        $CommentsAndRatingArray = $entityManager->getRepository(ProductReview::class)->findBy(['product' => $id]);
+        $myProductBool = false;
+        // if User is login
+        if ($myUser) {
+            
+            foreach ($CommentsAndRatingArray as $key => $productReview) {
+                if (is_int($key)) { // upewnij się, że to jest obiekt ProductReview
+                    $upVotesCheck = $myUser->getUpVoteReviews();
+                    $downVotesCheck = $myUser->getDownVoteReviews();
+                    $productReview->upVotesCheck = $upVotesCheck;
+                    $productReview->downVotesCheck = $downVotesCheck;
+                    $CommentsAndRatingArray[$key] = $productReview;
+                }
+                // Checking whether the product belongs to this user 
                 if ($userOwnerProduct->getId() == $myUser->getId()) {
-                $myProductBool = true;
-            }
-            }
-            // Display product images
-            $productImagesDirection = $product->getImagesDir();
-            $dir = scandir('users_data/' . $userOwnerProduct->getId() . '/products/' . $productImagesDirection);
-            foreach ($dir as $file) {
-                if ($file != '.' && $file != '..') {
-                    $imagesName[] = $file;
+                    $myProductBool = true;
                 }
             }
+        } else {
 
-            $CommentsAndRatingArray = $entityManager->getRepository(ProductReview::class)->findBy(['product' => $id]);
-            $CheckVoteProductReviewStatus = $entityManager->getRepository(User::class)->find($myUser->getId());
-
-            foreach($CommentsAndRatingArray as $key => $productReview) {
-                if(is_int($key)) { // upewnij się, że to jest obiekt ProductReview
-                    $upVotesCheck = $CheckVoteProductReviewStatus->getUpVoteReviews();
-                    $downVotesCheck = $CheckVoteProductReviewStatus->getDownVoteReviews();
+            foreach ($CommentsAndRatingArray as $key => $productReview) {
+                if (is_int($key)) { // upewnij się, że to jest obiekt ProductReview
+                    $upVotesCheck = 0;
+                    $downVotesCheck = 0;
                     $productReview->upVotesCheck = $upVotesCheck;
                     $productReview->downVotesCheck = $downVotesCheck;
                     $CommentsAndRatingArray[$key] = $productReview;
                 }
             }
-            
-                
-            return $this->render('product/check_product.html.twig', [
-                'product' => $product,
-                'imagesName' => $imagesName,
-                'userOwnerProduct' => $userOwnerProduct,
-                'myProductBool' => $myProductBool,
-                'CommentsAndRatingArray' => $CommentsAndRatingArray,
-                'CheckVoteProductReviewStatus' => $CheckVoteProductReviewStatus
-            ]);
         }
+ 
+        
+        // Display product images
+        $productImagesDirection = $product->getImagesDir();
+        $dir = scandir('users_data/' . $userOwnerProduct->getId() . '/products/' . $productImagesDirection);
+        foreach ($dir as $file) {
+            if ($file != '.' && $file != '..') {
+                $imagesName[] = $file;
+            }
+        }
+
+
+
+
+        return $this->render('product/check_product.html.twig', [
+            'product' => $product,
+            'imagesName' => $imagesName,
+            'userOwnerProduct' => $userOwnerProduct,
+            'myProductBool' => $myProductBool,
+            'CommentsAndRatingArray' => $CommentsAndRatingArray,
+            'myUser' => $myUser
+
+        ]);
     }
     #[Route('/user/edit_product/{id}', name: 'app_edit_product')]
     public function editProduct(EntityManagerInterface $entityManager, Request $request, int $id): Response
@@ -275,6 +288,5 @@ class ProductController extends AbstractController
         $entityManager->flush();
         $referer = $request->headers->get('referer');
         return $this->redirect($referer);
-
     }
 }

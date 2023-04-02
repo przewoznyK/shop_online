@@ -32,20 +32,20 @@
                 <p class="lead fw-normal mb-2">{{ cartInfo.name }}</p>
               </div>
               <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
-                <button class="btn btn-link px-2"
+                {# <button class="btn btn-link px-2"
                   onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
                   <i class="fas fa-minus"></i>
-                </button>
+                </button> #}
                
                 <input min="1" max="{{ cartInfo.quantity }}" data-display="#{{ cartInfo.id }}" value="{{ cartInfo.quantityUser  }}" type="number"
                   class="quantity-input form-control form-control-sm" data-price="{{ cartInfo.price }}" />
 
 
-                   Max: {{ cartInfo.quantity }}
-                <button class="btn btn-link px-2"
+                   Max: {{ cartInfo.quantity }}<br>
+                {# <button class="btn btn-link px-2"
                   onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
                   <i class="fas fa-plus"></i>
-                </button>
+                </button> #}
               </div>
               <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
     
@@ -56,7 +56,6 @@
 
               </div>
               <div class="col-md-1 col-lg-1 col-xl-1 text-end">
-                <a href="#!" class="text-danger"><i class="fas fa-trash fa-lg"></i></a>
                 				<a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary">Check product</a>
 					<button class="remove-cart-button" data-cart-id="{{ cartInfo.id }}">Remove product</button>
               </div>
@@ -115,4 +114,45 @@
       
 	{% endfor %}
 </div> #}
+
+{% block javascripts %}
+    <script type="text/javascript">
+      $(document).on('click', '.remove-cart-button', function(event){
+    var productId = $(this).data('cart-id');
+	var quantity = $('#quantity-input').val();
+    $.ajax({
+      url: '{{ path('ajax_remove_cart') }}',
+      method: 'POST',
+      data: {productId: productId, quantity: quantity},
+      success: function(response) {
+        
+			$('.show-cart-count').html(response.cartsCount);
+        	$('.cart-item[data-cart-id="' + productId + '"]').remove();
+			$('[data-cart-id="' + productId + '"]').removeClass('remove-cart-button').addClass('add-cart-button').text('Add product');
+
+      
+	  }
+    });
+  });
+
+
+  $(document).ready(function() {
+  updateTotal();
+  
+  $('.quantity-input').on('change', function() {
+    updateTotal();
+  });
+});
+
+function updateTotal() {
+  $('.quantity-input').each(function() {
+    var displayId = $(this).data('display');
+    var quantity = $(this).val();
+    var price = $(this).data('price');
+    $(displayId).text('$' + (quantity * price).toFixed(2));
+  });
+}
+    </script>
+{% endblock %}
+
 {% endblock %}

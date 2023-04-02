@@ -51,9 +51,12 @@
 								{% endif %}
 {% if myProductBool %}         
 <a href="{{ path('app_edit_product', {'id': product.id }) }}"> Edit </a>
+
 {% endif %}
 
+
 {# Add Review #}
+{% if is_granted('IS_AUTHENTICATED_FULLY') %}
     <form>
       <select name="rating">
   <option value="1">1</option>
@@ -65,12 +68,14 @@
       <input name='comment' type='text'><br>
       <button id="SubmitAddReviewProduct">Add Review</button>
     </form>
+    <div id='successAddReviewMessage'></div>
+{% endif %}
 <br><br>
 
 {# Show Review #}
 <section id='review_section'>
 {% for commentsAndRating in CommentsAndRatingArray %}
-<section  style="background-color: #e7effd;">
+<section  style="background-color: #e7effd;" class='reviewFull' data='{{commentsAndRating.id}}'>
   <div class="container my-5 py-5 text-dark">
     <div class="row d-flex justify-content-center">
       <div class="col-md-11 col-lg-9 col-xl-7">
@@ -81,23 +86,33 @@
           <div class="card w-100">
             <div class="card-body p-4">
               <div class="">
-                <h5>{{ commentsAndRating.author.username }}      {{ commentsAndRating.rating }}</h5>
-                <p class="small">{{ commentsAndRating.createdAt|date('d-m-Y H:i:s') }}</p>
-                <p>
+                <h5>{{ commentsAndRating.author.username }}      {{ commentsAndRating.rating }}  </h5>
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                  {% if commentsAndRating.author.id == myUser.id %}
+                    <h5><i data-comment-id='{{commentsAndRating.id}}' class="deleteReview fa-sharp fa-solid fa-trash position-absolute top-0 end-0 m-3 btn"></i></h5>
+                  {% endif %}
+                {% endif %}
+                    <p class="small">{{ commentsAndRating.createdAt|date('d-m-Y H:i:s') }}</p>
+                    <p>
                 {{ commentsAndRating.comment }}
                 </p>
 
                 <div class="d-flex justify-content-between align-items-center">
                   <div class="d-flex align-items-center">
-                  {% if commentsAndRating.upVotesCheck == commentsAndRating.id %}
-                  <i class="undoVote fas fa-thumbs-up me-1" style="color: blue;" data-comment-id="{{ commentsAndRating.id }}" data-type="upVote">{{commentsAndRating.upvote}}</i>
+                  {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    {% if commentsAndRating.id in (commentsAndRating.upVotesCheck|split('|')) %}
+                      <i class="undoVote fas fa-thumbs-up me-1 btn" style="color: blue;" data-comment-id="{{ commentsAndRating.id }}" data-type="upVote">{{commentsAndRating.upvote}}</i>
+                    {% else %}
+                      <i class="vote fas fa-thumbs-up me-1 btn"  data-comment-id="{{ commentsAndRating.id }}" data-type="upVote">{{commentsAndRating.upvote}}</i>
+                    {% endif %}
+                    {% if commentsAndRating.id in (commentsAndRating.downVotesCheck|split('|')) %}
+                      <i class="undoVote fas fa-thumbs-down me-1 btn" style="color: red;" data-comment-id="{{ commentsAndRating.id }}" data-type="downVote">{{commentsAndRating.downvote}}</i>
+                    {% else %}
+                      <i class="vote fas fa-thumbs-down me-1 btn"  data-comment-id="{{ commentsAndRating.id }}" data-type="downVote">{{commentsAndRating.downvote}}</i>
+                    {% endif %}
                   {% else %}
-                  <i class="vote fas fa-thumbs-up me-1"  data-comment-id="{{ commentsAndRating.id }}" data-type="upVote">{{commentsAndRating.upvote}}</i>
-                  {% endif %}
-                  {% if commentsAndRating.downVotesCheck == commentsAndRating.id %}
-                  <i class="undoVote fas fa-thumbs-down me-1" style="color: red;" data-comment-id="{{ commentsAndRating.id }}" data-type="downVote">{{commentsAndRating.downvote}}</i>
-                  {% else %}
-                  <i class="vote fas fa-thumbs-down me-1"  data-comment-id="{{ commentsAndRating.id }}" data-type="downVote">{{commentsAndRating.downvote}}</i>
+                      <i class="fas fa-thumbs-up me-1"  data-comment-id="{{ commentsAndRating.id }}" data-type="upVote">{{commentsAndRating.upvote}}</i>
+                      <i class="fas fa-thumbs-down me-1"  data-comment-id="{{ commentsAndRating.id }}" data-type="downVote">{{commentsAndRating.downvote}}</i>
                   {% endif %}
                   </div>
                   <a href="#!" class=""><i class="link-muted fas fa-reply me-1"></i> Reply</a>
@@ -132,8 +147,12 @@
 </div> #}
 {% block javascripts %}
     <script type="text/javascript">
-var canCallFunction1 = true;
 
+// Add Cart
+
+
+// Add Reviews Function
+var canCallFunction1 = true;
 $(function () {
   $(document).on('click', '#SubmitAddReviewProduct', function(event) {
     event.preventDefault();
@@ -143,24 +162,40 @@ $(function () {
         canCallFunction1 = true;
       }, 2000);
       
-      // reszta kodu
-      
       var productId = {{ product.id }}
       $.ajax({
         type: 'POST',
         url: '{{ path('ajax_add_reviews_product') }}',
         data: $('form').serialize() + '&productId=' + productId,
         success: function(response) {
-          console.log(response);
+          $('#successAddReviewMessage').append('Comment successfully added.<br>').addClass('bg-success text-white p-2');;
           $('#review_section').empty();
-          
+          $('#review_section').html(response.html);
         } 
       });
     }
   });
 });
 
+// Remove Reviews Function
+$(function(){
+  $(document).on('click', '.deleteReview', function() {
+    var $button = $(this);
+    var reviewId = $button.data('comment-id');
+    $.ajax({
+      type: 'POST',
+      url: '{{ path('ajax_remove_reviews_product') }}',
+      data: {reviewId: reviewId},
+      success: function(response)
+      {
+        console.log('1');
+       $('section.reviewFull[data=' + reviewId + ']').remove();
+      }
+    })
+  });
+});
 
+// Vote Function
 $(function (){
   var canCallFunction2 = true;
   $(document).on('click', '.vote, .undoVote', function(){
@@ -226,6 +261,53 @@ $(function (){
     $button.toggleClass('vote undoVote');
   }});
 });
+
+$(document).on('click', '.add-cart-button', function(event){
+	event.preventDefault();
+    if (canCallFunction1) {
+      canCallFunction1 = false;
+      setTimeout(() => {
+        canCallFunction1 = true;
+      }, 2000);
+    var productId = $(this).data('cart-id');
+	var quantity = $('#quantity-input').val();
+	if(quantity == null) quantity = 1;
+    $.ajax({
+      url: '{{ path('ajax_add_value_to_session') }}',
+      method: 'POST',
+      data: {productId: productId, quantity: quantity},
+      success: function(response) {
+        console.log('Value added to session');
+        // Aktualizujemy wartość elementu HTML po zakończeniu operacji AJAX
+        $('.show-cart-count').html(response.cartsCount);
+        $('[data-cart-id="' + productId + '"]').removeClass('add-cart-button').addClass('remove-cart-button').text('Remove product');
+	  
+      }
+    });
+  }});
+var canCallFunction1 = true;
+  $(document).on('click', '.remove-cart-button', function(event){
+	event.preventDefault();
+    if (canCallFunction1) {
+      canCallFunction1 = false;
+      setTimeout(() => {
+        canCallFunction1 = true;
+      }, 2000);
+    var productId = $(this).data('cart-id');
+	var quantity = $('#quantity-input').val();
+    $.ajax({
+      url: '{{ path('ajax_remove_cart') }}',
+      method: 'POST',
+      data: {productId: productId, quantity: quantity},
+      success: function(response) {
+        
+			$('.show-cart-count').html(response.cartsCount);
+        	$('.cart-item[data-cart-id="' + productId + '"]').remove();
+			$('[data-cart-id="' + productId + '"]').removeClass('remove-cart-button').addClass('add-cart-button').text('Add product');
+
+	  }
+    });
+  }});
 </script>
 {% endblock %}
 
