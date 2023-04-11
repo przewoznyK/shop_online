@@ -1,0 +1,116 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ProductController!{% endblock %}
+{% block body %}
+<section id = 'allDelivery'>
+    {{ id }}
+    <br>
+{% for delivery in deliveryArray %}
+    <section class='deliveryFull' data-id='{{ delivery.id }}'>
+    {{ delivery.type }}
+    {{ delivery.price }}
+  {{ delivery.getPersonalPickup() }}
+  <i class="deleteDelivery btn fa-sharp fa-solid fa-xmark" data-id='{{ delivery.id }}'></i>
+<br>
+</section>
+{% endfor %}
+</section>
+    <br>
+<h1> Delivery </h1>
+<div id='addDelivery' class='btn btn-primary'>Add Delivery</div>
+<div id='deliveryForm'>
+    <div id='type'></div>
+    <div id='location'></div>
+    <div id='price'></div>
+    <div id='submit'></div>
+</div>
+{% block javascripts %}
+<script type="text/javascript">
+$('#addDelivery').click(function()
+{
+  $('#type').html('{{ form_row(AddDeliveryFormType.type) }}');
+  $('#price').html('{{ form_row(AddDeliveryFormType.price) }}');
+  $('#submit').html('{{ form_row(AddDeliveryFormType.submit) }}');
+  $("#delivery_form_type").trigger("change");
+            console.log('2');
+});
+canCallFunction2 = true;
+$(document).on("click", ".deleteDelivery",function(){
+       event.preventDefault();
+    if (canCallFunction2) {
+      canCallFunction2 = false;
+      setTimeout(() => {
+        canCallFunction2 = true;
+      }, 2000);
+    var productId = {{ id }}
+    var $button = $(this);
+    var deliveryId = $button.data('id');
+    console.log(deliveryId);
+    $.ajax({
+        type: 'POST',
+        url: '{{ path('ajax_remove_delivery') }}',
+        data: { deliveryId: deliveryId },
+        success: function(response)
+        {
+            console.log(response.dziala);
+            $('section.deliveryFull[data-id=' + deliveryId + ']').remove();
+        }
+    })
+    }
+});
+$(document).on("change", "#delivery_form_type",function() {
+    var deliveryType = $(this).val();
+    if(deliveryType == 'personal_pickup'){
+        // kod do wykonania po wybraniu personal pickup
+        console.log('a');
+        var newLocationHtml = '{{ form_row(AddDeliveryFormType.personal_pickup) }}';
+        $('#location').html(newLocationHtml);
+        $('#delivery_form_price').val(0);
+    }
+    else if(deliveryType == 'parcel_locker'){
+        // kod do wykonania po wybraniu parcel locker
+        console.log('b');
+
+        $('#location').empty();
+        $('#delivery_form_price').val(10);
+    }
+    else if(deliveryType == 'courier'){
+        // kod do wykonania po wybraniu courier
+        console.log('c');
+        $('#location').empty();
+        $('#delivery_form_price').val(15);
+    }
+});
+// Submit
+var canCallFunction1 = true;
+$(document).on('click', '#submit', function(event)
+{
+    event.preventDefault();
+    if (canCallFunction1) {
+      canCallFunction1 = false;
+      setTimeout(() => {
+        canCallFunction1 = true;
+      }, 2000);
+    var productId = {{ id }}
+
+    var type = $('#delivery_form_type').val();
+    var location = $('#delivery_form_personal_pickup').val() || null;
+    var price = $('#delivery_form_price').val();
+    $.ajax({
+        type: 'POST',
+        url: '{{ path('ajax_add_delivery') }}',
+        data: {type: type, location: location, price: price, productId: productId},
+        success: function(response){
+            console.log(response.productId);
+            console.log(response.type);
+            console.log(response.location);
+            console.log(response.price);
+            $('#allDelivery').append(response.type + response.price + response.location + '<br>');
+        }
+    })
+    }
+})
+
+</script>
+{% endblock %}
+{% endblock %}

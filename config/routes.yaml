@@ -28,3 +28,12 @@ ajax_remove_reviews_product:
     path: /ajax/remove_reviews_product
     controller: App\Controller\SessionController::removeReviewsProduct
     methods: [POST]
+
+ajax_add_delivery:
+    path: /ajax/add_delivery
+    controller: App\Controller\SessionController::addDelivery
+
+ajax_remove_delivery:
+    path: /ajax/remove_delivery
+    controller: App\Controller\SessionController::removeDelivery
+    methods: [POST]

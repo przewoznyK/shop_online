@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -51,6 +53,14 @@ class Product
 
     #[ORM\Column(length: 255)]
     private ?string $Location = null;
+
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: Delivery::class)]
+    private Collection $delivery;
+
+    public function __construct()
+    {
+        $this->delivery = new ArrayCollection();
+    }
 
   
 
@@ -203,6 +213,36 @@ class Product
     public function setLocation(string $Location): self
     {
         $this->Location = $Location;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Delivery>
+     */
+    public function getDelivery(): Collection
+    {
+        return $this->delivery;
+    }
+
+    public function addDelivery(Delivery $delivery): self
+    {
+        if (!$this->delivery->contains($delivery)) {
+            $this->delivery->add($delivery);
+            $delivery->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDelivery(Delivery $delivery): self
+    {
+        if ($this->delivery->removeElement($delivery)) {
+            // set the owning side to null (unless already changed)
+            if ($delivery->getProduct() === $this) {
+                $delivery->setProduct(null);
+            }
+        }
 
         return $this;
     }

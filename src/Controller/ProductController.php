@@ -2,11 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\Delivery;
 use App\Entity\User;
 use App\Entity\Product;
 use App\Entity\ProductReview;
 use App\Form\AddProductFormType;
 use App\Form\AddReviewFormType;
+use App\Form\DeliveryFormType;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,49 +26,47 @@ class ProductController extends AbstractController
     {
         // $category = new Category();
         // $category->setName('Computer Peripherals');
-
         // $product = new Product();
-
-
         // $entityManager->persist($category);
         // $entityManager->persist($product);
         // $entityManager->flush();
         /** @var $user User */
         $user = $this->getUser();
         $product = new Product();
-        $form = $this->createForm(AddProductFormType::class, $product, [
+
+        // Create product form
+        $form_create_product = $this->createForm(AddProductFormType::class, $product, [
             'image_required' => true,
             'validation_groups' => ['create'],
         ]);
-        $form->handleRequest($request);
+        $form_create_product->handleRequest($request);
         if ($user) {
 
             $id = $user->getId();
-            if ($form->isSubmitted() && $form->isValid()) {
-
-
+            if ($form_create_product->isSubmitted() && $form_create_product->isValid()) {
+    
                 $product->setName(
-                    $form->get('name')->getData()
+                    $form_create_product->get('name')->getData()
                 );
                 $product->setDescription(
-                    $form->get('description')->getData()
+                    $form_create_product->get('description')->getData()
                 );
                 $product->setPrice(
-                    $form->get('price')->getData()
+                    $form_create_product->get('price')->getData()
                 );
                 $product->setCategory(
-                    $form->get('category')->getData()
+                    $form_create_product->get('category')->getData()
                 );
                 $product->setIsPublic(
-                    $form->get('is_public')->getData()
+                    $form_create_product->get('is_public')->getData()
                 );
-                $nameCatalog = $form->get('name')->getData() . uniqid();
+                $nameCatalog = $form_create_product->get('name')->getData() . uniqid();
                 $directionCatalog = 'users_data/' . $id . '/products/' . $nameCatalog;
                 $filesystem = new Filesystem();
                 $filesystem->mkdir($directionCatalog);
                 $product->setImagesDir($nameCatalog);
 
-                $files = $form->get('my_files')->getData();
+                $files = $form_create_product->get('my_files')->getData();
                 foreach ($files as $file) {
                     $filename = md5(uniqid()) . '.' . $file->guessExtension();
                     $file->move(
@@ -80,28 +80,50 @@ class ProductController extends AbstractController
                 $product->setUserId($id);
 
                 $product->setQuantity(
-                    $form->get('quantity')->getData()
+                    $form_create_product->get('quantity')->getData()
                 );
 
                 $product->setLocation(
-                    $form->get('location')->getData()
+                    $form_create_product->get('location')->getData()
                 );
                 $entityManager->persist($product);
                 $entityManager->flush();
                 $this->addFlash('success', 'Product added successfully!');
-                /** @var $user User */
-                $user = $this->getUser();
-                $id = $user->getId();
-                $url =  $id;
+                $id = $product->getId();
+
+
+                $url = 'add_delivery/' . $id;
                 return new RedirectResponse($url);
             }
         }
 
+        $delivery = new Delivery();
+        $form_create_delivery = $this->createForm(DeliveryFormType::class, $delivery);
+
 
         return $this->render('product/index.html.twig', [
-            'AddProductFormType' => $form->createView(),
+            'AddProductFormType' => $form_create_product->createView(),
+            'AddDeliveryFormType' => $form_create_delivery->createView(),
         ]);
     }
+
+
+
+    #[Route('/user/add_delivery/{id}', name: 'app_user_add_delivery')]
+    public function addDelivery(EntityManagerInterface $entityManager, int $id): Response
+    {   
+        $deliveryArray = $entityManager->getRepository(Delivery::class)->findBy(array('product' => $id));
+
+        $delivery = new Delivery();
+        $form_create_delivery = $this->createForm(DeliveryFormType::class, $delivery);
+        return $this->render('product/add_delivery.html.twig', [
+            'AddDeliveryFormType' => $form_create_delivery->createView(),
+            'id' => $id,
+            'deliveryArray' => $deliveryArray
+        ]);
+    }
+
+
 
     #[Route('/check_product/{id}', name: 'app_check_product')]
     public function checkProduct(EntityManagerInterface $entityManager, Request $request, int $id): Response

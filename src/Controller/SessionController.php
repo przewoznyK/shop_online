@@ -7,7 +7,7 @@ use App\Entity\User;
 use App\Entity\Product;
 use DateTime;
 use App\Controller\asset;
-
+use App\Entity\Delivery;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -106,7 +106,7 @@ class SessionController extends AbstractController
         $productId = $request->request->get('productId');
         $product = $entityManager->find(Product::class, $productId);
 
-
+        
         $comment = $request->request->get('comment');
         $productId = $request->request->get('productId');
         $rating = $request->request->get('rating');
@@ -295,5 +295,37 @@ class SessionController extends AbstractController
          $entityManager->remove($reviewToDelete);
          $entityManager->flush();
         return new JsonResponse(['success' => 1, 'reviewId' => $reviewId]);
+    }
+
+    public function addDelivery(Request $request, EntityManagerInterface $entityManager)
+    {
+        $productId = $request->request->get('productId');
+        $type = $request->request->get('type');
+        $location = $request->request->get('location');
+        $price = $request->request->get('price');
+        $product = $entityManager->find(Product::class, $productId);
+        $time = new DateTime();
+
+        $addDelivery = new Delivery();
+        $addDelivery->setProduct($product);
+        $addDelivery->setType($type);
+        $addDelivery->setPersonalPickup($location);
+        $addDelivery->setPrice($price);
+        $addDelivery->setDeliveryTime($time);
+
+        $entityManager->persist($addDelivery);
+        $entityManager->flush();
+        
+        
+        return new JsonResponse(['productId' => $productId,'type' => $type, 'location' => $location, 'price' => $price]);
+    }
+
+    public function removeDelivery(Request $request, EntityManagerInterface $entityManager)
+    {
+         $deliveryId = $request->request->get('deliveryId');
+        $deliveryDelete = $entityManager->getRepository(Delivery::class)->find($deliveryId);
+        $entityManager->remove($deliveryDelete);
+        $entityManager->flush();
+        return new JsonResponse(['dziala' => $deliveryId]);
     }
 }

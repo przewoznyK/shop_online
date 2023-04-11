@@ -1,15 +1,66 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Hello ProductController!{% endblock %}
-
 {% block body %}
+
+
     <h1>Add Product</h1>
 
     {{ form_start(AddProductFormType) }}
-        {{ form_row(AddProductFormType.name) }}
+        {# {{ form_row(AddProductFormType.name) }}
         {{ form_row(AddProductFormType.description) }}
         {{ form_row(AddProductFormType.price) }}
-        {{ form_row(AddProductFormType.category) }}
-        <button type="submit" class="btn">Add Product</button>
+        {{ form_row(AddProductFormType.category) }} #}
     {{ form_end(AddProductFormType) }}
+            
+
+    <br>
+    <br>
+    <br>
+<h1> Delivery </h1>
+<div id='addDelivery' class='btn btn-primary'>Add Delivery</div>
+<div id='deliveryForm'>
+    <div id='type'></div>
+    <div id='location'></div>
+    <div id='price'></div>
+    <div id='saveDelivery'></div>
+</div>
+{% block javascripts %}
+<script type="text/javascript">
+$('#addDelivery').click(function()
+{
+  $('#type').html('{{ form_row(AddDeliveryFormType.type) }}');
+  $('#price').html('{{ form_row(AddDeliveryFormType.price) }}');
+  $("#delivery_form_type").trigger("change");
+            console.log('2');
+});
+$(document).on("change", "#delivery_form_type",function() {
+    console.log(1);
+
+        var deliveryType = $(this).val();
+        if(deliveryType == 'personal_pickup'){
+            // kod do wykonania po wybraniu personal pickup
+            console.log('a');
+            var newLocationHtml = '{{ form_row(AddDeliveryFormType.location) }}';
+            $('#location').html(newLocationHtml);
+            $('#delivery_form_price').val(0);
+        }
+        else if(deliveryType == 'parcel_locker'){
+            // kod do wykonania po wybraniu parcel locker
+            console.log('b');
+
+            $('#location').empty();
+            $('#delivery_form_price').val(10);
+        }
+        else if(deliveryType == 'courier'){
+            // kod do wykonania po wybraniu courier
+            console.log('c');
+            $('#location').empty();
+            $('#delivery_form_price').val(15);
+        }
+    });
+
+
+</script>
+{% endblock %}
 {% endblock %}
