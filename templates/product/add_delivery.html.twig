@@ -101,11 +101,8 @@ $(document).on('click', '#submit', function(event)
         url: '{{ path('ajax_add_delivery') }}',
         data: {type: type, location: location, price: price, productId: productId},
         success: function(response){
-            console.log(response.productId);
-            console.log(response.type);
-            console.log(response.location);
-            console.log(response.price);
-            $('#allDelivery').append(response.type + response.price + response.location + '<br>');
+
+            $('#allDelivery').append('<section class="deliveryFull" data-id="'+ response.id +'">' + response.type + response.price + response.location + '  <i class="deleteDelivery btn fa-sharp fa-solid fa-xmark" data-id=' + response.id + '></i><br>');
         }
     })
     }

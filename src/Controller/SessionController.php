@@ -315,9 +315,9 @@ class SessionController extends AbstractController
 
         $entityManager->persist($addDelivery);
         $entityManager->flush();
+        $id = $addDelivery->getId();
         
-        
-        return new JsonResponse(['productId' => $productId,'type' => $type, 'location' => $location, 'price' => $price]);
+        return new JsonResponse(['id' => $id,'type' => $type, 'location' => $location, 'price' => $price]);
     }
 
     public function removeDelivery(Request $request, EntityManagerInterface $entityManager)

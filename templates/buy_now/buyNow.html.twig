@@ -8,79 +8,120 @@
 <script src="https://cdn.jsdelivr.net/npm/ol@v7.2.2/dist/ol.js"></script>
 <style>
 #map {
-    position: absolute;
+
     top: 0;
     bottom: 0;
     height: 400px;
     width: 50%;
 }
 </style>
-    <div id='map'></div>
-    <div id='popup'>
-      <div id='popup-content'></div>
-    </div>
+<section id='parcelLockerSection'>
+<div id='map'></div>
+<div id='popup'>
+  <div id='popup-content'></div>
+</div>
+</section>
+
+
+{{ id }}
+{% for delivery in deliveryArray %}
+  <section class='deliveryFull' data-id='{{ delivery.id }}'>
+    <input data-type='{{ delivery.type }}' id="delivery-{{ delivery.id }}" class="form-check-input" type="radio" name="deliveryOption" value="{{ delivery.id }}">
+    <label class="form-check-label" for="delivery-{{ delivery.id }}">
+    {{ delivery.type }}
+    {{ delivery.price }}
+    {{ delivery.getPersonalPickup() }}
+    </label>
+  </section>
+{% endfor %}
+
 {% block javascripts %}
 <script type="text/javascript">
 
-const key = 'dWCVxevJpUtedw46MjwC';
-const source = new ol.source.TileJSON({
-  url: `https://api.maptiler.com/maps/streets-v2/tiles.json?key=${key}`,
-  tileSize: 512,
-  crossOrigin: 'anonymous'
+$('input[name="deliveryOption"]').change(function() {
+  var deliveryId = $(this).val();
+  var deliveryType = $(this).data('type');
+  console.log('Wybrano dostawę o id ' + deliveryType);
+  if(deliveryType=='personal_pickup')
+  {
+    console.log('a');
+    $('#map').empty();
+  }
+  else if(deliveryType=='parcel_locker')
+  {
+    console.log('b');
+    createMap();
+  }
+  else if(deliveryType=='courier')
+  {
+    console.log('c');
+    $('#map').empty();
+  }
 });
 
-const attribution = new ol.control.Attribution({
-  collapsible: false,
-});
+function createMap()
+{
+      // Map
+    const key = 'dWCVxevJpUtedw46MjwC';
+    const source = new ol.source.TileJSON({
+      url: `https://api.maptiler.com/maps/streets-v2/tiles.json?key=${key}`,
+      tileSize: 512,
+      crossOrigin: 'anonymous'
+    });
 
-const map = new ol.Map({
-  layers: [
-    new ol.layer.Tile({
-      source: source
+    const attribution = new ol.control.Attribution({
+      collapsible: false,
+    });
+
+    const map = new ol.Map({
+      layers: [
+        new ol.layer.Tile({
+          source: source
+        })
+      ],
+      target: 'map',
+      view: new ol.View({
+        constrainResolution: true,
+        center: ol.proj.fromLonLat([16.62662018, 52.2125578]),
+        zoom: 5
+      })
+    });
+
+    const Airports = new ol.layer.Vector({
+        source: new ol.source.Vector({
+            url: 'https://api.maptiler.com/data/9874a5e8-c0f7-4a7f-989a-c5f44fd25e26/features.json?key=dWCVxevJpUtedw46MjwC',
+            format: new ol.format.GeoJSON(),
+        })
     })
-  ],
-  target: 'map',
-  view: new ol.View({
-    constrainResolution: true,
-    center: ol.proj.fromLonLat([16.62662018, 52.2125578]),
-    zoom: 5
-  })
-});
+    map.addLayer(Airports);
 
-const Airports = new ol.layer.Vector({
-    source: new ol.source.Vector({
-        url: 'https://api.maptiler.com/data/9874a5e8-c0f7-4a7f-989a-c5f44fd25e26/features.json?key=dWCVxevJpUtedw46MjwC',
-        format: new ol.format.GeoJSON(),
+    var container = $('#popup');
+    var content = $('#popup-content');
+    var content_element = $('#popup-content');
+
+    // PopUp
+    var overlaydet = new ol.Overlay({
+      element: document.getElementById('popup'),
+      positioning: 'bottom-center',
+    });
+    map.addOverlay(overlaydet);
+
+    map.on('click', function(evt){
+      $('#popup-content').empty();
+      var feature1=map.forEachFeatureAtPixel(evt.pixel,
+        function(feature1){
+          return feature1;
+        })
+        if(feature1){
+          const coord = feature1.getGeometry().getCoordinates();
+          const name = feature1.get('name');
+          var content = '<h6>' + name + '</h6>';
+          overlaydet.setPosition(coord);
+          $('#popup-content').html(content);
+        }
     })
-})
-map.addLayer(Airports);
+}
 
-var container = $('#popup');
-var content = $('#popup-content');
-var content_element = $('#popup-content');
-
-// PopUp
-var overlaydet = new ol.Overlay({
-  element: document.getElementById('popup'),
-  positioning: 'bottom-center',
-});
-map.addOverlay(overlaydet);
-
-
-map.on('click', function(evt){
-  $('#popup-content').empty();
-  var feature1=map.forEachFeatureAtPixel(evt.pixel,
-    function(feature1){
-      return feature1;
-    })
-    if(feature1){
-      const coord = feature1.getGeometry().getCoordinates();
-      const name = feature1.get('name');
-      var content = '<h6>' + name + '</h6>';
-      overlaydet.setPosition(coord);
-      $('#popup-content').html(content);
-    }
-})
 
 
 </script>
