@@ -75,9 +75,10 @@ class ProductController extends AbstractController
                     );
                 }
 
+                $user = $entityManager->find(User::class, $id);
                 $product->setCreatedAt(new \DateTime());
                 $product->setUpdatedAt(new \DateTime());
-                $product->setUserId($id);
+                $product->setUser($user);
 
                 $product->setQuantity(
                     $form_create_product->get('quantity')->getData()
@@ -131,7 +132,8 @@ class ProductController extends AbstractController
 
         $imagesName = [];
         $product = $entityManager->getRepository(Product::class)->findOneBy(array('id' => $id));
-        $userOwnerProduct = $entityManager->getRepository(User::class)->findOneBy(array('id' => $product->getUserId()));
+
+        $userOwnerProduct = $product->getUser();
 
         /** @var $myUser User */
         $myUser = $this->getUser();
@@ -198,7 +200,7 @@ class ProductController extends AbstractController
             $user = $this->getUser();
             $imagesName = [];
             $product = $entityManager->getRepository(Product::class)->findOneBy(array('id' => $id));
-            $userOwnerProduct = $entityManager->getRepository(User::class)->findOneBy(array('id' => $product->getUserId()));
+            $userOwnerProduct = $product->getUser();
 
             $myProductBool = false;
 

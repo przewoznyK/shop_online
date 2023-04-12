@@ -78,10 +78,7 @@ class IndexController extends AbstractController
                 $allOfferInfo[] = $productUser;
 
                 $allOfferDirImages[$i]['dir'] = $productUser->getImagesDir();
-                $ownerId = $productUser->getUserId();
-                $owner = $entityManager->getRepository(User::class)->find($ownerId);
-                $ownerUsername = $owner->getUsername();
-
+                $owner = $productUser->getUser();
                 foreach ($allOfferDirImages[$i] as $images) {
                     $dir = scandir('users_data/' . $owner->getId() . '/products/' . $images);
                     foreach ($dir as $file) {
@@ -121,7 +118,6 @@ class IndexController extends AbstractController
        
         if ($myCarts) {
             $cartsIdArray = explode('|', $myCarts);
-            dump($myCarts);
          
             $cartsIdAndQuantityArray = array();
         foreach ($cartsIdArray as $cart) {
@@ -131,7 +127,6 @@ class IndexController extends AbstractController
         }
             $myCartsDirImages =  array();
             $myCartsInfo = array();
-           dump($cartsIdAndQuantityArray);
            
             $i = 0;
 
@@ -144,9 +139,8 @@ class IndexController extends AbstractController
                    
                                                     
                         $myCartsDirImages[$i]['dir'] = $productUser->getImagesDir();
-                $ownerId = $productUser->getUserId();
-                $owner = $entityManager->getRepository(User::class)->find($ownerId);
 
+                $owner = $productUser->getUser();
                 foreach ($myCartsDirImages[$i] as $images) {
                     $dir = scandir('users_data/' . $owner->getId() . '/products/' . $images);
                     foreach ($dir as $file) {
@@ -155,7 +149,7 @@ class IndexController extends AbstractController
                         }
                     }
                 }
-                $myCartsDirImages[$i]['id'] = $ownerId;
+                $myCartsDirImages[$i]['id'] = $owner->getId();
 
                 $i++;
                 }
@@ -168,8 +162,16 @@ class IndexController extends AbstractController
             $myCartsDirImages = 0;
             $cartsIdAndQuantityArray = 0;
         }
-
+        usort($myCartsInfo, function($a, $b) {
+            return strcmp($a->getUserId(), $b->getUserId());
+        });
+        usort($myCartsDirImages, function($a, $b) {
+            return strcmp($a['id'], $b['id']);
+        });
         
+        //sort($myCartsInfo);
+         dump($myCartsInfo);
+        dump($myCartsDirImages);
         return $this->render('index/carts.html.twig', [
 
             'myCartsIdAndQuantityArray' => $cartsIdAndQuantityArray,
@@ -259,9 +261,7 @@ class IndexController extends AbstractController
                 $allOfferInfo[] = $productUser;
 
                 $allOfferDirImages[$i]['dir'] = $productUser->getImagesDir();
-                $ownerId = $productUser->getUserId();
-                $owner = $entityManager->getRepository(User::class)->find($ownerId);
-                $ownerUsername = $owner->getUsername();
+                $owner = $productUser->getUser();
 
                 foreach ($allOfferDirImages[$i] as $images) {
                     $dir = scandir('users_data/' . $owner->getId() . '/products/' . $images);
@@ -358,9 +358,7 @@ class IndexController extends AbstractController
                 $allOfferInfo[] = $productUser;
 
                 $allOfferDirImages[$i]['dir'] = $productUser->getImagesDir();
-                $ownerId = $productUser->getUserId();
-                $owner = $entityManager->getRepository(User::class)->find($ownerId);
-                $ownerUsername = $owner->getUsername();
+                $owner = $productUser->getUser();
 
                 foreach ($allOfferDirImages[$i] as $images) {
                     $dir = scandir('users_data/' . $owner->getId() . '/products/' . $images);

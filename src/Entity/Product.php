@@ -57,6 +57,9 @@ class Product
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: Delivery::class)]
     private Collection $delivery;
 
+    #[ORM\ManyToOne(inversedBy: 'products')]
+    private ?User $user = null;
+
     public function __construct()
     {
         $this->delivery = new ArrayCollection();
@@ -243,6 +246,18 @@ class Product
                 $delivery->setProduct(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }

@@ -103,9 +103,8 @@ class UserPageController extends AbstractController
                 {
      $myCartsInfo[] = $productUser;
                 $myCartsDirImages[$i]['dir'] = $productUser->getImagesDir();
-                $ownerId = $productUser->getUserId();
-                $owner = $entityManager->getRepository(User::class)->find($ownerId);
-                $ownerUsername = $owner->getUsername();
+
+                $owner = $productUser->getUser();
 
                 foreach ($myCartsDirImages[$i] as $images) {
                     $dir = scandir('users_data/' . $owner->getId() . '/products/' . $images);
@@ -115,7 +114,7 @@ class UserPageController extends AbstractController
                         }
                     }
                 }
-                $myCartsDirImages[$i]['id'] = $ownerId;
+                $myCartsDirImages[$i]['id'] = $owner->getId();
 
                 $i++;
                 }

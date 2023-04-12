@@ -5,7 +5,91 @@
 
 {% block body %}	
 
-<section class="h-100" style="background-color: #eee;">
+
+<section>
+      {% set lastIdOwner = 0 %}
+      {% set group = 0 %}
+      {% set count = 0 %}
+      {{dump(myCartsInfo)}}
+	    {% for cartInfo in myCartsInfo %}
+  {% if (count == 0 ) %}
+
+<div class="border border-primary">
+<div data-cart-id="{{ cartInfo.id }}">
+<img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}"
+    alt="{{ cartInfo.name }}-Image" class="img-fluid rounded-3" width="100px" height="300px">
+
+<p class="lead fw-normal mb-2">{{ cartInfo.name }}</p>
+
+<input min="1" max="{{ cartInfo.quantity }}" data-display="#{{ cartInfo.id }}" value="{{ cartInfo.quantityUser  }}" type="number"
+  class="quantity-input form-control form-control-sm w-25" data-price="{{ cartInfo.price }}" data-group="{{ group }}"/>
+  Max: {{ cartInfo.quantity }}<br>
+  <span id="{{ cartInfo.id }}">${{ cartInfo.price }}</span>
+<i class="remove-cart-button btn fa-sharp fa-solid fa-xmark" data-cart-id="{{ cartInfo.id }}"></i>
+<a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary">Check product</a>
+<a href="{{ path('app_buy_now', { 'productId': cartInfo.id }) }}" class="btn btn-primary">Buy Now</a>
+</div>
+{% elseif not (lastIdOwner == cartInfo.user.id ) %}
+<div class='summary' data-summary-id='{{ group }}'>
+Summary = 100k
+</div>
+{% set group = group + 1 %}
+</div>
+<br>
+<br>KONIEC
+<br>
+<div class="border border-primary">
+<div data-cart-id="{{ cartInfo.id }}">
+<img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}"
+    alt="{{ cartInfo.name }}-Image" class="img-fluid rounded-3" width="100px" height="300px">
+
+<p class="lead fw-normal mb-2">{{ cartInfo.name }}</p>
+
+<input min="1" max="{{ cartInfo.quantity }}" data-display="#{{ cartInfo.id }}" value="{{ cartInfo.quantityUser  }}" type="number"
+  class="quantity-input form-control form-control-sm w-25" data-price="{{ cartInfo.price }}" data-group="{{ group }}"/>
+  Max: {{ cartInfo.quantity }}<br>
+  <span id="{{ cartInfo.id }}">${{ cartInfo.price }}</span>
+<i class="remove-cart-button btn fa-sharp fa-solid fa-xmark" data-cart-id="{{ cartInfo.id }}"></i>
+<a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary">Check product</a>
+<a href="{{ path('app_buy_now', { 'productId': cartInfo.id }) }}" class="btn btn-primary">Buy Now</a>
+</div>
+{% else %}
+
+<div data-cart-id="{{ cartInfo.id }}">
+<img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}"
+    alt="{{ cartInfo.name }}-Image" class="img-fluid rounded-3" width="100px" height="300px">
+
+<p class="lead fw-normal mb-2">{{ cartInfo.name }}</p>
+
+<input min="1" max="{{ cartInfo.quantity }}" data-display="#{{ cartInfo.id }}" value="{{ cartInfo.quantityUser  }}" type="number"
+  class="quantity-input form-control form-control-sm w-25" data-price="{{ cartInfo.price }}" data-group="{{ group }}"/>
+  Max: {{ cartInfo.quantity }}<br>
+  <span id="{{ cartInfo.id }}">${{ cartInfo.price }}</span>
+<i class="remove-cart-button btn fa-sharp fa-solid fa-xmark" data-cart-id="{{ cartInfo.id }}"></i>
+<a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary">Check product</a>
+<a href="{{ path('app_buy_now', { 'productId': cartInfo.id }) }}" class="btn btn-primary">Buy Now</a>
+</div>
+ 
+    
+      {% endif %}
+      {% set lastIdOwner = cartInfo.user.id %}
+
+		  {% set count = count + 1 %}
+
+	    {% endfor %}
+    <div class='summary' data-summary-id='{{ group }}'>
+Summary = 100k
+</div>
+{% set group = group + 1 %}
+</section>
+
+
+
+
+
+
+
+{# <section class="h-100" style="background-color: #eee;">
   <div class="container h-100 py-5">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col-10">
@@ -20,11 +104,13 @@
             </p>
           </div>
         </div>
+      {% set lastIdOwner = 0 %}
       {% set count = 0 %}
+      {{dump(myCartsInfo)}}
 	    {% for cartInfo in myCartsInfo %}
-      <div class="cart-item" data-cart-id="{{ cartInfo.id }}">
-        <div class="card rounded-3 mb-4">
-          <div class="card-body p-4">
+
+      {% if (lastIdOwner == cartInfo.user.id ) %}
+                <div class="card-body p-4">
             <div class="row d-flex justify-content-between align-items-center">
               <div class="col-md-2 col-lg-2 col-xl-2">
               	<img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}" class="card-img-top" 
@@ -49,10 +135,48 @@
 					      <button class="remove-cart-button" data-cart-id="{{ cartInfo.id }}">Remove product</button>
               </div>
             </div>
+            
           </div>
-        </div>
+</div>
       </div>
+
+      {% else %}
+      <div class="cart-item" >
+        <div class="card rounded-3 mb-4">
+          <div class="card-body p-4" data-cart-id="{{ cartInfo.id }}">
+            <div class="row d-flex justify-content-between align-items-center">
+              <div class="col-md-2 col-lg-2 col-xl-2">
+              	<img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}" class="card-img-top" 
+                     alt="{{ cartInfo.name }}-Image" class="img-fluid rounded-3">
+              </div>
+              <div class="col-md-3 col-lg-3 col-xl-3">
+                <p class="lead fw-normal mb-2">{{ cartInfo.name }}</p>
+              </div>
+              <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
+                <input min="1" max="{{ cartInfo.quantity }}" data-display="#{{ cartInfo.id }}" value="{{ cartInfo.quantityUser  }}" type="number"
+                  class="quantity-input form-control form-control-sm" data-price="{{ cartInfo.price }}" />
+                  Max: {{ cartInfo.quantity }}<br>
+              </div>
+              <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                <h5 class="mb-0">
+                  <span id="{{ cartInfo.id }}">${{ cartInfo.price }}</span>
+                </h5>
+              </div>
+              <div class="col-md-1 col-lg-1 col-xl-1 text-end">
+              <i class="remove-cart-button btn fa-sharp fa-solid fa-xmark" data-cart-id="{{ cartInfo.id }}"></i>
+                <a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary">Check product</a>
+                <a href="{{ path('app_buy_now', { 'productId': cartInfo.id }) }}" class="btn btn-primary">Buy Now</a>
+
+                
+              </div>
+            </div>
+          </div>
+
+      {% endif %}
+      {% set lastIdOwner = cartInfo.user.id %}
+
 		  {% set count = count + 1 %}
+      
 	    {% endfor %}
       <div class="card mb-4">
         <div class="card-body p-4 d-flex flex-row">
@@ -71,7 +195,9 @@
       </div>
     </div>
   </div>
-</section>
+</section> #}
+
+
 {# <h2>My Carts</h2>
 <div class="d-inline-flex p-2">
 	{% set count = 0 %}
@@ -107,7 +233,7 @@
         
 			$('.show-cart-count').html(response.cartsCount);
         	$('.cart-item[data-cart-id="' + productId + '"]').remove();
-			$('[data-cart-id="' + productId + '"]').removeClass('remove-cart-button').addClass('add-cart-button').text('Add product');
+			$('[data-cart-id="' + productId + '"]').empty();
 
       
 	  }
@@ -120,6 +246,7 @@
   
   $('.quantity-input').on('change', function() {
     updateTotal();
+    countSummary();
   });
 });
 
@@ -131,7 +258,39 @@ function updateTotal() {
     $(displayId).text('$' + (quantity * price).toFixed(2));
   });
 }
-    </script>
+
+var groupCount = 0;
+// Summary
+$(document).ready(function(){
+  countSummary();
+})
+
+
+
+function countSummary()
+{
+  $('.summary').each(function(){
+    var summary = $(this).data('summary-id');
+    window['zmienna' + summary] = 0;
+      $('.quantity-input').each(function() {
+        var group = $(this).data('group');
+        
+        if(group == summary)
+        {
+      
+          var displayId = $(this).data('display');
+          var quantity = $(this).val();
+          var price = $(this).data('price');
+          window['zmienna' + group] += parseFloat(price * quantity);
+
+        }
+      });
+    var total = window['zmienna' + summary].toFixed(2);
+    console.log(total);
+    $('.summary[data-summary-id="'+summary+'"]').html(total);
+  });
+}
+</script>
 {% endblock %}
 
 {% endblock %}
