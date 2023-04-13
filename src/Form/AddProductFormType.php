@@ -52,7 +52,6 @@ class AddProductFormType extends AbstractType
                 ]
               
             ])
-            ->add('location', TextType::class)
             ->add('submit', SubmitType::class)
         ;
     }

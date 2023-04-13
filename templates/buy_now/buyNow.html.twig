@@ -15,40 +15,86 @@
     width: 50%;
 }
 </style>
-<section id='parcelLockerSection'>
-<div id='map'></div>
-<div id='popup'>
-  <div id='popup-content'></div>
+
+
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+      {{ form_row(OrderProductFormType.name) }}
+      {{ form_row(OrderProductFormType.lastName) }}
+      {{ form_row(OrderProductFormType.email) }}
+      {{ form_row(OrderProductFormType.phoneNumber) }}
+      {{ form_row(OrderProductFormType.address) }}
+      {{ form_row(OrderProductFormType.comment) }}
+
+      {{ dump(productIdAndQuantityArray) }}
+      {# {% for productAndQuantity in productAndQuantityArray %}
+        <section class='deliveryFull' data-id='{{ delivery.id }}'>
+          <input data-type='{{ delivery.type }}' data-location='{{ delivery.getPersonalPickup() }}' id="delivery-{{ delivery.id }}" class="form-check-input" type="radio" name="deliveryOption" value="{{ delivery.id }}">
+          <label class="form-check-label" for="delivery-{{ delivery.id }}">
+          {{ delivery.type }}
+          {{ delivery.price }}
+          {{ delivery.getPersonalPickup() }}
+          </label>
+        </section>
+      {% endfor %} #}
+      <section id='parcelLockerSection'>
+      <div id='map'></div>
+      <div id='popup'>
+        <div id='popup-content'></div>
+      </div>
+      </section>
+      <div id='final_location_place'>
+     </div>
+  </div>
+
+
+
+  <div class="col">
+     
+      {% set count = 0 %}
+					{% for offerInfo in allOfferInfo %}
+          Name  {{ offerInfo.name }}<br>
+          Price  {{ offerInfo.price }}<br>
+          Max quantity  {{ offerInfo.quantity }}<br>
+      		<img src="{{ asset('users_data/' ~ allOfferDirImages[count]['id'] ~ '/products/' ~ allOfferDirImages[count]['dir'] ~ '/' ~ allOfferDirImages[count]['images'][0] ) }}" class="card-img-top" alt="...">
+        {% set count = count + 1 %}
+      {% endfor %}
+      {% for productIdAndQuantity in productIdAndQuantityArray %}
+          {{ productIdAndQuantity.product_id }}
+          {{ productIdAndQuantity.quantity }}
+      {% endfor %}
+    </div>
+  </div>
 </div>
-</section>
 
-
-{{ id }}
-{% for delivery in deliveryArray %}
-  <section class='deliveryFull' data-id='{{ delivery.id }}'>
-    <input data-type='{{ delivery.type }}' id="delivery-{{ delivery.id }}" class="form-check-input" type="radio" name="deliveryOption" value="{{ delivery.id }}">
-    <label class="form-check-label" for="delivery-{{ delivery.id }}">
-    {{ delivery.type }}
-    {{ delivery.price }}
-    {{ delivery.getPersonalPickup() }}
-    </label>
-  </section>
-{% endfor %}
 
 {% block javascripts %}
 <script type="text/javascript">
 
+
 $('input[name="deliveryOption"]').change(function() {
+  $('#final_location_place').html('{{ form_row(OrderProductFormType.final_location) }}{{ form_row(OrderProductFormType.submit) }}')
   var deliveryId = $(this).val();
   var deliveryType = $(this).data('type');
-  console.log('Wybrano dostawę o id ' + deliveryType);
+  var deliveryLocation = $(this).data('location');
   if(deliveryType=='personal_pickup')
   {
     console.log('a');
+    console.log(deliveryLocation);
     $('#map').empty();
+    $('#order_product_form_final_location').attr('readonly', true);
+    $('#order_product_form_final_location').val(deliveryLocation);
+    $('label[for=order_product_form_final_location]').text('Pick up the product here');
+
   }
   else if(deliveryType=='parcel_locker')
   {
+    $('#order_product_form_final_location').attr('readonly', true);
+    $('#order_product_form_final_location').val('');
+    $('label[for=order_product_form_final_location]').text('Choose parcel locker');
+
     console.log('b');
     createMap();
   }
@@ -56,9 +102,13 @@ $('input[name="deliveryOption"]').change(function() {
   {
     console.log('c');
     $('#map').empty();
+    $('#order_product_form_final_location').attr('readonly', false);
+    $('#order_product_form_final_location').val($('#order_product_form_address').val());
+    $('label[for=order_product_form_final_location]').text('Enter the delivery address ');
+
   }
 });
-
+var parcel_locker_choosed;
 function createMap()
 {
       // Map
@@ -116,13 +166,17 @@ function createMap()
           const coord = feature1.getGeometry().getCoordinates();
           const name = feature1.get('name');
           var content = '<h6>' + name + '</h6>';
+          parcel_locker_choosed = name;
+
           overlaydet.setPosition(coord);
-          $('#popup-content').html(content);
+          $('#popup-content').html(content + '<button class="choose-parcel-locker" >Choose</button>');
         }
     })
 }
 
-
+$(document).on("click", ".choose-parcel-locker", function() {
+  $('#order_product_form_final_location').val(parcel_locker_choosed);
+});
 
 </script>
 {% endblock %}

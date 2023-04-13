@@ -51,8 +51,6 @@ class Product
     #[ORM\Column]
     private ?int $Quantity = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $Location = null;
 
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: Delivery::class)]
     private Collection $delivery;
@@ -204,18 +202,6 @@ class Product
     public function setQuantity(int $Quantity): self
     {
         $this->Quantity = $Quantity;
-
-        return $this;
-    }
-
-    public function getLocation(): ?string
-    {
-        return $this->Location;
-    }
-
-    public function setLocation(string $Location): self
-    {
-        $this->Location = $Location;
 
         return $this;
     }

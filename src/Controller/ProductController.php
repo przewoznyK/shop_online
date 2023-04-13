@@ -84,9 +84,6 @@ class ProductController extends AbstractController
                     $form_create_product->get('quantity')->getData()
                 );
 
-                $product->setLocation(
-                    $form_create_product->get('location')->getData()
-                );
                 $entityManager->persist($product);
                 $entityManager->flush();
                 $this->addFlash('success', 'Product added successfully!');
@@ -296,8 +293,9 @@ class ProductController extends AbstractController
         $filesystem = new Filesystem();
         $finder = new Finder();
         $product = $entityManager->getRepository(Product::class)->findOneBy(array('id' => $id));
-
-        $dir = 'users_data/' . $user->getId() . '/products/' . $product->getImagesDir();
+        if($product)
+        {
+            $dir = 'users_data/' . $user->getId() . '/products/' . $product->getImagesDir();
 
         if ($filesystem->exists($dir)) {
             $files = $finder->in($dir)->ignoreDotFiles(false)->files();
@@ -310,6 +308,8 @@ class ProductController extends AbstractController
         }
         $entityManager->remove($product);
         $entityManager->flush();
+        }
+        
         $referer = $request->headers->get('referer');
         return $this->redirect($referer);
     }
