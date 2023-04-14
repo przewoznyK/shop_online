@@ -224,58 +224,48 @@
 </div> #}
 
 {% block javascripts %}
-
-    <script type="text/javascript">
-
+<script type="text/javascript">
+$(document).ready(function(){
+  $('input[type=checkbox]').prop('checked', false);
+})
 $(document).ready(function(){
   $('input[type=checkbox]').change(function()
   {
     var value = ($(this).val());
     var classCheckbox = $(this).attr('class');
 
-
     if($(this).is(':checked')){
-
-  
       window['checkboxCount' + classCheckbox] = typeof window['checkboxCount' + classCheckbox] !== 'undefined' ? window['checkboxCount' + classCheckbox] + 1 : 1;
-
       $('.quantity-input[data-display="'+value+'"]').prop('disabled', false);
       $('input[type=submit][class="'+classCheckbox+'"]').prop('disabled', false);
     }
     else{
-      window['checkboxCount' + classCheckbox] --;
-      
+      window['checkboxCount' + classCheckbox]--;
       $('.quantity-input[data-display="'+value+'"]').prop('disabled', true);
       if(window['checkboxCount' + classCheckbox] == 0)
       {
         $('input[type=submit][class="'+classCheckbox+'"]').prop('disabled', true);
       }
-        
-    }console.log(window['checkboxCount' + classCheckbox]);
+    }
   })
 })
-      $(document).on('click', '.remove-cart-button', function(event){
-    var productId = $(this).data('cart-id');
+$(document).on('click', '.remove-cart-button', function(event){
+  var productId = $(this).data('cart-id');
 	var quantity = $('#quantity-input').val();
-    $.ajax({
-      url: '{{ path('ajax_remove_cart') }}',
-      method: 'POST',
-      data: {productId: productId, quantity: quantity},
-      success: function(response) {
-        
-			$('.show-cart-count').html(response.cartsCount);
-        	$('.cart-item[data-cart-id="' + productId + '"]').remove();
-			$('[data-cart-id="' + productId + '"]').empty();
-
-      
+  $.ajax({
+    url: '{{ path('ajax_remove_cart') }}',
+    method: 'POST',
+    data: {productId: productId, quantity: quantity},
+    success: function(response) {
+    $('.show-cart-count').html(response.cartsCount);
+    $('.cart-item[data-cart-id="' + productId + '"]').remove();
+    $('[data-cart-id="' + productId + '"]').empty();
 	  }
-    });
   });
+});
 
-
-  $(document).ready(function() {
+$(document).ready(function() {
   updateTotal();
-  
   $('.quantity-input').on('change', function() {
     updateTotal();
     countSummary();
@@ -292,12 +282,11 @@ function updateTotal() {
 }
 
 var groupCount = 0;
+
 // Summary
 $(document).ready(function(){
   countSummary();
 })
-
-
 
 function countSummary()
 {

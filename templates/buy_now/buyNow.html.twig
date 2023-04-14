@@ -27,8 +27,6 @@
       {{ form_row(OrderProductFormType.phoneNumber) }}
       {{ form_row(OrderProductFormType.address) }}
       {{ form_row(OrderProductFormType.comment) }}
-
-      {{ dump(productIdAndQuantityArray) }}
       {# {% for productAndQuantity in productAndQuantityArray %}
         <section class='deliveryFull' data-id='{{ delivery.id }}'>
           <input data-type='{{ delivery.type }}' data-location='{{ delivery.getPersonalPickup() }}' id="delivery-{{ delivery.id }}" class="form-check-input" type="radio" name="deliveryOption" value="{{ delivery.id }}">
@@ -54,17 +52,33 @@
   <div class="col">
      
       {% set count = 0 %}
-					{% for offerInfo in allOfferInfo %}
+          {% for offerInfo in allOfferInfo %}
+      		<img src="{{ asset('users_data/' ~ allOfferDirImages[count]['id'] ~ '/products/' ~ allOfferDirImages[count]['dir'] ~ '/' ~ allOfferDirImages[count]['images'][0] ) }}" class="card-img-top w-25" alt="...">
           Name  {{ offerInfo.name }}<br>
           Price  {{ offerInfo.price }}<br>
           Max quantity  {{ offerInfo.quantity }}<br>
-      		<img src="{{ asset('users_data/' ~ allOfferDirImages[count]['id'] ~ '/products/' ~ allOfferDirImages[count]['dir'] ~ '/' ~ allOfferDirImages[count]['images'][0] ) }}" class="card-img-top" alt="...">
+
+          {{ productIdAndQuantityArray[count]['product_id'] }}
+          <input class='quantity-input' type='number' data-display='{{ offerInfo.id }}' data-price='{{ offerInfo.price }}' value="{{ productIdAndQuantityArray[count]['quantity'] }}"
+                 max="{{ offerInfo.quantity }}" min=1>
+          <div class='total-display' data-id='{{ offerInfo.id }}'>Price {{ offerInfo.price }}</div><br>
+
+
+          <br>
         {% set count = count + 1 %}
-      {% endfor %}
-      {% for productIdAndQuantity in productIdAndQuantityArray %}
-          {{ productIdAndQuantity.product_id }}
-          {{ productIdAndQuantity.quantity }}
-      {% endfor %}
+        {% endfor %}
+        {% set count = 0 %}
+        {% for delivery in avalibleDelivery %}
+          <label><input type="radio" class='delivery-type-checkbox' name="delivery-type-checkbox" value="{{ delivery.type }}"  data-id='{{ count }}'
+          {% if delivery.type == 'personal_pickup' %} data-price="0" 
+          {% elseif delivery.type == 'parcel_locker' %} data-price="5" 
+          {% elseif delivery.type == 'courier' %} data-price="10" 
+          {% endif %}>
+          {{ delivery.type }} {{ delivery.personal_pickup }}<div class='delivery-price' data-id='{{ count }}'></div></label>
+          <br>
+          {% set count = count + 1 %}
+        {% endfor %}
+        Summary: <div id='summary'></div>
     </div>
   </div>
 </div>
@@ -72,7 +86,51 @@
 
 {% block javascripts %}
 <script type="text/javascript">
+$(document).ready()
+{
+  updateTotal();
+  displayDeliveryPrice();
+}
 
+$('.quantity-input').on('change', function() 
+{
+  updateTotal();
+
+});
+$('input[name="delivery-type-checkbox"]').on('change', function() 
+{
+   updateTotal();
+});
+function displayDeliveryPrice() {
+    
+  $('.delivery-type-checkbox').each(function(){
+    console.log(111);
+  var price = $(this).data('price');
+  var id = $(this).data('id');
+  console.log(price);
+  console.log(111);
+  $('.delivery-price[data-id='+id+']').text(price+'$');
+})
+}
+
+function updateTotal() {
+  var summary = 0;
+  $('.quantity-input').each(function() {
+    var displayId = $(this).data('display');
+    var quantity = $(this).val();
+    var price = $(this).data('price');
+    var total = (quantity * price);
+    $('.total-display[data-id='+displayId+']').text('$' + (quantity * price).toFixed(2));
+    summary = total + summary;
+    console.log(quantity * price);
+    
+  });
+  var deliveryPrice = $('input[name="delivery-type-checkbox"]:checked').data('price');
+  if(!deliveryPrice){deliveryPrice = 0;}
+  console.log(deliveryPrice);
+      $('#summary').text(summary+deliveryPrice+'$');
+
+}
 
 $('input[name="deliveryOption"]').change(function() {
   $('#final_location_place').html('{{ form_row(OrderProductFormType.final_location) }}{{ form_row(OrderProductFormType.submit) }}')
@@ -87,7 +145,6 @@ $('input[name="deliveryOption"]').change(function() {
     $('#order_product_form_final_location').attr('readonly', true);
     $('#order_product_form_final_location').val(deliveryLocation);
     $('label[for=order_product_form_final_location]').text('Pick up the product here');
-
   }
   else if(deliveryType=='parcel_locker')
   {
@@ -111,67 +168,67 @@ $('input[name="deliveryOption"]').change(function() {
 var parcel_locker_choosed;
 function createMap()
 {
-      // Map
-    const key = 'dWCVxevJpUtedw46MjwC';
-    const source = new ol.source.TileJSON({
-      url: `https://api.maptiler.com/maps/streets-v2/tiles.json?key=${key}`,
-      tileSize: 512,
-      crossOrigin: 'anonymous'
-    });
+  // Map
+  const key = 'dWCVxevJpUtedw46MjwC';
+  const source = new ol.source.TileJSON({
+    url: `https://api.maptiler.com/maps/streets-v2/tiles.json?key=${key}`,
+    tileSize: 512,
+    crossOrigin: 'anonymous'
+  });
 
-    const attribution = new ol.control.Attribution({
-      collapsible: false,
-    });
+  const attribution = new ol.control.Attribution({
+    collapsible: false,
+  });
 
-    const map = new ol.Map({
-      layers: [
-        new ol.layer.Tile({
-          source: source
-        })
-      ],
-      target: 'map',
-      view: new ol.View({
-        constrainResolution: true,
-        center: ol.proj.fromLonLat([16.62662018, 52.2125578]),
-        zoom: 5
+  const map = new ol.Map({
+    layers: [
+      new ol.layer.Tile({
+        source: source
       })
-    });
-
-    const Airports = new ol.layer.Vector({
-        source: new ol.source.Vector({
-            url: 'https://api.maptiler.com/data/9874a5e8-c0f7-4a7f-989a-c5f44fd25e26/features.json?key=dWCVxevJpUtedw46MjwC',
-            format: new ol.format.GeoJSON(),
-        })
+    ],
+    target: 'map',
+    view: new ol.View({
+      constrainResolution: true,
+      center: ol.proj.fromLonLat([16.62662018, 52.2125578]),
+      zoom: 5
     })
-    map.addLayer(Airports);
+  });
 
-    var container = $('#popup');
-    var content = $('#popup-content');
-    var content_element = $('#popup-content');
+  const Airports = new ol.layer.Vector({
+      source: new ol.source.Vector({
+          url: 'https://api.maptiler.com/data/9874a5e8-c0f7-4a7f-989a-c5f44fd25e26/features.json?key=dWCVxevJpUtedw46MjwC',
+          format: new ol.format.GeoJSON(),
+      })
+  })
+  map.addLayer(Airports);
 
-    // PopUp
-    var overlaydet = new ol.Overlay({
-      element: document.getElementById('popup'),
-      positioning: 'bottom-center',
-    });
-    map.addOverlay(overlaydet);
+  var container = $('#popup');
+  var content = $('#popup-content');
+  var content_element = $('#popup-content');
 
-    map.on('click', function(evt){
-      $('#popup-content').empty();
-      var feature1=map.forEachFeatureAtPixel(evt.pixel,
-        function(feature1){
-          return feature1;
-        })
-        if(feature1){
-          const coord = feature1.getGeometry().getCoordinates();
-          const name = feature1.get('name');
-          var content = '<h6>' + name + '</h6>';
-          parcel_locker_choosed = name;
+  // PopUp
+  var overlaydet = new ol.Overlay({
+    element: document.getElementById('popup'),
+    positioning: 'bottom-center',
+  });
+  map.addOverlay(overlaydet);
 
-          overlaydet.setPosition(coord);
-          $('#popup-content').html(content + '<button class="choose-parcel-locker" >Choose</button>');
-        }
-    })
+  map.on('click', function(evt){
+    $('#popup-content').empty();
+    var feature1=map.forEachFeatureAtPixel(evt.pixel,
+      function(feature1){
+        return feature1;
+      })
+      if(feature1){
+        const coord = feature1.getGeometry().getCoordinates();
+        const name = feature1.get('name');
+        var content = '<h6>' + name + '</h6>';
+        parcel_locker_choosed = name;
+
+        overlaydet.setPosition(coord);
+        $('#popup-content').html(content + '<button class="choose-parcel-locker" >Choose</button>');
+      }
+  })
 }
 
 $(document).on("click", ".choose-parcel-locker", function() {

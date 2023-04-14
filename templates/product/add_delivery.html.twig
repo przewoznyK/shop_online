@@ -29,7 +29,7 @@
 $('#addDelivery').click(function()
 {
   $('#type').html('{{ form_row(AddDeliveryFormType.type) }}');
-  $('#price').html('{{ form_row(AddDeliveryFormType.price) }}');
+  $('#price').html('{{ form_row(AddDeliveryFormType.price, {attr:{'disabled': true}}) }}');
   $('#submit').html('{{ form_row(AddDeliveryFormType.submit) }}');
   $("#delivery_form_type").trigger("change");
             console.log('2');
