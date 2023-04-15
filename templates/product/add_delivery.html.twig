@@ -2,38 +2,75 @@
 
 {% block title %}Hello ProductController!{% endblock %}
 {% block body %}
-<section id = 'allDelivery'>
-    {{ id }}
-    <br>
-{% for delivery in deliveryArray %}
-    <section class='deliveryFull' data-id='{{ delivery.id }}'>
-    {{ delivery.type }}
-    {{ delivery.price }}
-  {{ delivery.getPersonalPickup() }}
-  <i class="deleteDelivery btn fa-sharp fa-solid fa-xmark" data-id='{{ delivery.id }}'></i>
-<br>
-</section>
-{% endfor %}
-</section>
-    <br>
-<h1> Delivery </h1>
-<div id='addDelivery' class='btn btn-primary'>Add Delivery</div>
-<div id='deliveryForm'>
-    <div id='type'></div>
+
+    <h1>Add Delivery</h1>
+<form id='my-form' action="{{ path('app_user_add_delivery', {'id': id }) }}" method="POST">
+
+    <input type='checkbox' id='personal_pickup' name='personal_pickup' value='personal_pickup'>
+    <label for='personal_pickup'>  personal_pickup </label><br>
     <div id='location'></div>
-    <div id='price'></div>
-    <div id='submit'></div>
-</div>
+    <div id='button'></div>
+    <div id='notification'></div>
+    <div id='addedLocation'>
+
+    </div>
+    <input type='checkbox' id='parcel_locker' name='parcel_locker' value='parcel_locker'>
+    <label for='parcel_locker'>  parcel_locker 5$ </label><br>
+    <input type='checkbox' id='courier' name='courier' value='courier'>
+    <label for='courier'>  courier 10$ </label><br>
+    <input type="hidden" name="my_array[]" id="my_array" value="" />
+    <input type="submit" value="ss" />
+    </form>
+
+
+
 {% block javascripts %}
 <script type="text/javascript">
-$('#addDelivery').click(function()
-{
-  $('#type').html('{{ form_row(AddDeliveryFormType.type) }}');
-  $('#price').html('{{ form_row(AddDeliveryFormType.price, {attr:{'disabled': true}}) }}');
-  $('#submit').html('{{ form_row(AddDeliveryFormType.submit) }}');
-  $("#delivery_form_type").trigger("change");
-            console.log('2');
+$('input[type=checkbox]#personal_pickup').click(function(){
+    if($(this).is(':checked')){
+        $('#location').html('Pickup Location<input id="location-text" type="text">');
+        $('#button').html('<div class="btn btn-primary">Add Pickup Location</div>');
+    }
+    else
+    {
+        $('#location').empty();
+        $('#button').empty();
+    }
 });
+var addedLocation = [];
+$('#button').click(function(){
+    var add = $('#location-text').val();
+    if(addedLocation.includes(add) || add=='')
+    {
+        showNotification('lokacja już istnieje');
+    }
+    else
+    {
+        addedLocation.push(add);
+        refreshAddedLocation();
+    }
+    console.log(addedLocation);
+});
+function refreshAddedLocation()
+{
+    $('#addedLocation').empty();
+    for (var i = 0; i < addedLocation.length; i++){
+        var location = addedLocation[i];
+        $('#addedLocation').append(location + '<div data-id="'+location+'" class="deleteDelivery btn fa-sharp fa-solid fa-xmark" ></div><br>');
+    }
+    $('#my_array').val(JSON.stringify(addedLocation));
+    console.log($('#my_array').val());
+}
+function showNotification(message)
+{
+    $('#notification').html(message);
+    setTimeout(function()
+    {
+        $('#notification').get(0).style.display = 'none';
+        console.log(1111);
+    }, 2000);
+}
+
 canCallFunction2 = true;
 $(document).on("click", ".deleteDelivery",function(){
        event.preventDefault();
@@ -41,72 +78,18 @@ $(document).on("click", ".deleteDelivery",function(){
       canCallFunction2 = false;
       setTimeout(() => {
         canCallFunction2 = true;
-      }, 2000);
-    var productId = {{ id }}
+      }, 500);
     var $button = $(this);
-    var deliveryId = $button.data('id');
-    console.log(deliveryId);
-    $.ajax({
-        type: 'POST',
-        url: '{{ path('ajax_remove_delivery') }}',
-        data: { deliveryId: deliveryId },
-        success: function(response)
-        {
-            console.log(response.dziala);
-            $('section.deliveryFull[data-id=' + deliveryId + ']').remove();
-        }
-    })
+    var deliveryLocation = $button.data('id');
+    var deleteDelivery = addedLocation.indexOf(deliveryLocation);
+    console.log(deleteDelivery);
+    addedLocation.splice(deleteDelivery, 1);
+    console.log(addedLocation);
+    refreshAddedLocation();
     }
 });
-$(document).on("change", "#delivery_form_type",function() {
-    var deliveryType = $(this).val();
-    if(deliveryType == 'personal_pickup'){
-        // kod do wykonania po wybraniu personal pickup
-        console.log('a');
-        var newLocationHtml = '{{ form_row(AddDeliveryFormType.personal_pickup) }}';
-        $('#location').html(newLocationHtml);
-        $('#delivery_form_price').val(0);
-    }
-    else if(deliveryType == 'parcel_locker'){
-        // kod do wykonania po wybraniu parcel locker
-        console.log('b');
 
-        $('#location').empty();
-        $('#delivery_form_price').val(10);
-    }
-    else if(deliveryType == 'courier'){
-        // kod do wykonania po wybraniu courier
-        console.log('c');
-        $('#location').empty();
-        $('#delivery_form_price').val(15);
-    }
-});
-// Submit
-var canCallFunction1 = true;
-$(document).on('click', '#submit', function(event)
-{
-    event.preventDefault();
-    if (canCallFunction1) {
-      canCallFunction1 = false;
-      setTimeout(() => {
-        canCallFunction1 = true;
-      }, 2000);
-    var productId = {{ id }}
 
-    var type = $('#delivery_form_type').val();
-    var location = $('#delivery_form_personal_pickup').val() || null;
-    var price = $('#delivery_form_price').val();
-    $.ajax({
-        type: 'POST',
-        url: '{{ path('ajax_add_delivery') }}',
-        data: {type: type, location: location, price: price, productId: productId},
-        success: function(response){
-
-            $('#allDelivery').append('<section class="deliveryFull" data-id="'+ response.id +'">' + response.type + response.price + response.location + '  <i class="deleteDelivery btn fa-sharp fa-solid fa-xmark" data-id=' + response.id + '></i><br>');
-        }
-    })
-    }
-})
 
 </script>
 {% endblock %}

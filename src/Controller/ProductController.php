@@ -44,7 +44,7 @@ class ProductController extends AbstractController
 
             $id = $user->getId();
             if ($form_create_product->isSubmitted() && $form_create_product->isValid()) {
-    
+
                 $product->setName(
                     $form_create_product->get('name')->getData()
                 );
@@ -108,14 +108,67 @@ class ProductController extends AbstractController
 
 
     #[Route('/user/add_delivery/{id}', name: 'app_user_add_delivery')]
-    public function addDelivery(EntityManagerInterface $entityManager, int $id): Response
-    {   
+    public function addDelivery(EntityManagerInterface $entityManager, Request $request, int $id): Response
+    {
         $deliveryArray = $entityManager->getRepository(Delivery::class)->findBy(array('product' => $id));
+        
+        $product = $entityManager->find(Product::class, $id);
+        $time = new DateTime();
+        $formData = $request->request->all();
+        $count = 0;
+        $addLocationArray = [];
+        if ($formData) {
+            foreach ($formData as $key => $data) {
+                //dd($formData);
+                if($key == 'my_array') {echo 'arrayklucz';}
+                if($key == 'parcel_locker') {echo 'parcel_locker';}
+                
+                if ($key == 'my_array') {
+                    // $array = json_decode($data[0], true);
+                    // $explodedArray = explode(',', $array[0]);
+                    // print_r($explodedArray);
+                        
+                        $addLocationArray = explode(',', $data[0]);
+                        foreach($addLocationArray as $addLocation)
+                        {
+                            $newDelivery = new Delivery();
+                            $count++;
+                            
+                        $newDelivery->setType('personal_pickup');
+                        $newDelivery->setPersonalPickup($addLocation);
+                        $newDelivery->setProduct($product);
+                        $newDelivery->setPrice(0);
+                        $newDelivery->setDeliveryTime($time);
+        
+                        $entityManager->persist($newDelivery);
+                        $entityManager->flush();
 
-        $delivery = new Delivery();
-        $form_create_delivery = $this->createForm(DeliveryFormType::class, $delivery);
+                        dump($addLocation);
+                        }
+                        
+
+                    
+                } 
+                else if($data !== 'personal_pickup'){
+                    $newDelivery = new Delivery();
+                    $newDelivery->setType($data);
+                    $newDelivery->setPersonalPickup('');
+
+                $newDelivery->setProduct($product);
+                $newDelivery->setPrice(0);
+                $newDelivery->setDeliveryTime($time);
+
+                $entityManager->persist($newDelivery);
+                $entityManager->flush();
+                }
+              
+
+                
+             }
+             return new RedirectResponse('/user');
+        }
+
         return $this->render('product/add_delivery.html.twig', [
-            'AddDeliveryFormType' => $form_create_delivery->createView(),
             'id' => $id,
             'deliveryArray' => $deliveryArray
         ]);
@@ -139,7 +192,7 @@ class ProductController extends AbstractController
         $myProductBool = false;
         // if User is login
         if ($myUser) {
-            
+
             foreach ($CommentsAndRatingArray as $key => $productReview) {
                 if (is_int($key)) { // upewnij się, że to jest obiekt ProductReview
                     $upVotesCheck = $myUser->getUpVoteReviews();
@@ -165,8 +218,8 @@ class ProductController extends AbstractController
                 }
             }
         }
- 
-        
+
+
         // Display product images
         $productImagesDirection = $product->getImagesDir();
         $dir = scandir('users_data/' . $userOwnerProduct->getId() . '/products/' . $productImagesDirection);
@@ -293,23 +346,22 @@ class ProductController extends AbstractController
         $filesystem = new Filesystem();
         $finder = new Finder();
         $product = $entityManager->getRepository(Product::class)->findOneBy(array('id' => $id));
-        if($product)
-        {
+        if ($product) {
             $dir = 'users_data/' . $user->getId() . '/products/' . $product->getImagesDir();
 
-        if ($filesystem->exists($dir)) {
-            $files = $finder->in($dir)->ignoreDotFiles(false)->files();
+            if ($filesystem->exists($dir)) {
+                $files = $finder->in($dir)->ignoreDotFiles(false)->files();
 
-            foreach ($files as $file) {
-                $filesystem->remove($file->getRealPath());
+                foreach ($files as $file) {
+                    $filesystem->remove($file->getRealPath());
+                }
+
+                $filesystem->remove($dir);
             }
+            $entityManager->remove($product);
+            $entityManager->flush();
+        }
 
-            $filesystem->remove($dir);
-        }
-        $entityManager->remove($product);
-        $entityManager->flush();
-        }
-        
         $referer = $request->headers->get('referer');
         return $this->redirect($referer);
     }
