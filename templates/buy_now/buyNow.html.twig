@@ -12,7 +12,7 @@
     top: 0;
     bottom: 0;
     height: 400px;
-    width: 50%;
+    width: 100%;
 }
 </style>
 
@@ -21,10 +21,11 @@
 <div class="container">
   <div class="row">
     <div class="col">
+    {{ form_start(OrderProductFormType) }}
       {{ form_row(OrderProductFormType.name) }}
-      {{ form_row(OrderProductFormType.lastName) }}
+      {{ form_row(OrderProductFormType.last_name) }}
       {{ form_row(OrderProductFormType.email) }}
-      {{ form_row(OrderProductFormType.phoneNumber) }}
+      {{ form_row(OrderProductFormType.phone_number) }}
       {{ form_row(OrderProductFormType.address) }}
       {{ form_row(OrderProductFormType.comment) }}
       {# {% for productAndQuantity in productAndQuantityArray %}
@@ -43,26 +44,27 @@
         <div id='popup-content'></div>
       </div>
       </section>
-      <div id='final_location_place'>
-     </div>
+      
   </div>
 
-
+  <input type='hidden' name='summary' value=''>
 
   <div class="col">
-     
+
       {% set count = 0 %}
           {% for offerInfo in allOfferInfo %}
+          <input type='hidden' name='ownerId' value='{{ offerInfo.user.id }}'>
+          
       		<img src="{{ asset('users_data/' ~ allOfferDirImages[count]['id'] ~ '/products/' ~ allOfferDirImages[count]['dir'] ~ '/' ~ allOfferDirImages[count]['images'][0] ) }}" class="card-img-top w-25" alt="...">
           Name  {{ offerInfo.name }}<br>
           Price  {{ offerInfo.price }}<br>
           Max quantity  {{ offerInfo.quantity }}<br>
 
           {{ productIdAndQuantityArray[count]['product_id'] }}
-          <input class='quantity-input' type='number' data-display='{{ offerInfo.id }}' data-price='{{ offerInfo.price }}' value="{{ productIdAndQuantityArray[count]['quantity'] }}"
+          <input name='quantity[]' class='quantity-input' type='number' data-display='{{ offerInfo.id }}' data-price='{{ offerInfo.price }}' value="{{ productIdAndQuantityArray[count]['quantity'] }}"
                  max="{{ offerInfo.quantity }}" min=1>
           <div class='total-display' data-id='{{ offerInfo.id }}'>Price {{ offerInfo.price }}</div><br>
-
+          <input name='id-and-quantity[]' type='hidden' data-id={{ offerInfo.id }} data-quantity='1' value=''>
 
           <br>
         {% set count = count + 1 %}
@@ -70,20 +72,23 @@
         {% set count = 0 %}
         {% for delivery in avalibleDelivery %}
           <label><input type="radio" class='delivery-type-checkbox' name="delivery-type-checkbox" value="{{ delivery.type }}"  data-id='{{ count }}'
-          {% if delivery.type == 'personal_pickup' %} data-price="0" 
+          {% if delivery.type == 'personal_pickup' %} data-price="0" data-location='{{delivery.personal_pickup}}'
           {% elseif delivery.type == 'parcel_locker' %} data-price="5" 
           {% elseif delivery.type == 'courier' %} data-price="10" 
           {% endif %}>
           {{ delivery.type }} {{ delivery.personal_pickup }}<div class='delivery-price' data-id='{{ count }}'></div></label>
           <br>
           {% set count = count + 1 %}
-        {% endfor %}
+        {% endfor %}    
+          <div id='final_location_place' class='d-none'>
+          {{ form_widget(OrderProductFormType.final_location)}}
+          </div>
         Summary: <div id='summary'></div>
     </div>
   </div>
 </div>
-
-
+{{ form_row(OrderProductFormType.submit) }}
+{{ form_end(OrderProductFormType) }}
 {% block javascripts %}
 <script type="text/javascript">
 $(document).ready()
@@ -104,11 +109,8 @@ $('input[name="delivery-type-checkbox"]').on('change', function()
 function displayDeliveryPrice() {
     
   $('.delivery-type-checkbox').each(function(){
-    console.log(111);
   var price = $(this).data('price');
   var id = $(this).data('id');
-  console.log(price);
-  console.log(111);
   $('.delivery-price[data-id='+id+']').text(price+'$');
 })
 }
@@ -120,24 +122,24 @@ function updateTotal() {
     var quantity = $(this).val();
     var price = $(this).data('price');
     var total = (quantity * price);
+$('input[name="id-and-quantity[]"][data-id="'+displayId+'"]').val(displayId+':'+quantity);
+
     $('.total-display[data-id='+displayId+']').text('$' + (quantity * price).toFixed(2));
     summary = total + summary;
-    console.log(quantity * price);
     
   });
   var deliveryPrice = $('input[name="delivery-type-checkbox"]:checked').data('price');
   if(!deliveryPrice){deliveryPrice = 0;}
-  console.log(deliveryPrice);
       $('#summary').text(summary+deliveryPrice+'$');
-
+      $('input[name="summary"]').val(summary+deliveryPrice);
 }
 
-$('input[name="deliveryOption"]').change(function() {
-  $('#final_location_place').html('{{ form_row(OrderProductFormType.final_location) }}{{ form_row(OrderProductFormType.submit) }}')
+$('input[name="delivery-type-checkbox"]').change(function() {
   var deliveryId = $(this).val();
   var deliveryType = $(this).data('type');
   var deliveryLocation = $(this).data('location');
-  if(deliveryType=='personal_pickup')
+  $('#final_location_place').removeClass('d-none');
+  if(deliveryId=='personal_pickup')
   {
     console.log('a');
     console.log(deliveryLocation);
@@ -146,8 +148,9 @@ $('input[name="deliveryOption"]').change(function() {
     $('#order_product_form_final_location').val(deliveryLocation);
     $('label[for=order_product_form_final_location]').text('Pick up the product here');
   }
-  else if(deliveryType=='parcel_locker')
+  else if(deliveryId=='parcel_locker')
   {
+    console.log(11);
     $('#order_product_form_final_location').attr('readonly', true);
     $('#order_product_form_final_location').val('');
     $('label[for=order_product_form_final_location]').text('Choose parcel locker');
@@ -155,7 +158,7 @@ $('input[name="deliveryOption"]').change(function() {
     console.log('b');
     createMap();
   }
-  else if(deliveryType=='courier')
+  else if(deliveryId=='courier')
   {
     console.log('c');
     $('#map').empty();

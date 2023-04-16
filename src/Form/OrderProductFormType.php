@@ -20,9 +20,9 @@ class OrderProductFormType extends AbstractType
             //->add('delivery_type')
             
             ->add('name')
-            ->add('lastName')
+            ->add('last_name')
             ->add('email')
-            ->add('phoneNumber')
+            ->add('phone_number')
             ->add('address')
             ->add('comment')
             ->add('final_location')

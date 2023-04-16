@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Delivery;
+use App\Entity\User;
 use App\Entity\OrderProduct;
 use App\Entity\Product;
 use App\Form\OrderProductFormType;
@@ -20,7 +21,53 @@ class BuyNowController extends AbstractController
     #[Route('/buy_now', name: 'app_buy_now')]
     public function index(EntityManagerInterface $entityManager, Request $request): Response
     {
+        $newOrder = new OrderProduct();
+        $form_create_order_product = $this->createForm(OrderProductFormType::class, $newOrder);
 
+        $form_create_order_product->handleRequest($request);
+        if ($form_create_order_product->isSubmitted() && $form_create_order_product->isValid()) {
+            $allData = $request->request->all();
+             $idAndQuantityArray = $allData['id-and-quantity'];
+      
+                $productsOrder = implode("|",$idAndQuantityArray);
+
+            $ownerId = $request->request->get('ownerId');
+            $deliveryType = $request->request->get('delivery-type-checkbox');
+            $owner = $entityManager->find(User::class, $ownerId);
+            $summary = $request->request->get('summary');
+            $newOrder->setOwner($owner);
+            $newOrder->setBuyer($this->getUser());
+            $newOrder->setName(
+                $form_create_order_product->get('name')->getData()
+            );
+            $newOrder->setLastName(
+                $form_create_order_product->get('last_name')->getData()
+            );
+            $newOrder->setEmail(
+                $form_create_order_product->get('email')->getData()
+            );
+            $newOrder->setPhoneNumber(
+                $form_create_order_product->get('phone_number')->getData()
+            );
+            $newOrder->setComment(
+                $form_create_order_product->get('comment')->getData()
+            );
+            $newOrder->setDeliveryType($deliveryType);
+            $newOrder->setFinalLocation(
+                $form_create_order_product->get('final_location')->getData()
+            );
+            $newOrder->setAddress(
+                $form_create_order_product->get('address')->getData()
+            );
+            $newOrder->setPrice($summary);
+            $newOrder->setProduct($productsOrder);
+
+            $newOrder->setIspaid(false);
+            $newOrder->setPaymentMethod('transfer payment');
+            $entityManager->persist($newOrder);
+            $entityManager->flush();
+            dd($allData);
+        }
         // Take all data from form
         $allData = $request->request->all();
         // Create new array for product ID and quantity
@@ -97,12 +144,7 @@ class BuyNowController extends AbstractController
         // });
         // dd($deliveryPersonalPickupLocation);
 
-        $newOrder = new OrderProduct();
-        $form_create_order_product = $this->createForm(OrderProductFormType::class, $newOrder);
 
-        $form_create_order_product->handleRequest($request);
-        if ($form_create_order_product->isSubmitted() && $form_create_order_product->isValid()) {
-        }
 
         return $this->render('buy_now/buyNow.html.twig', [
             'controller_name' => 'BuyNowController',
