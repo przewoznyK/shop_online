@@ -84,6 +84,9 @@
           {{ form_widget(OrderProductFormType.final_location)}}
           </div>
         Summary: <div id='summary'></div>
+        Your wallet: {{ app.user.wallet }}<br>
+        <label><input type='radio' class='payment-method' name='payment-method' value='My wallet'>My wallet</label><br>
+        <label><input type='radio' class='payment-method' name='payment-method' value='Cash on Delivery'>Cash on Delivery</label>
     </div>
   </div>
 </div>
@@ -122,16 +125,19 @@ function updateTotal() {
     var quantity = $(this).val();
     var price = $(this).data('price');
     var total = (quantity * price);
-$('input[name="id-and-quantity[]"][data-id="'+displayId+'"]').val(displayId+':'+quantity);
-
+    
+    console.log(wallet);
+    $('input[name="id-and-quantity[]"][data-id="'+displayId+'"]').val(displayId+':'+quantity);
     $('.total-display[data-id='+displayId+']').text('$' + (quantity * price).toFixed(2));
     summary = total + summary;
-    
   });
+  var wallet = {{ app.user.wallet }}
   var deliveryPrice = $('input[name="delivery-type-checkbox"]:checked').data('price');
   if(!deliveryPrice){deliveryPrice = 0;}
-      $('#summary').text(summary+deliveryPrice+'$');
-      $('input[name="summary"]').val(summary+deliveryPrice);
+  $('#summary').text(summary+deliveryPrice+'$');
+  $('input[name="summary"]').val(summary+deliveryPrice);
+  if(wallet < summary+deliveryPrice) { $('input[name="payment-method"][value="My wallet"]').attr("disabled",true); }
+  else { $('input[name="payment-method"][value="My wallet"]').attr("disabled",false); }
 }
 
 $('input[name="delivery-type-checkbox"]').change(function() {

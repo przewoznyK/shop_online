@@ -8,6 +8,7 @@ use App\Entity\Product;
 use DateTime;
 use App\Controller\asset;
 use App\Entity\Delivery;
+use App\Entity\OrderProduct;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -106,7 +107,7 @@ class SessionController extends AbstractController
         $productId = $request->request->get('productId');
         $product = $entityManager->find(Product::class, $productId);
 
-        
+
         $comment = $request->request->get('comment');
         $productId = $request->request->get('productId');
         $rating = $request->request->get('rating');
@@ -291,9 +292,9 @@ class SessionController extends AbstractController
     public function removeReviewsProduct(Request $request, EntityManagerInterface $entityManager)
     {
         $reviewId = $request->request->get('reviewId');
-         $reviewToDelete = $entityManager->getRepository(ProductReview::class)->find($reviewId);
-         $entityManager->remove($reviewToDelete);
-         $entityManager->flush();
+        $reviewToDelete = $entityManager->getRepository(ProductReview::class)->find($reviewId);
+        $entityManager->remove($reviewToDelete);
+        $entityManager->flush();
         return new JsonResponse(['success' => 1, 'reviewId' => $reviewId]);
     }
 
@@ -316,16 +317,82 @@ class SessionController extends AbstractController
         $entityManager->persist($addDelivery);
         $entityManager->flush();
         $id = $addDelivery->getId();
-        
-        return new JsonResponse(['id' => $id,'type' => $type, 'location' => $location, 'price' => $price]);
+
+        return new JsonResponse(['id' => $id, 'type' => $type, 'location' => $location, 'price' => $price]);
     }
 
     public function removeDelivery(Request $request, EntityManagerInterface $entityManager)
     {
-         $deliveryId = $request->request->get('deliveryId');
+        $deliveryId = $request->request->get('deliveryId');
         $deliveryDelete = $entityManager->getRepository(Delivery::class)->find($deliveryId);
         $entityManager->remove($deliveryDelete);
         $entityManager->flush();
         return new JsonResponse(['dziala' => $deliveryId]);
+    }
+
+    public function orderFromBuyers(Request $request, SessionInterface $session, EntityManagerInterface $entityManager)
+    {
+        
+        $orderId = $request->request->get('id');
+        $orderStatus = $request->request->get('status');
+        $orderType = $request->request->get('type');
+        $order = $entityManager->getRepository(OrderProduct::class)->find($orderId);
+        $done = false;
+        // $newStatus = '11';
+        // $newText = '111';
+        if ($orderStatus == 'pending') {
+            $newStatus = 'processing';
+            
+            if($orderType == 'personal_pickup')
+            {
+                $newText = 'Ready to pick up';
+            }
+            else
+            {
+                $newText = 'Shipped';
+            }
+            
+        }
+        if ($orderStatus == 'processing')
+        {
+            if($orderType == 'personal_pickup')
+            {
+                $newStatus = 'ready_to_pick_up';
+                $newText = 'All done';
+            }
+            else
+            {
+                $newStatus = 'shipped';
+                $newText = 'All done';
+                
+            }
+            /** @var $myUser User */
+            $myUser=$this->getUser();
+            $myUser->setWallet($myUser->getWallet()+$order->getPrice());
+            $done = true;
+            $entityManager->persist($myUser);
+            $session->set('wallet', $myUser->getWallet());
+        }
+        $order->setStatus($newStatus);
+        $entityManager->persist($order);
+        $entityManager->flush();
+        return new JsonResponse(['id' => $orderStatus, 'newStatus' => $newStatus, 'newText' => $newText, 'done' => $done]);
+    }
+
+    public function myOrders(Request $request, SessionInterface $session, EntityManagerInterface $entityManager)
+    {
+        $orderId = $request->request->get('id');
+        $orderToDelete = $entityManager->getRepository(OrderProduct::class)->find($orderId);
+        if($orderToDelete->getIsPaid())
+        {
+            /** @var $myUser User */
+            $myUser = $this->getUser();
+            $myUser->setWallet($myUser->getWallet()+$orderToDelete->getPrice());
+            $session->set('wallet', $myUser->getWallet());
+        }
+        $entityManager->remove($orderToDelete);
+        $entityManager->flush();
+        return new JsonResponse(['id' => $orderId]);
+
     }
 }

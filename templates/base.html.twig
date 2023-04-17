@@ -103,10 +103,16 @@ function updateTotal() {
 							<li class="nav-item float-end">
 								<a class="nav-link" href="{{ path('app_logout') }}">Logout</a>
 							</li>
-              <li class="nav-item">
+              				<li class="nav-item">
 								<a class="nav-link" href="{{ path('app_user') }}">Profile</a>
-								Welcome {{ app.user ? app.user.email }}
+								Welcome {{ app.user ? app.user.email }} Wallet: {{ app.user.wallet }}
 							</li>
+							</li class="nav-item">
+								<a class="nav-link" href="{{ path('app_my_sell') }}">My sell</a>
+							<li>
+							</li class="nav-item">
+								<a class="nav-link" href="{{ path('app_my_orders') }}">My orders</a>
+							<li>
 						{% else %}
 							<li class="nav-item">
 								<a class="nav-link" href="{{ path('app_login') }}">Login</a>

@@ -37,3 +37,13 @@ ajax_remove_delivery:
     path: /ajax/remove_delivery
     controller: App\Controller\SessionController::removeDelivery
     methods: [POST]
+
+ajax_order_from_buyers:
+    path: /ajax/order_from_buyers
+    controller: App\Controller\SessionController::orderFromBuyers
+    methods: [POST]
+
+ajax_my_orders:
+    path: /ajax/my_orders
+    controller: App\Controller\SessionController::myOrders
+    methods: [POST]

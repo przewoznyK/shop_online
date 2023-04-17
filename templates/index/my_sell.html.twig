@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello BuyNowController!{% endblock %}
+
+{% block body %}
+
+{% for myOrders in myOrdersArray %}
+   Product: {{ myOrders.product }}<br>
+   Price: {{ myOrders.price }}<br>
+
+   Comment: {{ myOrders.comment }}<br>
+   Delivery Type: {{ myOrders.deliveryType }}<br>
+
+   
+   Final Location: {{ myOrders.finalLocation }}<br>
+   Name: {{ myOrders.name }}<br>
+   Last Name: {{ myOrders.lastName }}<br>
+   Email: {{ myOrders.email }}<br>
+   Address: {{ myOrders.address }}<br>
+   Phone Number: {{ myOrders.phoneNumber }}<br>
+   Payment Method: {{ myOrders.paymentMethod }}<br>
+   
+
+   {% if (myOrders.isPaid) %}
+   Paid 
+   {% else %}
+   Not Paid 
+   {% endif %}
+   <br>
+    {{myOrders.status}}
+    {% if not (myOrders.status == 'ready_to_pick_up') and not (myOrders.status == 'shipping') %}
+        <div class='btn btn-primary order ' data-status='{{myOrders.status}}' data-id='{{ myOrders.id }}' data-type='{{ myOrders.deliveryType }}'
+        {% if (myOrders.status == 'pending') %} >Accept
+        {% elseif (myOrders.status == 'processing') %} 
+            {% if (myOrders.deliveryType == 'personal_pickup') %}>Ready to pick up
+            {% elseif (myOrders.deliveryType == 'parcel_locker') %}>Shipped
+            {% elseif (myOrders.deliveryType == 'courier') %}>Shipped
+        {% endif %}
+        {% endif %}
+        </div>
+    {% else %}
+        <div> All done </div>
+    {% endif %}
+   <br>
+   <hr>
+{% endfor %}
+
+{% block javascripts %}
+{{ encore_entry_script_tags('app') }}
+<script>
+$(document).ready(function(){
+    $('.order[data-status="ready_to_pick_up"]').attr('disabled', true);
+})
+$(document).on('click', '.order', function(){
+    id = $(this).data('id');
+    status = $(this).data('status');
+    type = $(this).data('type');
+    console.log(id);
+    console.log(status);
+    console.log(type);
+    $.ajax({
+        url: '{{ path('ajax_order_from_buyers') }}',
+        method: 'POST',
+        data: {id: id, status: status, type: type},
+        success: function(response)
+        {
+            console.log(response.done);
+            if(!response.done)
+            {
+                $('.order[data-id='+id+']').data('status', response.newStatus);
+                $('.order[data-id='+id+']').text(response.newText);
+            }
+            else
+            {
+                $('.order[data-id='+id+']').attr('data-status', response.newStatus);
+                $('.order[data-id='+id+']').text(response.newText).addClass('disabled');
+            }
+            
+        }
+    })
+})
+
+
+</script>
+{% endblock %}
+{% endblock %}

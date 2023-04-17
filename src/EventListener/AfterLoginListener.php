@@ -20,10 +20,9 @@ class AfterLoginListener
         if ($myCarts) {
             $myCartsId = explode(',', $myCarts);
             $session->set('cartsId', $myCarts);
-          $session->set('cartsCount', count($myCartsId));
-           echo $session->get('cartsCount');
-           echo $session->get('cartsId');
+            $session->set('cartsCount', count($myCartsId));
         }
+        $session->set('wallet', $myUser->getWallet());
     }
 }
 

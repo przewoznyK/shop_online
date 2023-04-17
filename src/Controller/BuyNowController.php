@@ -13,28 +13,70 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class BuyNowController extends AbstractController
 {
 
     #[Route('/buy_now', name: 'app_buy_now')]
-    public function index(EntityManagerInterface $entityManager, Request $request): Response
+    public function index(EntityManagerInterface $entityManager, SessionInterface $session, Request $request): Response
     {
         $newOrder = new OrderProduct();
         $form_create_order_product = $this->createForm(OrderProductFormType::class, $newOrder);
 
         $form_create_order_product->handleRequest($request);
         if ($form_create_order_product->isSubmitted() && $form_create_order_product->isValid()) {
+            // Request data
             $allData = $request->request->all();
-             $idAndQuantityArray = $allData['id-and-quantity'];
-      
-                $productsOrder = implode("|",$idAndQuantityArray);
-
             $ownerId = $request->request->get('ownerId');
             $deliveryType = $request->request->get('delivery-type-checkbox');
             $owner = $entityManager->find(User::class, $ownerId);
             $summary = $request->request->get('summary');
+            $paymentMethod = $request->request->get('payment-method');
+            $time = new DateTime();
+            $idAndQuantityArray = $allData['id-and-quantity'];
+
+            // Delete carts from order
+            /** @var $myUser User */
+            $myUser=$this->getUser();
+            $myCarts=$myUser->getCarts();
+            $myCartsExplode = explode('|', $myCarts);
+            foreach($myCartsExplode as $element) {
+                $explodedElement = explode(':', $element);
+                if (count($explodedElement) == 2) {
+                    $newCarts[$explodedElement[0]] = $explodedElement[1];
+                }
+            }
+
+            foreach($idAndQuantityArray as $element)
+            {
+                $deleteFromCarts = explode(':', $element);
+                if (count($deleteFromCarts) == 2) {
+                    $deleteCarts[$deleteFromCarts[0]] = $deleteFromCarts[1];
+                }
+            }
+            foreach($deleteCarts as $key => $element) {
+                unset($newCarts[$key]);
+            }
+
+            // Make final form to database
+            $newCartsFinal = [];
+            foreach($newCarts as $key => $value)
+            {
+                $newCartsFinal[] = $key . ':' . $value;
+            }
+
+
+            
+
+            $newCartsFinal = implode('|', $newCartsFinal);
+            // Change session value
+            $session->set('cartsId', $newCartsFinal);
+            $session->set('cartsCount', count($newCarts));
+            $productsOrder = implode("|",$idAndQuantityArray);
+            //Add data to newOrder
             $newOrder->setOwner($owner);
             $newOrder->setBuyer($this->getUser());
             $newOrder->setName(
@@ -61,12 +103,19 @@ class BuyNowController extends AbstractController
             );
             $newOrder->setPrice($summary);
             $newOrder->setProduct($productsOrder);
-
-            $newOrder->setIspaid(false);
-            $newOrder->setPaymentMethod('transfer payment');
+            $newOrder->setCreateIn($time);
+            $myUser->setCarts($newCartsFinal);
+            $newOrder->setPaymentMethod($paymentMethod);
+            $newOrder->setStatus('pending');
+            if($paymentMethod=='My wallet'){
+                $newOrder->setIspaid(true);
+                $myUser->setWallet($myUser->getWallet()-$summary);
+            }
+            else{$newOrder->setIspaid(false);}
             $entityManager->persist($newOrder);
             $entityManager->flush();
-            dd($allData);
+            $this->addFlash('success', 'Product ordered!');
+            return new RedirectResponse('/user');
         }
         // Take all data from form
         $allData = $request->request->all();

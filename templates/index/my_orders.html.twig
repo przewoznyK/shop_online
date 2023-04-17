@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello BuyNowController!{% endblock %}
+
+{% block body %}
+
+{% for myOrders in myOrdersArray %}
+<section class='order-field' data-id={{ myOrders.id }}
+   Product: {{ myOrders.product }}<br>
+   Price: {{ myOrders.price }}<br>
+
+   Comment: {{ myOrders.comment }}<br>
+   Delivery Type: {{ myOrders.deliveryType }}<br>
+
+   
+   Final Location: {{ myOrders.finalLocation }}<br>
+   Name: {{ myOrders.name }}<br>
+   Last Name: {{ myOrders.lastName }}<br>
+   Email: {{ myOrders.email }}<br>
+   Address: {{ myOrders.address }}<br>
+   Phone Number: {{ myOrders.phoneNumber }}<br>
+   Payment Method: {{ myOrders.paymentMethod }}<br>
+   
+
+   {% if (myOrders.isPaid) %}
+   Paid 
+   {% else %}
+   Not Paid 
+   {% endif %}
+   <br>
+    {{myOrders.status}}
+    {% if (myOrders.status == 'pending') or (myOrders.status == 'processing') %}
+        <div class='btn btn-danger delete-order' data-id='{{ myOrders.id }}'>Delete</div>
+    {% endif %}
+   <br>
+   <hr>
+</section>
+{% endfor %}
+
+{% block javascripts %}
+{{ encore_entry_script_tags('app') }}
+<script>
+$(document).on('click', '.delete-order', function(){
+    id = $(this).data('id');
+    $.ajax({
+        url: '{{ path('ajax_my_orders') }}',
+        method: 'POST',
+        data: {id: id, status: status},
+        success: function(response)
+        {
+            console.log(response.id);
+            $('.order-field[data-id='+id+']').remove();
+        }
+    })
+})
+
+
+</script>
+{% endblock %}
+{% endblock %}

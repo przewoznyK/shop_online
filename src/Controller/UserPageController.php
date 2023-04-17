@@ -18,8 +18,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserPageController extends AbstractController
 {
     #[Route('/user', name: 'app_user')]
-
-
     public function index(): Response
     {
         /** @var $user User */
@@ -32,7 +30,6 @@ class UserPageController extends AbstractController
     #[Route('/user/{id}', name: 'app_user_profile')]
     public function showProfile(EntityManagerInterface $entityManager, int $id, Request $request, SessionInterface $session): Response
     {
-
         /** @var $user User */
         $myUser = $this->getUser();
         $myId = $myUser->getId();
@@ -151,11 +148,9 @@ class UserPageController extends AbstractController
                 } else {
                     $carts = $productId;
                 }
-
                 $myUser->setCarts($carts);
                 $entityManager->persist($myUser);
                 $entityManager->flush();
-
                 $this->addFlash('success', 'Product successfully add to cart!');
                 return new RedirectResponse('/check_product/' . $productId);
             } else {
@@ -166,13 +161,10 @@ class UserPageController extends AbstractController
                     $cartsId =  $session->get('cartsId').','.$carts;
                     $session->set('cartsId', $cartsId);
                     $this->addFlash('success', 'Jest carts');
-
-
                 } else {
                     $session->set('cartsCount', 1);
                     $session->set('cartsId', $carts);
                     $this->addFlash('success', 'stworzono carts');
-
                 }
                 $this->addFlash('success', 'Product successfully add to cart!');
                 return new RedirectResponse('/check_product/' . $productId);

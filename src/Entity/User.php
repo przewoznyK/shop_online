@@ -53,6 +53,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: OrderProduct::class)]
     private Collection $orderProducts;
 
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    private ?string $wallet = null;
+
     public function __construct()
     {
         $this->products = new ArrayCollection();
@@ -247,6 +250,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $orderProduct->setOwner(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getWallet(): ?string
+    {
+        return $this->wallet;
+    }
+
+    public function setWallet(string $wallet): self
+    {
+        $this->wallet = $wallet;
 
         return $this;
     }

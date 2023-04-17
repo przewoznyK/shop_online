@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\OrderProductRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OrderProductRepository::class)]
@@ -57,6 +58,12 @@ class OrderProduct
     #[ORM\Column(length: 255)]
     private ?string $address = null;
 
+    #[ORM\Column]
+    private ?string $status = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $createIn = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -110,7 +117,7 @@ class OrderProduct
         return $this;
     }
 
-    public function isIspaid(): ?bool
+    public function getIsPaid(): ?bool
     {
         return $this->ispaid;
     }
@@ -226,6 +233,30 @@ class OrderProduct
     public function setAddress(string $address): self
     {
         $this->address = $address;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getCreateIn(): ?\DateTimeInterface
+    {
+        return $this->createIn;
+    }
+
+    public function setCreateIn(\DateTimeInterface $createIn): self
+    {
+        $this->createIn = $createIn;
 
         return $this;
     }
