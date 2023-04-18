@@ -29,7 +29,19 @@ services:
    
     Symfony\Component\HttpFoundation\Session\SessionInterface:
         alias: session
-        
+    
+    Symfony\Component\Mailer\Mailer:
+        arguments:
+            - dsn: '%env(MAILER_DSN)%'
+
     App\EventListener\AfterLoginListener:
         tags:
             - { name: kernel.event_listener, event: security.interactive_login }
+    
+    App\Command\MyCommand:
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@mailer'
+
+        tags:
+            - { name: console.command }

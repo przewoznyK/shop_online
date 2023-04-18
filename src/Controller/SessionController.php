@@ -358,12 +358,14 @@ class SessionController extends AbstractController
             if($orderType == 'personal_pickup')
             {
                 $newStatus = 'ready_to_pick_up';
-                $newText = 'All done';
+                $newText = 'Waiting for pickup';
             }
             else
             {
+                $time = new DateTime();
+                $order->setStartDelivery($time);
                 $newStatus = 'shipped';
-                $newText = 'All done';
+                $newText = 'Durning shipment';
                 
             }
             /** @var $myUser User */

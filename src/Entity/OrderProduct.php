@@ -61,8 +61,11 @@ class OrderProduct
     #[ORM\Column]
     private ?string $status = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $createIn = null;
+    #[ORM\Column]
+    private ?\DateTime $createIn = null;
+    
+    #[ORM\Column(nullable: true)]
+    private ?\DateTime $start_delivery = null;
 
     public function getId(): ?int
     {
@@ -257,6 +260,18 @@ class OrderProduct
     public function setCreateIn(\DateTimeInterface $createIn): self
     {
         $this->createIn = $createIn;
+
+        return $this;
+    }
+
+    public function getStartDelivery(): ?\DateTimeInterface
+    {
+        return $this->start_delivery;
+    }
+
+    public function setStartDelivery(\DateTimeInterface $start_delivery): self
+    {
+        $this->start_delivery = $start_delivery;
 
         return $this;
     }

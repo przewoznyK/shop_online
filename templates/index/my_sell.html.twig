@@ -5,6 +5,8 @@
 {% block body %}
 
 {% for myOrders in myOrdersArray %}
+<section class='order-field' data-id={{ myOrders.id }}
+
    Product: {{ myOrders.product }}<br>
    Price: {{ myOrders.price }}<br>
 
@@ -28,7 +30,8 @@
    {% endif %}
    <br>
     {{myOrders.status}}
-    {% if not (myOrders.status == 'ready_to_pick_up') and not (myOrders.status == 'shipping') %}
+    {% if not (myOrders.status == 'ready_to_pick_up') and not (myOrders.status == 'shipped') and not(myOrders.status == 'done') %}
+        <div class='btn btn-danger delete-order' data-id='{{ myOrders.id }}'>Delete</div>
         <div class='btn btn-primary order ' data-status='{{myOrders.status}}' data-id='{{ myOrders.id }}' data-type='{{ myOrders.deliveryType }}'
         {% if (myOrders.status == 'pending') %} >Accept
         {% elseif (myOrders.status == 'processing') %} 
@@ -39,10 +42,11 @@
         {% endif %}
         </div>
     {% else %}
-        <div> All done </div>
+        <div> During shipment </div>
     {% endif %}
    <br>
    <hr>
+</section>
 {% endfor %}
 
 {% block javascripts %}
@@ -74,12 +78,25 @@ $(document).on('click', '.order', function(){
             {
                 $('.order[data-id='+id+']').attr('data-status', response.newStatus);
                 $('.order[data-id='+id+']').text(response.newText).addClass('disabled');
+                $('.delete-order[data-id='+id+']').remove();
             }
-            
         }
     })
 })
 
+$(document).on('click', '.delete-order', function(){
+    id = $(this).data('id');
+    $.ajax({
+        url: '{{ path('ajax_my_orders') }}',
+        method: 'POST',
+        data: {id: id, status: status},
+        success: function(response)
+        {
+            console.log(response.id);
+            $('.order-field[data-id='+id+']').remove();
+        }
+    })
+})
 
 </script>
 {% endblock %}
