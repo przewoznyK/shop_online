@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+	</head>
+	<body>
+		<div>
+			{% for order in orderArray %}
+				Hi
+				{{ order.name }}
+				{{ order.lastName }}
+				<br>
+				Your delivery is ready to pick up in
+				{{ order.finalLocation }}
+				<br>
+
+				<div>
+					{% for product in productsInfoArray %}
+						<img src="{{ product.images }}" alt="1" width="150px" height="150px">
+                        Price: {{ product.productPrice }}    Quantity: {{ product.productQuantity }}
+
+					{% endfor %}
+                        Delivery price: {% if order.deliveryType == 'personal_pickup' %}
+                                        0 $
+                                        {% elseif order.deliveryType == 'percel_locker' %}
+                                        5 $
+                                        {% elseif order.deliveryType == 'courier' %}
+                                        10 $
+                                        {% endif %}
+                    <hr>
+                    Summary {{ order.price }} <br>
+                    <a href='{{ feedbackUrl }}'>Feedback</a> 
+				</div>
+			</div>
+
+		{% endfor %}
+	</body>
+</html>

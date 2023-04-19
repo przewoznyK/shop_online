@@ -67,6 +67,18 @@ class OrderProduct
     #[ORM\Column(nullable: true)]
     private ?\DateTime $start_delivery = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $token = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $feedback = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $feedback_description = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $price_details = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -272,6 +284,54 @@ class OrderProduct
     public function setStartDelivery(\DateTimeInterface $start_delivery): self
     {
         $this->start_delivery = $start_delivery;
+
+        return $this;
+    }
+
+    public function getToken(): ?string
+    {
+        return $this->token;
+    }
+
+    public function setToken(?string $token): self
+    {
+        $this->token = $token;
+
+        return $this;
+    }
+
+    public function getFeedback(): ?string
+    {
+        return $this->feedback;
+    }
+
+    public function setFeedback(?string $feedback): self
+    {
+        $this->feedback = $feedback;
+
+        return $this;
+    }
+
+    public function getFeedbackDescription(): ?string
+    {
+        return $this->feedback_description;
+    }
+
+    public function setFeedbackDescription(?string $feedback_description): self
+    {
+        $this->feedback_description = $feedback_description;
+
+        return $this;
+    }
+
+    public function getPriceDetails(): ?string
+    {
+        return $this->price_details;
+    }
+
+    public function setPriceDetails(?string $price_details): self
+    {
+        $this->price_details = $price_details;
 
         return $this;
     }

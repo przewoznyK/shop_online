@@ -47,8 +47,11 @@
 {% if product.id in app.session.get('cartsId', '') %}
 									<button class="remove-cart-button" data-cart-id="{{ product.id }}">Remove product</button>
 								{% else %}
+                {% if product.quantity > 0 %}
 									<button class="add-cart-button" data-cart-id="{{ product.id }}">Add product</button>
 								{% endif %}
+								{% endif %}
+        
 {% if myProductBool %}         
 <a href="{{ path('app_edit_product', {'id': product.id }) }}"> Edit </a>
 

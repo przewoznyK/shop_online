@@ -15,7 +15,7 @@
   
   <div class="border border-primary">
     <form action="{{ path('app_buy_now') }}" method="POST">
-    <input type="checkbox" name="product_id[]" value="{{ cartInfo.id }}" class='{{ group }}'>
+    <input type="checkbox" name="product_id[]" value="{{ cartInfo.id }}" class='{{ group }}' data-display="{{ cartInfo.id }}">
     <div data-cart-id="{{ cartInfo.id }}">
     <img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}"
       alt="{{ cartInfo.name }}-Image" class="img-fluid rounded-3" width="100px" height="300px">
@@ -41,7 +41,7 @@
   <br>
   <div class="border border-primary">
   <form action="{{ path('app_buy_now') }}" method="POST">
-    <input type="checkbox" name="product_id[]" value="{{ cartInfo.id }}" class='{{ group }}'>
+    <input type="checkbox" name="product_id[]" value="{{ cartInfo.id }}" class='{{ group }}' data-display="{{ cartInfo.id }}">
     <div data-cart-id="{{ cartInfo.id }}">
       <img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}"
         alt="{{ cartInfo.name }}-Image" class="img-fluid rounded-3" width="100px" height="300px">
@@ -57,7 +57,7 @@
       <a href="{{ path('app_buy_now', { 'productId': cartInfo.id }) }}" class="btn btn-primary">Buy Now</a>
     </div>
     {% else %}
-    <input type="checkbox" name="product_id[]" value="{{ cartInfo.id }}" class='{{ group }}'>
+    <input type="checkbox" name="product_id[]" value="{{ cartInfo.id }}" class='{{ group }}' data-display="{{ cartInfo.id }}">
     <div data-cart-id="{{ cartInfo.id }}">
       <img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}"
         alt="{{ cartInfo.name }}-Image" class="img-fluid rounded-3" width="100px" height="300px">
@@ -225,15 +225,23 @@
 
 {% block javascripts %}
 <script type="text/javascript">
+
 $(document).ready(function(){
   $('input[type=checkbox]').prop('checked', false);
-})
+  $('.quantity-input').each(function(){
+    var data = $(this).data('display');
+    if ($(this).attr('max') <= 0) {
+            $('input[type=checkbox][data-display="'+data+'"]').prop('disabled', true);
+
+    }
+  });
+});
 $(document).ready(function(){
   $('input[type=checkbox]').change(function()
   {
     var value = ($(this).val());
     var classCheckbox = $(this).attr('class');
-
+    
     if($(this).is(':checked')){
       window['checkboxCount' + classCheckbox] = typeof window['checkboxCount' + classCheckbox] !== 'undefined' ? window['checkboxCount' + classCheckbox] + 1 : 1;
       $('.quantity-input[data-display="'+value+'"]').prop('disabled', false);

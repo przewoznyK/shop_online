@@ -8,6 +8,7 @@ use App\Entity\Product;
 use App\Entity\User;
 use App\Form\ProductSortFormType;
 use App\Service\CartService;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -64,8 +65,11 @@ class IndexController extends AbstractController
         // My carts count
         $categories = $entityManager->getRepository(Category::class)->findAll();
 
+        $criteria = Criteria::create()
+            ->where(Criteria::expr()->eq('is_public', true))
+            ->andWhere(Criteria::expr()->gt('quantity', 0));
+        $allOffer = $entityManager->getRepository(Product::class)->matching($criteria);
 
-        $allOffer = $entityManager->getRepository(Product::class)->findBy(['is_public' => true]);
 
         if ($allOffer) {
             foreach ($allOffer as $allOfferTakeId) {

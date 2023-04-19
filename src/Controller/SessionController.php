@@ -368,6 +368,20 @@ class SessionController extends AbstractController
                 $newText = 'Durning shipment';
                 
             }
+            // Change product quantity value
+            $orderProducts = $order->getProduct();
+            $orderProductExplode = explode('|', $orderProducts);
+            foreach($orderProductExplode as $element)
+            {
+                $elementExplode = explode(':', $element);
+                $product = $entityManager->getRepository(Product::class)->find($elementExplode[0]);
+                $productQuantity = $product->getQuantity();
+                $productQuantityChange = $productQuantity - $elementExplode[1];
+                $product->setQuantity($productQuantityChange);
+                $entityManager->persist($product);
+                $entityManager->flush();
+            }
+
             /** @var $myUser User */
             $myUser=$this->getUser();
             $myUser->setWallet($myUser->getWallet()+$order->getPrice());

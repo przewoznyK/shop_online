@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello BuyNowController!{% endblock %}
+
+{% block body %}
+{{ token }}
+<br>
+{% if (status == 0) %}
+Sorry, we dont have this product in database
+{% elseif (status == 1) %}
+
+    <form action='{{path('app_feedback_product', {'token': token})}}' method='POST'>
+        <label><input type='radio' name='feedback' value='ok'> Everything ok </label><br>
+        <label><input type='radio' name='feedback' value='damaged'> The product is damaged </label><br>
+        <label><input type='radio' name='feedback' value='content'> Contents of the delivery do not match </label><br>
+        <label><input type='radio' name='feedback' value='other'> Other </label><br>
+        <input type='text' name='description'>
+        <input type='submit' value='Send'>
+    </form>
+{% else %}
+    Thank you for send feedback!
+{% endif %}
+{% block javascripts %}
+<script type="text/javascript">
+
+
+</script>
+{% endblock %}
+
+{% endblock %}

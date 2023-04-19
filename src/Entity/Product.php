@@ -49,7 +49,7 @@ class Product
     private ?bool $is_public = null;
 
     #[ORM\Column]
-    private ?int $Quantity = null;
+    private ?int $quantity = null;
 
 
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: Delivery::class)]
@@ -196,12 +196,12 @@ class Product
 
     public function getQuantity(): ?int
     {
-        return $this->Quantity;
+        return $this->quantity;
     }
 
-    public function setQuantity(int $Quantity): self
+    public function setQuantity(int $quantity): self
     {
-        $this->Quantity = $Quantity;
+        $this->quantity = $quantity;
 
         return $this;
     }

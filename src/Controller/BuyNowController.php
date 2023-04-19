@@ -16,12 +16,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 
 class BuyNowController extends AbstractController
 {
 
     #[Route('/buy_now', name: 'app_buy_now')]
-    public function index(EntityManagerInterface $entityManager, SessionInterface $session, Request $request): Response
+    public function index(TokenGeneratorInterface $tokenGenerator, EntityManagerInterface $entityManager, SessionInterface $session, Request $request): Response
     {
         $newOrder = new OrderProduct();
         $form_create_order_product = $this->createForm(OrderProductFormType::class, $newOrder);
@@ -36,46 +38,59 @@ class BuyNowController extends AbstractController
             $summary = $request->request->get('summary');
             $paymentMethod = $request->request->get('payment-method');
             $time = new DateTime();
+            $token = $tokenGenerator->generateToken();
+            // Make price details
             $idAndQuantityArray = $allData['id-and-quantity'];
-
+            $priceDetails = '';
+            
+            foreach ($idAndQuantityArray as $element) {
+                $elementExplode = explode(':', $element);
+                $product = $entityManager->getRepository(Product::class)->find($elementExplode[0]);
+                $productPrice = $product->getPrice();
+                if ($priceDetails) {
+                    $priceDetails .= '+' . $productPrice . '*' . $elementExplode[1];
+                } else {
+                    $priceDetails .= $productPrice . '*' . $elementExplode[1];
+                }
+            }
             // Delete carts from order
+            // Reset array
+            //  $idAndQuantityArray = $allData['id-and-quantity'];
             /** @var $myUser User */
-            $myUser=$this->getUser();
-            $myCarts=$myUser->getCarts();
+            $myUser = $this->getUser();
+            $myCarts = $myUser->getCarts();
             $myCartsExplode = explode('|', $myCarts);
-            foreach($myCartsExplode as $element) {
+            foreach ($myCartsExplode as $element) {
                 $explodedElement = explode(':', $element);
                 if (count($explodedElement) == 2) {
                     $newCarts[$explodedElement[0]] = $explodedElement[1];
                 }
             }
 
-            foreach($idAndQuantityArray as $element)
-            {
+            foreach ($idAndQuantityArray as $element) {
                 $deleteFromCarts = explode(':', $element);
                 if (count($deleteFromCarts) == 2) {
                     $deleteCarts[$deleteFromCarts[0]] = $deleteFromCarts[1];
                 }
             }
-            foreach($deleteCarts as $key => $element) {
+
+            foreach ($deleteCarts as $key => $element) {
                 unset($newCarts[$key]);
             }
 
             // Make final form to database
             $newCartsFinal = [];
-            foreach($newCarts as $key => $value)
-            {
+            foreach ($newCarts as $key => $value) {
                 $newCartsFinal[] = $key . ':' . $value;
             }
 
 
-            
 
             $newCartsFinal = implode('|', $newCartsFinal);
             // Change session value
             $session->set('cartsId', $newCartsFinal);
             $session->set('cartsCount', count($newCarts));
-            $productsOrder = implode("|",$idAndQuantityArray);
+            $productsOrder = implode("|", $idAndQuantityArray);
             //Add data to newOrder
             $newOrder->setOwner($owner);
             $newOrder->setBuyer($this->getUser());
@@ -107,11 +122,14 @@ class BuyNowController extends AbstractController
             $myUser->setCarts($newCartsFinal);
             $newOrder->setPaymentMethod($paymentMethod);
             $newOrder->setStatus('pending');
-            if($paymentMethod=='My wallet'){
+            $newOrder->setToken($token);
+            $newOrder->setPriceDetails($priceDetails);
+            if ($paymentMethod == 'My wallet') {
                 $newOrder->setIspaid(true);
-                $myUser->setWallet($myUser->getWallet()-$summary);
+                $myUser->setWallet($myUser->getWallet() - $summary);
+            } else {
+                $newOrder->setIspaid(false);
             }
-            else{$newOrder->setIspaid(false);}
             $entityManager->persist($newOrder);
             $entityManager->flush();
             $this->addFlash('success', 'Product ordered!');
@@ -203,6 +221,38 @@ class BuyNowController extends AbstractController
             'allOfferDirImages' => $allOfferDirImages,
             'avalibleDelivery' => $avalibleDelivery,
             'OrderProductFormType' => $form_create_order_product->createView(),
+        ]);
+    }
+    #[Route('/feedback_product/{token}', name: 'app_feedback_product')]
+    public function feedback(EntityManagerInterface $entityManager, Request $request, string $token): Response
+    {
+        $status = 0;
+        $order = $entityManager->getRepository(OrderProduct::class)->findOneBy(['token' => $token]);
+        $feedback = $request->request->get('feedback');
+        if ($order) {
+            $status = 1;
+            $feedback = $request->request->get('feedback');
+            if ($feedback) {
+                $order->setFeedback($feedback);
+                $order->setStatus('feedback');
+                $description = $request->request->get('description');
+                if ($description) {
+                    $order->setFeedbackDescription($description);
+                }
+                $entityManager->persist($order);
+                $entityManager->flush();
+                $status = 2;
+                return $this->render('buy_now/feedback_product.html.twig', [
+                    'token' => $token,
+                    'status' => $status
+                ]);
+            }
+        } else {
+            echo 'nmie ma';
+        }
+        return $this->render('buy_now/feedback_product.html.twig', [
+            'token' => $token,
+            'status' => $status
         ]);
     }
 }

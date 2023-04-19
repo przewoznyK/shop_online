@@ -192,7 +192,11 @@ class ProductController extends AbstractController
         $myProductBool = false;
         // if User is login
         if ($myUser) {
-
+                // Checking whether the product belongs to this user 
+                if ($userOwnerProduct->getId() == $myUser->getId()) {
+                    $myProductBool = true;
+                    
+                }
             foreach ($CommentsAndRatingArray as $key => $productReview) {
                 if (is_int($key)) { // upewnij się, że to jest obiekt ProductReview
                     $upVotesCheck = $myUser->getUpVoteReviews();
@@ -201,10 +205,7 @@ class ProductController extends AbstractController
                     $productReview->downVotesCheck = $downVotesCheck;
                     $CommentsAndRatingArray[$key] = $productReview;
                 }
-                // Checking whether the product belongs to this user 
-                if ($userOwnerProduct->getId() == $myUser->getId()) {
-                    $myProductBool = true;
-                }
+
             }
         } else {
 
@@ -312,7 +313,6 @@ class ProductController extends AbstractController
                 $referer = $request->headers->get('referer');
                 return $this->redirect($referer);
             }
-
             return $this->render('product/edit_product.html.twig', [
                 'product' => $product,
                 'imagesName' => $imagesName,
