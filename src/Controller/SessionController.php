@@ -53,6 +53,17 @@ class SessionController extends AbstractController
         return new JsonResponse(['cartsCount' => $cartsCount]);
     }
 
+    public function deleteProduct(Request $request, EntityManagerInterface $entityManager)
+    {
+        $productId = $request->request->get('id');
+        $product = $entityManager->getRepository(Product::class)->find($productId);
+        $product->setIsDeleted(true);
+        $product->setIsPublic(false);
+        $entityManager->persist($product);
+        $entityManager->flush();
+        return new JsonResponse(['id' => $productId]);
+    }
+
     public function removeCart(Request $request, SessionInterface $session, EntityManagerInterface $entity): JsonResponse
     {
         // Change session cartsCount value
@@ -332,17 +343,16 @@ class SessionController extends AbstractController
 
     public function orderFromBuyers(Request $request, SessionInterface $session, EntityManagerInterface $entityManager)
     {
-        
         $orderId = $request->request->get('id');
         $orderStatus = $request->request->get('status');
         $orderType = $request->request->get('type');
         $order = $entityManager->getRepository(OrderProduct::class)->find($orderId);
         $done = false;
-        // $newStatus = '11';
+         $newStatus = '11';
         // $newText = '111';
         if ($orderStatus == 'pending') {
-            $newStatus = 'processing';
-            
+            $newStatus = 'progressing';
+
             if($orderType == 'personal_pickup')
             {
                 $newText = 'Ready to pick up';
@@ -351,9 +361,8 @@ class SessionController extends AbstractController
             {
                 $newText = 'Shipped';
             }
-            
         }
-        if ($orderStatus == 'processing')
+        if ($orderStatus == 'progressing')
         {
             if($orderType == 'personal_pickup')
             {

@@ -3,6 +3,12 @@
 {% block title %}Log in!{% endblock %}
 
 {% block body %}
+    {% if app.session.get('account_deleted')  %}
+    <div class="alert alert-danger">
+        {{ app.session.get('account_deleted') }}
+        {{ app.session.clear() }}
+    </div>
+    {% endif %}
 <form method="post">
     {% if error %}
         <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>

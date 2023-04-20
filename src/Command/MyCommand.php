@@ -44,17 +44,25 @@ class MyCommand extends Command
         foreach ($orderArray as $order) {
             $checkStatus = $order->getStatus();
             $token = $order->getToken();
-            if ($checkStatus == 'shipped') {
-                // Get price details
+
+            $delivered = false;
+            $startDelivery = $order->getStartDelivery();
+            $now = new \DateTime();
+            $feedbackUrl = $url . '/feedback_product/' . $token;
+            if($startDelivery)
+            {
+                $interval = $startDelivery->diff($now);
+                if($interval->i >= 5 ) $delivered = true;
+            }
+
+            if ($delivered  || $order->getStatus = 'ready_to_pick_up') {
                 $priceDetailsArray = [];
                 $priceDetails = $order->getPriceDetails();
                 $priceDetailsExplode = explode('+', $priceDetails);
-                foreach($priceDetailsExplode as $element)
-                {
+                foreach ($priceDetailsExplode as $element) {
                     $elementExplode = explode('*', $element);
                     $priceDetailsArray[] = $elementExplode;
                 }
-                
 
                 $myProducts = $order->getProduct();
                 $productsIdArray = explode('|', $myProducts);
@@ -84,7 +92,7 @@ class MyCommand extends Command
                                             $productsInfoArray[$i]['images'] = $dirForEmail . '/' . $file;
                                             $productsInfoArray[$i]['productPrice'] = $priceDetailsArray[$i][0];
                                             $productsInfoArray[$i]['productQuantity'] = $priceDetailsArray[$i][1];
-                                            
+
                                             //  $productsInfoArray
                                             $oneTime = false;
                                         }
@@ -97,14 +105,7 @@ class MyCommand extends Command
                             $i++;
                         }
                     }
-                }
-                $startDelivery = $order->getStartDelivery();
-                $now = new \DateTime();
-                $feedbackUrl = $url . '/feedback_product/' . $token;
 
-                $interval = $startDelivery->diff($now);
-
-                if ($interval->i >= 5) {
 
                     $email = (new TemplatedEmail())
                         ->from('symfony_project_shop@proton.me')
@@ -120,17 +121,7 @@ class MyCommand extends Command
                     $order->setStatus('done');
                     $output->writeln('Change status to done: ' . $order->getId());
                 }
-            } else if ($checkStatus == 'ready_to_pick_up') {
-                $email = (new Email())
-                    ->from('symfony_project_shop@proton.me')
-                    ->to($order->getEmail())
-                    ->subject('Your delivery ')
-                    ->html('Hi ' . $order->getName() . '<br>   Your delivery is ready to pickup in ' . $order->getFinalLocation() . '<br><a href="' . $url . '/feedback_product/' . $token . '">Feedback</a>');
-
-                $this->mailer->send($email);
-                $order->setStatus('done');
-                $output->writeln('Change status to done: ' . $order->getId());
-            }
+            } 
         }
         $this->entityManager->flush();
         return Command::SUCCESS;

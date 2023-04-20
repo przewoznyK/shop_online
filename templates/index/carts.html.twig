@@ -26,7 +26,6 @@
     <span id="{{ cartInfo.id }}">${{ cartInfo.price }}</span>
     <i class="remove-cart-button btn fa-sharp fa-solid fa-xmark" data-cart-id="{{ cartInfo.id }}"></i>
     <a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary">Check product</a>
-    <a href="{{ path('app_buy_now', { 'productId': cartInfo.id }) }}" class="btn btn-primary">Buy Now</a>
     </div>
     {% elseif not (lastIdOwner == cartInfo.user.id ) %}
     <div class='summary' data-summary-id='{{ group }}'>
@@ -54,7 +53,6 @@
       <span id="{{ cartInfo.id }}">${{ cartInfo.price }}</span>
       <i class="remove-cart-button btn fa-sharp fa-solid fa-xmark" data-cart-id="{{ cartInfo.id }}"></i>
       <a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary">Check product</a>
-      <a href="{{ path('app_buy_now', { 'productId': cartInfo.id }) }}" class="btn btn-primary">Buy Now</a>
     </div>
     {% else %}
     <input type="checkbox" name="product_id[]" value="{{ cartInfo.id }}" class='{{ group }}' data-display="{{ cartInfo.id }}">
@@ -70,7 +68,6 @@
       <span id="{{ cartInfo.id }}">${{ cartInfo.price }}</span>
       <i class="remove-cart-button btn fa-sharp fa-solid fa-xmark" data-cart-id="{{ cartInfo.id }}"></i>
       <a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary">Check product</a>
-      <a href="{{ path('app_buy_now', { 'productId': cartInfo.id }) }}" class="btn btn-primary">Buy Now</a>
     </div>
     {% endif %}
     {% set lastIdOwner = cartInfo.user.id %}
@@ -78,14 +75,14 @@
     {% set count = count + 1 %}
 
     {% endfor %}
+    {% if myCartsInfo %}
   <div class='summary' data-summary-id='{{ group }}'>
-    Summary = 100k
   </div>
       <input type='submit' value='buy' class='{{ group }}' disabled>
     </form>
   {% set group = group + 1 %}
 </section>
-
+{% endif %}
 
 
 

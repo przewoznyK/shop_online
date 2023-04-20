@@ -56,6 +56,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private ?string $wallet = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $deleted_at = null;
+
     public function __construct()
     {
         $this->products = new ArrayCollection();
@@ -262,6 +265,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setWallet(string $wallet): self
     {
         $this->wallet = $wallet;
+
+        return $this;
+    }
+
+    public function getDeletedAt(): ?\DateTimeImmutable
+    {
+        return $this->deleted_at;
+    }
+
+    public function setDeletedAt(?\DateTimeImmutable $deleted_at): self
+    {
+        $this->deleted_at = $deleted_at;
 
         return $this;
     }

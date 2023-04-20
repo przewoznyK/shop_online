@@ -30,20 +30,21 @@ class UserPageController extends AbstractController
     #[Route('/user/{id}', name: 'app_user_profile')]
     public function showProfile(EntityManagerInterface $entityManager, int $id, Request $request, SessionInterface $session): Response
     {
-        /** @var $user User */
-        $myUser = $this->getUser();
-        $myId = $myUser->getId();
-
         $myPageBool = false;
         $user = $entityManager->getRepository(User::class)->find($id);
-        if ($user->getID() == $myId) {
-            $myPageBool = true;
-        }
-
+        
         if (!$user) {
             throw $this->createNotFoundException(
-                'No product found for id ' . $id
+                'No user found for id ' . $id
             );
+        }
+        /** @var $user User */
+        $myUser = $this->getUser();
+        if ($myUser) {
+            $myId = $myUser->getId();
+            if ($user->getId() == $myId) {
+                $myPageBool = true;
+            }
         }
 
         $form = $this->createForm(EditProfileFormType::class, $user);
@@ -67,7 +68,7 @@ class UserPageController extends AbstractController
         }
 
         //Send my offerts products data
-        $productsUser = $entityManager->getRepository(Product::class)->findBy(array('user_id' => $id));
+        $productsUser = $entityManager->getRepository(Product::class)->findBy(array('user_id' => $id, 'is_deleted' => false));
 
         $productImagesDirection  = array();
         $i = 0;
@@ -85,37 +86,36 @@ class UserPageController extends AbstractController
         }
 
         //Send my cart product data
-        
+
         $myCarts = $session->get('cartsId');
-       
+
         if ($myCarts) {
             $myCartsId = explode(',', $myCarts);
             $myCartsDirImages =  array();
             $myCartsInfo = array();
             $i = 0;
-    
+
             foreach ($myCartsId as $myCartId) {
+                
                 $productUser = $entityManager->getRepository(Product::class)->find($myCartId);
-                if($productUser)
-                {
-     $myCartsInfo[] = $productUser;
-                $myCartsDirImages[$i]['dir'] = $productUser->getImagesDir();
+                if ($productUser && !$productUser->getIsDeleted()) {
+                    $myCartsInfo[] = $productUser;
+                    $myCartsDirImages[$i]['dir'] = $productUser->getImagesDir();
 
-                $owner = $productUser->getUser();
+                    $owner = $productUser->getUser();
 
-                foreach ($myCartsDirImages[$i] as $images) {
-                    $dir = scandir('users_data/' . $owner->getId() . '/products/' . $images);
-                    foreach ($dir as $file) {
-                        if ($file != '.' && $file != '..') {
-                            $myCartsDirImages[$i]['images'][] = $file;
+                    foreach ($myCartsDirImages[$i] as $images) {
+                        $dir = scandir('users_data/' . $owner->getId() . '/products/' . $images);
+                        foreach ($dir as $file) {
+                            if ($file != '.' && $file != '..') {
+                                $myCartsDirImages[$i]['images'][] = $file;
+                            }
                         }
                     }
-                }
-                $myCartsDirImages[$i]['id'] = $owner->getId();
+                    $myCartsDirImages[$i]['id'] = $owner->getId();
 
-                $i++;
+                    $i++;
                 }
-           
             }
         } else {
             $myCartsId = 0;
@@ -158,7 +158,7 @@ class UserPageController extends AbstractController
                 if ($session->has('cartsCount')) {
                     $cartsCount = $session->get('cartsCount') + 1;
                     $session->set('cartsCount', $cartsCount);
-                    $cartsId =  $session->get('cartsId').','.$carts;
+                    $cartsId =  $session->get('cartsId') . ',' . $carts;
                     $session->set('cartsId', $cartsId);
                     $this->addFlash('success', 'Jest carts');
                 } else {
@@ -171,6 +171,24 @@ class UserPageController extends AbstractController
             }
         }
     }
+    #[Route('/delete_account', name: 'app_delete_account')]
+    public function deleteAccount(EntityManagerInterface $entityManager)
+    {
+        /** @var $myUser User */
+        $myUser = $this->getUser();
 
-    
+        $productArray = $entityManager->getRepository(Product::class)->findBy(['user' =>$myUser]);
+        foreach ($productArray as $product)
+        {
+            $product->setIsDeleted(true);
+            $product->setIsPublic(false);
+            $entityManager->persist($product);
+        }
+        $now = new \DateTimeImmutable();
+        $myUser->setDeletedAt($now);
+        $entityManager->persist($myUser);
+        $entityManager->flush();
+        session_destroy();
+        return $this->render('user_page/account_successfully_deleted.html.twig');
+    }
 }

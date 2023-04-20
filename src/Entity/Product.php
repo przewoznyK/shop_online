@@ -58,13 +58,13 @@ class Product
     #[ORM\ManyToOne(inversedBy: 'products')]
     private ?User $user = null;
 
+    #[ORM\Column]
+    private ?bool $is_deleted = null;
+
     public function __construct()
     {
         $this->delivery = new ArrayCollection();
     }
-
-  
-
 
     public function __toString() {
         return $this->name;
@@ -244,6 +244,18 @@ class Product
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getIsDeleted(): ?bool
+    {
+        return $this->is_deleted;
+    }
+
+    public function setIsDeleted(bool $is_deleted): self
+    {
+        $this->is_deleted = $is_deleted;
 
         return $this;
     }

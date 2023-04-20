@@ -83,7 +83,7 @@ class ProductController extends AbstractController
                 $product->setQuantity(
                     $form_create_product->get('quantity')->getData()
                 );
-
+                $product->setIsDeleted(false);
                 $entityManager->persist($product);
                 $entityManager->flush();
                 $this->addFlash('success', 'Product added successfully!');
@@ -232,7 +232,7 @@ class ProductController extends AbstractController
 
 
 
-
+        $myProductBool = false;
         return $this->render('product/check_product.html.twig', [
             'product' => $product,
             'imagesName' => $imagesName,
