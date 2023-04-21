@@ -5,128 +5,221 @@
 
 {% block body %}
 
-
+	{# Side bar #}
 	<div class="container-fluid">
-		<div class="row content">
-			<div class="col-sm-3 sidenav">
-				<h4>Categories</h4>
-
-
+		<div class="row ">
+			<div class="col-md-2 mt-4 ">
+				<h4 class=' mt-5'>Categories</h4>
 				{% for category in categories %}
-					<a href="{{ path('app_category', { 'name': category.name }) }}"
-					{% if (actualCategory) and category.id == actualCategory.id %}
-						class="active font-weight-bold text-danger"
-					{% endif %}>
+					<a class="text-decoration-none {% if (actualCategory) and category.id == actualCategory.id %}active font-weight-bold text-danger{% endif %}" href="{{ path('app_category', { 'name': category.name }) }}">
 						{{ category.name }}
+						<i class="fas fa-light fa-angle-right"></i>
 					</a><br>
 				{% endfor %}
-
-
-				<div class="input-group">
-<form action="{% if actualCategory %} {{ path('app_category', { 'name': actualCategory.name }) }} {% else %} {{ path('app_listening') }} {% endif %}" method="GET">
-    <div class="input-group">
-        <p><input type="text" class="form-control" placeholder="Find..." name="searchName"></p>
-        
-		Min Price<input type="number" name="minPrice">
-        Max Price<input type="number" name="maxPrice">
-
-		Select by
-		<select id="sort_by" name="sort_by">
-		     {% for option in sortOptions %}
-            <option value={{ option.sort }} name={{ option.sort }} {% if option.sort == sortBy %}selected{% endif %}>{{ option.label }}</option>
-        {% endfor %}
-		{# {% if option == sortBy %}selected{% endif %} #}
-		</select>
-		<span class="input-group-btn">
-            <button type="submit" class="btn btn-primary">
-                <span class="glyphicon glyphicon-search"></span>
-            </button>
-				
-        </span>
-    </div>
-</form> 
-				</div>
+				<form action="{% if actualCategory %} {{ path('app_category', { 'name': actualCategory.name }) }} {% else %} {{ path('app_listening') }} {% endif %}" method="GET">
+					<div class="input-group mt-3">
+						<input type="text" class="form-control" placeholder="Search..." name="searchName">
+						<button type="submit" class="btn btn-primary align-self-center">
+							<i class="fas fa-search "></i>
+						</button>
+					</div>
+					<div class="input-group col-md-12 col-xs-2">
+						<p>Min Price<input class="form-control" type="number" name="minPrice"></p>
+						<p>Max Price<input class="form-control" type="number" name="maxPrice"></p>
+					</div>
+					<div class="input-group">
+						<select class='d-block ' id="sort_by" name="sort_by">
+							{% for option in sortOptions %}
+								<option value={{ option.sort }} name={{ option.sort }} {% if option.sort == sortBy %} selected {% endif %}>{{ option.label }}</option>
+							{% endfor %}
+						</select>
+						<span class="input-group-btn">
+							<button type="submit" class="btn btn-primary" value="select by">Sort
+								<span class="glyphicon glyphicon-search"></span>
+							</button>
+						</span>
+					</div>
+				</form>
 			</div>
 
-			<div class="col-sm-9">
-				{{ app.session.get('cartsId') }}
-				<span class="show-cart-count">{{ app.session.get('cartsCount') }}></span>
-				<div class="d-inline-flex p-2">
-					{% set count = 0 %}
-					{% for offerInfo in allOfferInfo %}
-						<div class="card" style="width: 14rem; margin-right: 1rem">
-							<img src="{{ asset('users_data/' ~ allOfferDirImages[count]['id'] ~ '/products/' ~ allOfferDirImages[count]['dir'] ~ '/' ~ allOfferDirImages[count]['images'][0] ) }}" class="card-img-top" alt="...">
-							<div class="card-body">
-								<h5 class="card-title">{{ offerInfo.name }}</h5>
-								<p class="card-text">Price:
-									{{ offerInfo.price }}</p>
-								<a href="{{ path('app_check_product', { 'id': offerInfo.id }) }}" class="btn btn-primary">Check product</a>
-
-								{% if offerInfo.id in app.session.get('cartsId', '') %}
-									<button class="remove-cart-button" data-cart-id="{{ offerInfo.id }}">Remove product</button>
-								{% else %}
-									<button class="add-cart-button" data-cart-id="{{ offerInfo.id }}">Add product</button>
-								{% endif %}
-							</div>
+			{# Carts #}
+			<div class="col-md-9 col-sm-10 col-md-8">
+				<section class="py-5">
+					<div class="container px-4 px-lg-5 mt-5">
+						<div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+							{% set count = 0 %}
+							{% for offerInfo in allOfferInfo %}
+								<div class="col mb-5">
+									<div
+										class="card h-100">
+										<!-- Product image-->
+										<img
+										src="{{ asset('users_data/' ~ allOfferDirImages[count]['id'] ~ '/products/' ~ allOfferDirImages[count]['dir'] ~ '/' ~ allOfferDirImages[count]['images'][0] ) }}" class="card-img-top" alt="...">
+										<!-- Product details-->
+										<div class="card-body p-4">
+											<div
+												class="text-center">
+												<!-- Product name-->
+												<h5 class="fw-bolder">{{ offerInfo.name }}</h5>
+												<!-- Product price-->
+												{{ offerInfo.price }}$
+											</div>
+										</div>
+										<!-- Product actions-->
+										<div class="card-footer p-4 pt-0 border-top-0 bg-transparent d-flex align-items-center justify-content-center">
+											<a href="{{ path('app_check_product', { 'id': offerInfo.id }) }}" class="btn btn-primary ">Check product</a>
+											{% if offerInfo.id in app.session.get('cartsId', '') %}
+												<button class="remove-cart-button text-center" data-cart-id="{{ offerInfo.id }}">Remove product</button>
+											{% else %}
+												<button class="add-cart-button btn btn-success" data-cart-id="{{ offerInfo.id }}">Add to cart</button>
+											{% endif %}
+										</div>
+									</div>
+								</div>
+								{% set count = count + 1 %}
+							{% endfor %}
 						</div>
-
-						{% set count = count + 1 %}
-					{% endfor %}
-				</div>
-
+					</div>
+				</section>
 			</div>
 		</div>
 	</div>
-{% block javascripts %}
-    <script type="text/javascript">
-	var canCallFunction1 = true;
-$(document).on('click', '.add-cart-button', function(event){
-	event.preventDefault();
-    if (canCallFunction1) {
-      canCallFunction1 = false;
-      setTimeout(() => {
-        canCallFunction1 = true;
-      }, 2000);
-    var productId = $(this).data('cart-id');
-	var quantity = $('#quantity-input').val();
-	if(quantity == null) quantity = 1;
-    $.ajax({
-      url: '{{ path('ajax_add_value_to_session') }}',
-      method: 'POST',
-      data: {productId: productId, quantity: quantity},
-      success: function(response) {
-        console.log('Value added to session');
-        // Aktualizujemy wartość elementu HTML po zakończeniu operacji AJAX
-        $('.show-cart-count').html(response.cartsCount);
-        $('[data-cart-id="' + productId + '"]').removeClass('add-cart-button').addClass('remove-cart-button').text('Remove product');
-	  
-      }
-    });
-  }});
-var canCallFunction1 = true;
-  $(document).on('click', '.remove-cart-button', function(event){
-	event.preventDefault();
-    if (canCallFunction1) {
-      canCallFunction1 = false;
-      setTimeout(() => {
-        canCallFunction1 = true;
-      }, 2000);
-    var productId = $(this).data('cart-id');
-	var quantity = $('#quantity-input').val();
-    $.ajax({
-      url: '{{ path('ajax_remove_cart') }}',
-      method: 'POST',
-      data: {productId: productId, quantity: quantity},
-      success: function(response) {
-        
-			$('.show-cart-count').html(response.cartsCount);
-        	$('.cart-item[data-cart-id="' + productId + '"]').remove();
-			$('[data-cart-id="' + productId + '"]').removeClass('remove-cart-button').addClass('add-cart-button').text('Add product');
+	{# <div class="container-fluid">
+					<div class="row content">
+						<div class="col-sm-3 sidenav">
+							<h4>Categories</h4>
+			
+			
+							{% for category in categories %}
+								<a href="{{ path('app_category', { 'name': category.name }) }}"
+								{% if (actualCategory) and category.id == actualCategory.id %}
+									class="active font-weight-bold text-danger"
+								{% endif %}>
+									{{ category.name }}
+								</a><br>
+							{% endfor %}
+			
+			
+							<div class="input-group">
+			<form action="{% if actualCategory %} {{ path('app_category', { 'name': actualCategory.name }) }} {% else %} {{ path('app_listening') }} {% endif %}" method="GET">
+			    <div class="input-group">
+			        <p><input type="text" class="form-control" placeholder="Find..." name="searchName"></p>
+			        
+					Min Price<input type="number" name="minPrice">
+			        Max Price<input type="number" name="maxPrice">
+			
+					Select by
+					<select id="sort_by" name="sort_by">
+					     {% for option in sortOptions %}
+			            <option value={{ option.sort }} name={{ option.sort }} {% if option.sort == sortBy %}selected{% endif %}>{{ option.label }}</option>
+			        {% endfor %} #}
 
-	  }
-    });
-  }});
-    </script>
-{% endblock %}
+
+	{# {% if option == sortBy %}selected{% endif %} #}
+
+
+	{# </select>
+					<span class="input-group-btn">
+			            <button type="submit" class="btn btn-primary">
+			                <span class="glyphicon glyphicon-search"></span>
+			            </button>
+							
+			        </span>
+			    </div>
+			</form> 
+							</div>
+						</div>
+			
+						<div class="col-sm-9">
+							{{ app.session.get('cartsId') }}
+							<span class="show-cart-count">{{ app.session.get('cartsCount') }}></span>
+							<div class="d-inline-flex p-2">
+								{% set count = 0 %}
+								{% for offerInfo in allOfferInfo %}
+									<div class="card" style="width: 14rem; margin-right: 1rem">
+										<img src="{{ asset('users_data/' ~ allOfferDirImages[count]['id'] ~ '/products/' ~ allOfferDirImages[count]['dir'] ~ '/' ~ allOfferDirImages[count]['images'][0] ) }}" class="card-img-top" alt="...">
+										<div class="card-body">
+											<h5 class="card-title">{{ offerInfo.name }}</h5>
+											<p class="card-text">Price:
+												{{ offerInfo.price }}</p>
+											<a href="{{ path('app_check_product', { 'id': offerInfo.id }) }}" class="btn btn-primary">Check product</a>
+			
+											{% if offerInfo.id in app.session.get('cartsId', '') %}
+												<button class="remove-cart-button" data-cart-id="{{ offerInfo.id }}">Remove product</button>
+											{% else %}
+												<button class="add-cart-button" data-cart-id="{{ offerInfo.id }}">Add product</button>
+											{% endif %}
+										</div>
+									</div>
+			
+									{% set count = count + 1 %}
+								{% endfor %}
+							</div>
+			
+						</div>
+					</div>
+				</div> #}
+		{% block javascripts %}
+			<script type="text/javascript"> var canCallFunction1 = true;
+$(document).on('click', '.add-cart-button', function (event) {
+event.preventDefault();
+if (canCallFunction1) {
+canCallFunction1 = false;
+setTimeout(() => {
+canCallFunction1 = true;
+}, 2000);
+var productId = $(this).data('cart-id');
+var quantity = $('#quantity-input').val();
+if (quantity == null) 
+quantity = 1;
+
+
+
+$.ajax({
+url: '{{ path('ajax_add_value_to_session') }}',
+method: 'POST',
+data: {
+productId: productId,
+quantity: quantity
+},
+success: function (response) {
+console.log('Value added to session');
+// Aktualizujemy wartość elementu HTML po zakończeniu operacji AJAX
+$('.show-cart-count').html(response.cartsCount);
+$('[data-cart-id="' + productId + '"]').removeClass('add-cart-button').addClass('remove-cart-button').text('Remove product');
+
+}
+});
+}
+});
+var canCallFunction1 = true;
+$(document).on('click', '.remove-cart-button', function (event) {
+event.preventDefault();
+if (canCallFunction1) {
+canCallFunction1 = false;
+setTimeout(() => {
+canCallFunction1 = true;
+}, 2000);
+var productId = $(this).data('cart-id');
+var quantity = $('#quantity-input').val();
+$.ajax({
+url: '{{ path('ajax_remove_cart') }}',
+method: 'POST',
+data: {
+productId: productId,
+quantity: quantity
+},
+success: function (response) {
+
+$('.show-cart-count').html(response.cartsCount);
+$('.cart-item[data-cart-id="' + productId + '"]').remove();
+$('[data-cart-id="' + productId + '"]').removeClass('remove-cart-button').addClass('add-cart-button').text('Add product');
+
+}
+});
+}
+});
+		</script>
+	{% endblock %}
 
 {% endblock %}

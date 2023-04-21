@@ -3,21 +3,40 @@
 {% block body %}
 
 
-{% for image in imagesName %}
-<img class="w-25 p-3" src="{{ asset('users_data/' ~ userOwnerProduct.id ~ '/products/' ~ product.imagesdir ~ '/' ~ image) }}" />
-{% if imagesName|length > 1 %}
-<a href="{{ path('app_user_image_remove', { 'dir':  product.imagesdir, 'image': image }) }}" class="btn btn-primary">Delte</a>
-{% endif %}
-{% endfor %}
-     {{ form_start(AddProductFormType) }}
-        {{ form_row(AddProductFormType.name) }}
-        {{ form_row(AddProductFormType.description) }}
-        {{ form_row(AddProductFormType.price) }}
-        {{ form_row(AddProductFormType.category) }}
-        {{ form_row(AddProductFormType.my_files) }}
-        {{ form_row(AddProductFormType.is_public) }}
-        <button type="submit" class="btn">Add Product</button>
-    {{ form_end(AddProductFormType) }}
-</div>
+	<div class="container-fluid" style="max-width: 70%;">
+		<div class="row ">
+			<div class="col-md-4 col-sm-10">
+				<h1 class="h3 mb-3 font-weight-normal">Add Product</h1>
+				{{ form_start(AddProductFormType) }}
+				{{ form_row(AddProductFormType.name, {'attr': {'class': 'form-control'}}) }}
+				{{ form_row(AddProductFormType.price, {'attr': {'class': 'form-control'}}) }}
+				{{ form_row(AddProductFormType.quantity, {'attr': {'class': 'form-control'}}) }}
+				{{ form_row(AddProductFormType.category, {'attr': {'class': 'form-control'}}) }}
+
+				{{ form_row(AddProductFormType.my_files, {'attr': {'class': 'form-control'}}) }}
+
+				{{ form_row(AddProductFormType.description, {'attr': {'class': 'form-control', 'style': 'height: 6em;' }}) }}
+				{{ form_row(AddProductFormType.is_public) }}
+				{{ form_row(AddProductFormType.submit, {'attr': {'class': 'btn btn-primary'}}) }}
+				{{ form_end(AddProductFormType) }}
+
+			</div>
+			<div class="col mt-5">
+				<div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+					{% for image in imagesName %}
+						<div class='border'>
+							<img class="w-100 " src="{{ asset('users_data/' ~ userOwnerProduct.id ~ '/products/' ~ product.imagesdir ~ '/' ~ image) }}"/>
+							{% if imagesName|length > 1 %}
+								<a href="{{ path('app_user_image_remove', { 'dir': product.imagesdir, 'image': image }) }}">
+									<div class="btn btn-danger btn-sm mx-4">Delete</div>
+								</a>
+							{% endif %}
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+
+		</div>
+	</div>
 
 {% endblock %}

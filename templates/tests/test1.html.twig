@@ -1,28 +1,162 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+	www
+	<div class='container-fluid bg-primary text-center'>
+		----
+		<div class="row">
+			<div class="col-6 col-md-4 bg-secondary ">Wpisz cos:
+				<input type='text'></div>
+			<div class="col-12 col-md-4 bg-success ">.col-6 .col-md-4</div>
+		</div>
 
-hello
+	</div>
+
+	<div class="container">
+		<div class="row">
+			<div class="col bg-success">
+				1 of 2
+								      Wpisz cos:
+				<input type='text'>
+			</div>
+			<div class="col bg-danger">
+				2 of 2
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				1 of 3
+			</div>
+			<div class="col">
+				2 of 3
+			</div>
+			<div class="col">
+				3 of 3
+			</div>
+		</div>
+	</div>
+
+
+	<div class="container-fluid">
+		<div class="row">
+			<div
+				class="col bg-success">
+				{# ... #}
+				<h4>Categories</h4>
+				<div class="mb-3">
+					<label for="formFile" class="form-label">Default file input example</label>
+					<input class="form-control" type="file" id="formFile">
+				</div>
+				<div class="mb-3">
+					<label for="formFileMultiple" class="form-label">Multiple files input example</label>
+					<input class="form-control" type="file" id="formFileMultiple" multiple>
+				</div>
+				<div class="mb-3">
+					<label for="formFileDisabled" class="form-label">Disabled file input example</label>
+					<input class="form-control" type="file" id="formFileDisabled" disabled>
+				</div>
+				<div class="mb-3">
+					<label for="formFileSm" class="form-label">Small file input example</label>
+					<input class="form-control form-control-sm" id="formFileSm" type="file">
+				</div>
+				<div>
+					<label for="formFileLg" class="form-label">Large file input example</label>
+					<input class="form-control form-control-lg" id="formFileLg" type="file">
+				</div>
+				<a href="">
+					class="active font-weight-bold text-danger"
+													    category.name
+				</a><br>
+				<form action="">
+					<div class='form-control'>Wpisz cos:
+						<input type='text'></div>
+					Wpisz cos:
+					<input class='form-control' type='text'>
+					Wpisz cos:
+					<input type='text'>
+
+
+					<div class="input-group md-form form-sm form-2 pl-0">
+						<input class="form-control my-0 py-1 lime-border" type="text" placeholder="Search" aria-label="Search">
+						<div class="input-group-append">
+							<span class="input-group-text lime lighten-2" id="basic-text1">
+								<i class="fas fa-search text-grey" aria-hidden="true"></i>
+							</span>
+						</div>
+					</div>
+					{# <div class="input-group col-md-12 col-xs-2">
+										      			<p><input type="text" class="form-control" placeholder="Find..." name="searchName"></p>
+											 					<br>
+														
+																<p>Min Price<input class="d-block form-control" type="number" name="minPrice"></p>
+										      		  <br>
+										            <p>Max Price<input class="d-block form-control" type="number" name="maxPrice"></p>
+																<br>
+										          </div>
+															<div class="input-group"> 
+															  <select class='d-block form-control'  id="sort_by" name="sort_by">
+																  <option value= option.sort  name= option.sort > option.label </option>
+															  </select>
+															  <span class="input-group-btn">
+																  <button type="submit" class="btn btn-primary" value="select by">select by
+																	  <span class="glyphicon glyphicon-search"></span>
+																  </button>
+															  </span>
+															</div>#}
+				</form>
+
+			</div>
+			{# {% if option == sortBy %}selected{% endif %} #}
+
+
+			<div class="col-md-9">
+
+				<section class="py-5">
+					<div class="container px-4 px-lg-5 mt-5">
+						<div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+
+							<div class="col mb-5">
+								<div
+									class="card h-100">
+									<!-- Product image-->
+									<img
+									src="{{ asset('tools/avatar.jpg') }}" class="card-img-top" alt="...">
+									<!-- Product details-->
+									<div class="card-body p-4">
+										<div
+											class="text-center">
+											<!-- Product name-->
+											<h5 class="fw-bolder">
+												offerInfo.name
+											</h5>
+											<!-- Product price-->
+											offerInfo.price $
+										</div>
+									</div>
+									<!-- Product actions-->
+									<div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+										<a href="" class="btn btn-primary">Check product</a>
+
+										<button class="remove-cart-button" data-cart-id=" offerInfo.id ">Remove product</button>
+
+
+									</div>
+								</div>
+							</div>
+
+
+						</div>
+					</div>
+				</section>
+			</div>
+		</div>
+	</div>
+
 {% endblock %}
 {% block javascripts %}
-<script>
-
-</script>
+	<script></script>
 
 {% endblock %}
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 {# 
