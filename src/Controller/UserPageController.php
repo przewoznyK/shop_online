@@ -59,12 +59,16 @@ class UserPageController extends AbstractController
             $entityManager->flush();
 
             $newAvatar = $form->get('avatar')->getData();
-            $directionAvatar = 'users_data/' . $user->getId() . '/avatar/';
+            if($newAvatar)
+            {
+                       $directionAvatar = 'users_data/' . $user->getId() . '/avatar/';
             $filename = 'avatar.jpg';
             $newAvatar->move(
                 $directionAvatar,
                 $filename
             );
+            }
+     
         }
 
         //Send my offerts products data
@@ -123,8 +127,9 @@ class UserPageController extends AbstractController
             $myCartsDirImages = 0;
         }
 
-        return $this->render('user_page/index.html.twig', [
+        return $this->render('user_page/profile.html.twig', [
             'username' => $user->getUsername(),
+            'description' => $user->getDescription(),
             'userId' => $user->getId(),
             'productUser' => $productsUser,
             'files' => $productImagesDirection,

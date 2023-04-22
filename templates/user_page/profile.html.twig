@@ -1,0 +1,189 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello UserPageController!
+{% endblock %}
+
+{% block body %}
+	<style>
+		@media(min-width: 768px) {
+			#accordionExample {
+				min-width: 25%;
+			}
+		}
+	</style>
+	{% for message in app.flashes('success') %}
+		<div class='alert alert-success'>
+			{{ message }}
+		</div>
+	{% endfor %}
+	{% for message in app.flashes('error') %}
+		<div class='alert alert-danger'>
+			{{ message }}
+		</div>
+	{% endfor %}
+
+
+	<div class="container mt-5 ">
+		<div class="row ">
+			<div class="col mb-5 text-center mt-3">
+				{% if myPageBool %}
+				{{ form_start(editProfile)}}
+					<label for='edit_profile_form_avatar' class='btn label' data-toggle="tooltip" data-placement="top" title="Tooltip on top">
+						<img src="{{ asset('users_data/' ~ userId ~ '/avatar/avatar.jpg') }}" alt="avatar" class="img-fluid img-thumbnail rounded" width='200px'>
+						{{ form_widget(editProfile.avatar, {'attr': {'class': 'visually-hidden'}}) }}
+					</label>
+					<h1>{{ username }}</h1>
+					{{ form_row(editProfile.description, {'attr': {'class': 'form-control mx-auto', 'style': 'max-width: 70%; resize: vertical;'}}) }}
+					<div class="accordion mx-auto mt-3" id="accordionExample" style=" max-width: 30%;">
+						<div class="accordion-item">
+							<h2 class="accordion-header" id="headingOne">
+								<button class="accordion-button collapsed btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+									More
+								</button>
+							</h2>
+							<div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+								<div class="accordion-body">
+
+									<a class="btn btn-danger mb-3" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+										Delete account
+									</a>
+									<div class="collapse" id="collapseExample">
+										<p>Are you sure?</p>
+										<a class="btn btn-secondary" href="{{ path('app_delete_account') }}">
+											Yes
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+			{{ form_row(editProfile.submit, {'attr': {'class': 'btn btn-primary mt-3'}}) }}
+			{{ form_end(editProfile) }}
+
+				</div>
+			{% else %}
+
+				<img src="{{ asset('users_data/' ~ userId ~ '/avatar/avatar.jpg') }}" alt="avatar" class="img-fluid img-thumbnail rounded" width='200px'>
+				<h1>{{ username }}</h1>
+				{{ description }}
+			{% endif %}
+		
+		</div>
+	</div>
+	{# <img src="{{ asset('users_data/' ~ userId ~ '/avatar/avatar.jpg') }}" alt="ACME logo" class="img-fluid img-thumbnail rounded" width='150px'>
+																																																																				<h1>{{ username }}</h1>
+																																																																				<br><br> #}
+	{# Carts #}
+
+
+	<div class="container mt-5">
+		<div class="row justify-content-center">
+			{% if myPageBool %}
+				<div class="col-xxl-2 col-xl-4 col-lg-6 col-md-12 mb-5">
+					<div
+						class="card h-100">
+						<!-- Product image-->
+						<img
+						src="{{ asset('tools/plus.png') }}" class="card-img-top" alt="...">
+						<!-- Product details-->
+						<div class="card-body p-4">
+							<div
+								class="text-center">
+								<!-- Product name-->
+								<a href="{{ path('app_create_product') }}">
+									<p class='btn btn-success'>Add Product</p>
+								</a>
+								<!-- Product price-->
+
+							</div>
+						</div>
+						<!-- Product actions-->
+					</div>
+				</div>
+			{% endif %}
+			{% set count = 0 %}
+			{% for product in productUser %}
+				<div class="col-xxl-2 col-xl-4 col-lg-6 col-md-12 mb-5">
+					<div
+						class="card h-100">
+						<!-- Product image-->
+						<img
+						src="{{ asset('users_data/' ~ userId ~ '/products/' ~ files[count]['dir'] ~ '/' ~ files[count]['images'][0] ) }}" class="card-img-top" alt="...">
+						<!-- Product details-->
+						<div class="card-body p-4">
+							<div
+								class="text-center">
+								<!-- Product name-->
+								<h5 class="fw-bolder">{{ product.name }}</h5>
+								<!-- Product price-->
+								{{ product.price }}$
+							</div>
+						</div>
+						<!-- Product actions-->
+						<div class="card-footer p-4 pt-0 border-top-0 bg-transparent d-flex align-items-center justify-content-center">
+							<a href="{{ path('app_check_product', { 'id': product.id }) }}" class="btn btn-primary btn-sm flex-fill">Check</a>
+							{% if myPageBool %}
+								<a href="{{ path('app_edit_product', {'id': product.id }) }}" class="btn btn-secondary btn-sm flex-fill mx-1">
+									Edit
+								</a>
+								<div data-id={{ product.id }} class="btn btn-danger btn-sm delete-product flex-fill ">
+									Delete
+								</div>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+				{% set count = count + 1 %}
+			{% endfor %}
+		</div>
+	</div>
+</div></div>{# <h2>My Offerts</h2><br><div class="d-inline-flex p-2">
+											{% set count = 0 %}
+											{% for product in productUser %}
+												<div class="card offer-field" data-id='{{ product.id }}' style="width: 14rem; margin-right: 1rem">
+													<img src="{{ asset('users_data/' ~ userId ~ '/products/' ~ files[count]['dir'] ~ '/' ~ files[count]['images'][0] ) }}" class="card-img-top" alt="...">
+													<div class="card-body">
+														<h5 class="card-title">{{ product.name }}</h5>
+														<p class="card-text">Price:
+															{{ product.price }}</p>
+														<a href="{{ path('app_check_product', { 'id': product.id }) }}" class="btn btn-primary">Check product</a>
+														{% if myPageBool %}
+															<div data-id={{ product.id }} class="btn btn-error delete-product">Delete product</div>
+											
+														{% endif %}
+													</div>
+												</div>
+												{% set count = count + 1 %}
+											{% endfor %}
+											{% if myPageBool %}
+											</div></div>{{ myCartsInfo|length }}<br><h2>My Carts</h2><div class="d-inline-flex p-2">
+											{% set count = 0 %}
+											{% for cartInfo in myCartsInfo %}
+												<div class="card" style="width: 14rem; margin-right: 1rem">
+													<img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}" class="card-img-top" alt="...">
+													<div class="card-body">
+														<h5 class="card-title">{{ cartInfo.name }}</h5>
+														<p class="card-text">Price:
+															{{ cartInfo.price }}</p>
+														<a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary">Check product</a>
+													</div>
+												</div>
+												{% set count = count + 1 %}
+											{% endfor %}{% else %} 
+											<i class="bi bi-person-circle">ss</i>{% endif %}</div>#}
+											{% block javascripts %}
+			<script type="text/javascript"> 
+$(document).on('click', '.delete-product', function () {
+id = $(this).data('id');
+$.ajax({
+url: '{{ path('ajax_delete_product') }}',
+method: 'POST',
+data: {
+id: id
+},
+success: function (response) {
+console.log(response.id);
+$('.offer-field[data-id=' + id + ']').remove();
+}
+})
+})</script>{% endblock %}{% endblock %}		

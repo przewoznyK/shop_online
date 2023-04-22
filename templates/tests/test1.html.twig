@@ -1,157 +1,250 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-	www
-	<div class='container-fluid bg-primary text-center'>
-		----
-		<div class="row">
-			<div class="col-6 col-md-4 bg-secondary ">Wpisz cos:
-				<input type='text'></div>
-			<div class="col-12 col-md-4 bg-success ">.col-6 .col-md-4</div>
-		</div>
+	<style>
+		[class*="col"] {
+			padding: 1rem;
+			background-color: #33b5e5;
+			border: 2px solid #fff;
+			color: #fff;
+		}
+	</style>
+	<h2 class="my-5 text-center">Example 1</h2>
 
+	<div class="container my-5">
+		<div class="row">
+			<div class="col-md-8">Main Content</div>
+			<div class="col-md-4">Sidebar</div>
+		</div>
 	</div>
+
+	<hr class="my-3">
+
+	<h2 class="my-5  text-center">Example 2</h2>
 
 	<div class="container">
 		<div class="row">
-			<div class="col bg-success">
-				1 of 2
-								      Wpisz cos:
-				<input type='text'>
+			<div class="col-md-8 text-center">
+				header
+				<div class="row text-center">
+					<div class="col-md-6">article
+						<p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quidem accusantium sapiente maiores corrupti impedit, praesentium eaque ex sint numquam sequi.</p>
+					</div>
+					<div class="col-md-6">article
+						<p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Incidunt architecto laborum excepturi debitis ipsam quis animi quo beatae hic itaque.</p>
+					</div>
+					<span>footer</span>
+				</div>
 			</div>
-			<div class="col bg-danger">
-				2 of 2
-			</div>
+			<div class="col-md-4 d-sm-none d-md-block">sidebar</div>
 		</div>
+	</div>
+
+	<hr class="my-5">
+
+	<h2 class="my-5  text-center">
+		Example 3</h2>
+	<div class="container my-5">
 		<div class="row">
-			<div class="col">
-				1 of 3
-			</div>
-			<div class="col">
-				2 of 3
-			</div>
-			<div class="col">
-				3 of 3
-			</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
 		</div>
 	</div>
 
 
-	<div class="container-fluid">
+	<div class="container my-5">
 		<div class="row">
-			<div
-				class="col bg-success">
-				{# ... #}
-				<h4>Categories</h4>
-				<div class="mb-3">
-					<label for="formFile" class="form-label">Default file input example</label>
-					<input class="form-control" type="file" id="formFile">
-				</div>
-				<div class="mb-3">
-					<label for="formFileMultiple" class="form-label">Multiple files input example</label>
-					<input class="form-control" type="file" id="formFileMultiple" multiple>
-				</div>
-				<div class="mb-3">
-					<label for="formFileDisabled" class="form-label">Disabled file input example</label>
-					<input class="form-control" type="file" id="formFileDisabled" disabled>
-				</div>
-				<div class="mb-3">
-					<label for="formFileSm" class="form-label">Small file input example</label>
-					<input class="form-control form-control-sm" id="formFileSm" type="file">
-				</div>
-				<div>
-					<label for="formFileLg" class="form-label">Large file input example</label>
-					<input class="form-control form-control-lg" id="formFileLg" type="file">
-				</div>
-				<a href="">
-					class="active font-weight-bold text-danger"
-													    category.name
-				</a><br>
-				<form action="">
-					<div class='form-control'>Wpisz cos:
-						<input type='text'></div>
-					Wpisz cos:
-					<input class='form-control' type='text'>
-					Wpisz cos:
-					<input type='text'>
+			<div class="col-xxl-4 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+			<div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+		</div>
+	</div>
 
+	<div class="container my-5">
+		<div class="row">
+			{% for i in 0..10 %}
+				<div class="col-xxl-3 col-xl-4 col-lg-6 col-md-12 ">
+					<div
+						class="card h-100">
+						<!-- Product image-->
+						<img
+						src="{{ asset('tools/plus.png') }}" class="card-img-top" alt="...">
+						<!-- Product details-->
+						<div class="card-body p-4">
+							<div
+								class="text-center">
+								<!-- Product name-->
+								<a href="{{ path('app_create_product') }}">
+									<p class='btn btn-success'>Add Product</p>
+								</a>
+								<!-- Product price-->
 
-					<div class="input-group md-form form-sm form-2 pl-0">
-						<input class="form-control my-0 py-1 lime-border" type="text" placeholder="Search" aria-label="Search">
-						<div class="input-group-append">
-							<span class="input-group-text lime lighten-2" id="basic-text1">
-								<i class="fas fa-search text-grey" aria-hidden="true"></i>
-							</span>
-						</div>
-					</div>
-					{# <div class="input-group col-md-12 col-xs-2">
-										      			<p><input type="text" class="form-control" placeholder="Find..." name="searchName"></p>
-											 					<br>
-														
-																<p>Min Price<input class="d-block form-control" type="number" name="minPrice"></p>
-										      		  <br>
-										            <p>Max Price<input class="d-block form-control" type="number" name="maxPrice"></p>
-																<br>
-										          </div>
-															<div class="input-group"> 
-															  <select class='d-block form-control'  id="sort_by" name="sort_by">
-																  <option value= option.sort  name= option.sort > option.label </option>
-															  </select>
-															  <span class="input-group-btn">
-																  <button type="submit" class="btn btn-primary" value="select by">select by
-																	  <span class="glyphicon glyphicon-search"></span>
-																  </button>
-															  </span>
-															</div>#}
-				</form>
-
-			</div>
-			{# {% if option == sortBy %}selected{% endif %} #}
-
-
-			<div class="col-md-9">
-
-				<section class="py-5">
-					<div class="container px-4 px-lg-5 mt-5">
-						<div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-
-							<div class="col mb-5">
-								<div
-									class="card h-100">
-									<!-- Product image-->
-									<img
-									src="{{ asset('tools/avatar.jpg') }}" class="card-img-top" alt="...">
-									<!-- Product details-->
-									<div class="card-body p-4">
-										<div
-											class="text-center">
-											<!-- Product name-->
-											<h5 class="fw-bolder">
-												offerInfo.name
-											</h5>
-											<!-- Product price-->
-											offerInfo.price $
-										</div>
-									</div>
-									<!-- Product actions-->
-									<div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-										<a href="" class="btn btn-primary">Check product</a>
-
-										<button class="remove-cart-button" data-cart-id=" offerInfo.id ">Remove product</button>
-
-
-									</div>
-								</div>
 							</div>
-
-
 						</div>
+						<!-- Product actions-->
 					</div>
-				</section>
-			</div>
+				</div>
+
+
+			{% endfor %}
 		</div>
 	</div>
 
+	{# <div class='container my-5'>
+				<div class='row'>
+					<div class='col'>
+						<div class="card" style="width: 18rem;">
+							<img src="..." class="card-img-top" alt="...">
+							<div class="card-body">
+								<h5 class="card-title">Card title</h5>
+								<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+								<a href="#" class="btn btn-primary">Go somewhere</a>
+							</div>
+						</div>
+					</div>
+					<div class='col'>
+						<div class="card" style="width: 18rem;">
+							<img src="..." class="card-img-top" alt="...">
+							<div class="card-body">
+								<h5 class="card-title">Card title</h5>
+								<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+								<a href="#" class="btn btn-primary">Go somewhere</a>
+							</div>
+						</div>
+						<div class="card" style="width: 18rem;">
+							<img src="..." class="card-img-top" alt="...">
+							<div class="card-body">
+								<h5 class="card-title">Card title</h5>
+								<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+								<a href="#" class="btn btn-primary">Go somewhere</a>
+							</div>
+						</div>
+						<div class="card" style="width: 18rem;">
+							<img src="..." class="card-img-top" alt="...">
+							<div class="card-body">
+								<h5 class="card-title">Card title</h5>
+								<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+								<a href="#" class="btn btn-primary">Go somewhere</a>
+							</div>
+						</div>
+					</div>
+				</div>  #}
+{# 
+											<div class='container border mt-5' style="max-width: 50%;">
+												<div class='row'>
+													<div class='text-center mt-5 container-fluid' style="max-width: 60%;">
+										
+										
+														<label for='edit_profile_form_avatar' class='btn label' data-toggle="tooltip" data-placement="top" title="Tooltip on top">
+															<img src="{{ asset('tools/avatar.jpg') }}" alt="avatar" class="img-fluid img-thumbnail rounded" width='200px'>
+															<input type='file' class='visually-hidden'>
+														</label>
+														<h1>username</h1>
+										
+														<input type='textarea' class='form-control mx-auto'>
+														<div class="accordion mx-auto mt-3" id="accordionExample" style=" max-width: 30%;">
+															<div class="accordion-item">
+																<h2 class="accordion-header" id="headingOne">
+																	<button class="accordion-button collapsed btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+																		More
+																	</button>
+																</h2>
+																<div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+																	<div class="accordion-body">
+																		<a href="{{ path('app_delete_account') }}">
+																			<div class="btn btn-sm btn-danger ">Delete account</div>
+																		</a>
+																	</div>
+																</div>
+															</div>
+														</div>
+														<button type="submit" class="btn btn-primary mt-3 mb-5">Save</button><br>
+										
+										
+													{# <img src="{{ asset('users_data/' ~ userId ~ '/avatar/avatar.jpg') }}" alt="ACME logo" class="img-fluid img-thumbnail rounded" width='150px'>
+																																																<h1>{{ username }}</h1>
+																																																<br><br> #}
+	{# Carts #}
+	{# </div>
+														</div>
+													</div>
+													<div class="container px-4 px-lg-5 mt-5 mx-auto">
+														<div class="row col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12 justify-content-center">
+															<div class="col  mb-5">
+																<div
+																	class="card h-100">
+																	<!-- Product image-->
+																	<img
+																	src="{{ asset('tools/plus.png') }}" class="card-img-top" alt="...">
+																	<!-- Product details-->
+																	<div class="card-body p-4">
+																		<div
+																			class="text-center">
+																			<!-- Product name-->
+																			<a href="{{ path('app_create_product') }}">
+																				<p class='btn btn-success'>Add Product</p>
+																			</a>
+																			<!-- Product price-->
+												
+																		</div>
+																	</div>
+																	<!-- Product actions-->
+																</div>
+															</div>
+															<div class="col mb-5">
+																<div
+																	class="card h-100">
+																	<!-- Product image-->
+																	<img
+																	src="{{ asset('tools/avatar.jpg') }}" class="card-img-top" alt="...">
+																	<!-- Product details-->
+																	<div class="card-body p-4">
+																		<div
+																			class="text-center">
+																			<!-- Product name-->
+																			<h5 class="fw-bolder">
+																				product.name
+																			</h5>
+																			<!-- Product price-->
+																			1000$
+																		</div>
+																	</div>
+																	<!-- Product actions-->
+																	<div class="card-footer p-4 pt-0 border-top-0 bg-transparent d-flex align-items-center justify-content-center">
+																		<a href="" class="btn btn-primary">Check</a>
+												
+																		<a href="">
+																			<div class='btn btn-secondary m-1'>
+																				Edit
+																			</div>
+																		</a>
+																		<div class="btn btn-danger delete-product">Delete</div>
+												
+																	</div>
+																</div>
+															</div>
+												
+														</div>
+													</div> #}
 {% endblock %}
 {% block javascripts %}
 	<script></script>
@@ -160,55 +253,55 @@
 
 
 {# 
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Przykładowa strona HTML</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-</head>
-<body>
- #}
+				<!DOCTYPE html>
+				<html>
+				<head>
+					<title>Przykładowa strona HTML</title>
+					<meta charset="utf-8">
+					<meta name="viewport" content="width=device-width, initial-scale=1.0">
+						<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+				
+				</head>
+				<body>
+				 #}
 {# {% extends 'base.html.twig' %}
-
-{% block body %}
-    <form>
-      <select name="rating">
-  <option value="1">1</option>
-  <option value="2">2</option>
-  <option value="3">3</option>
-  <option value="4">4</option>
-  <option value="5">5</option>
-</select>
-      <input name='comment' type='text'><br>
-      <button id="SubmitAddReviewProduct">Add Review</button>
-    </form>
-    
-{% block javascripts %}
-    <script type="text/javascript">
-    $(function () {
-  $('#SubmitAddReviewProduct').click(function(event) {
-  // using this page stop being refreshing 
-  event.preventDefault();
-  var productId = 71;
-
-	$.ajax({
-	type: 'POST',
-	url: '{{ path('ajax_add_reviews_product') }}',
-	data: $('form').serialize() + '&productId=' + productId,
-		success: function(response) {
-  			console.log(response);
-		} 
-     
-	});
-
-  });
-});
-</script>
-{% endblock %}
-{% endblock %} #}
+				
+				{% block body %}
+				    <form>
+				      <select name="rating">
+				  <option value="1">1</option>
+				  <option value="2">2</option>
+				  <option value="3">3</option>
+				  <option value="4">4</option>
+				  <option value="5">5</option>
+				</select>
+				      <input name='comment' type='text'><br>
+				      <button id="SubmitAddReviewProduct">Add Review</button>
+				    </form>
+				    
+				{% block javascripts %}
+				    <script type="text/javascript">
+				    $(function () {
+				  $('#SubmitAddReviewProduct').click(function(event) {
+				  // using this page stop being refreshing 
+				  event.preventDefault();
+				  var productId = 71;
+				
+					$.ajax({
+					type: 'POST',
+					url: '{{ path('ajax_add_reviews_product') }}',
+					data: $('form').serialize() + '&productId=' + productId,
+						success: function(response) {
+				  			console.log(response);
+						} 
+				     
+					});
+				
+				  });
+				});
+				</script>
+				{% endblock %}
+				{% endblock %} #}
 
 {# </body>
-</html> #}
+				</html> #}

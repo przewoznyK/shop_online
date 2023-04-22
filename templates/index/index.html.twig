@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello IndexController!
+{% block title %}Main Page
 {% endblock %}
 
 {% block body %}
@@ -8,7 +8,7 @@
 	{# Side bar #}
 	<div class="container-fluid">
 		<div class="row ">
-			<div class="col-md-2 mt-4 ">
+			<div class="col-md-2 mx-5 mt-4 ">
 				<h4 class=' mt-5'>Categories</h4>
 				{% for category in categories %}
 					<a class="text-decoration-none {% if (actualCategory) and category.id == actualCategory.id %}active font-weight-bold text-danger{% endif %}" href="{{ path('app_category', { 'name': category.name }) }}">
