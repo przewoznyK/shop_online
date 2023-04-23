@@ -5,11 +5,12 @@
 
 {% block body %}
 
-	{# Side bar #}
-	<div class="container-fluid">
-		<div class="row ">
-			<div class="col-md-2 mx-5 mt-4 ">
-				<h4 class=' mt-5'>Categories</h4>
+	<div class="container-fluid my-5 border">
+		<div
+			class="row justify-content-center">
+			{# Side bar #}
+			<div class="col-xxl-2 col-xl-10 col-lg-10 col-md-10  ps-5 border">
+				<h4 class='mt-5'>Categories</h4>
 				{% for category in categories %}
 					<a class="text-decoration-none {% if (actualCategory) and category.id == actualCategory.id %}active font-weight-bold text-danger{% endif %}" href="{{ path('app_category', { 'name': category.name }) }}">
 						{{ category.name }}
@@ -23,7 +24,7 @@
 							<i class="fas fa-search "></i>
 						</button>
 					</div>
-					<div class="input-group col-md-12 col-xs-2">
+					<div class="input-group ">
 						<p>Min Price<input class="form-control" type="number" name="minPrice"></p>
 						<p>Max Price<input class="form-control" type="number" name="maxPrice"></p>
 					</div>
@@ -41,124 +42,123 @@
 					</div>
 				</form>
 			</div>
-
 			{# Carts #}
-			<div class="col-md-9 col-sm-10 col-md-8">
-				<section class="py-5">
-					<div class="container px-4 px-lg-5 mt-5">
-						<div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-							{% set count = 0 %}
-							{% for offerInfo in allOfferInfo %}
-								<div class="col mb-5">
-									<div
-										class="card h-100">
-										<!-- Product image-->
-										<img
-										src="{{ asset('users_data/' ~ allOfferDirImages[count]['id'] ~ '/products/' ~ allOfferDirImages[count]['dir'] ~ '/' ~ allOfferDirImages[count]['images'][0] ) }}" class="card-img-top" alt="...">
-										<!-- Product details-->
-										<div class="card-body p-4">
-											<div
-												class="text-center">
-												<!-- Product name-->
-												<h5 class="fw-bolder">{{ offerInfo.name }}</h5>
-												<!-- Product price-->
-												{{ offerInfo.price }}$
-											</div>
-										</div>
-										<!-- Product actions-->
-										<div class="card-footer p-4 pt-0 border-top-0 bg-transparent d-flex align-items-center justify-content-center">
-											<a href="{{ path('app_check_product', { 'id': offerInfo.id }) }}" class="btn btn-primary ">Check product</a>
-											{% if offerInfo.id in app.session.get('cartsId', '') %}
-												<button class="remove-cart-button text-center" data-cart-id="{{ offerInfo.id }}">Remove product</button>
-											{% else %}
-												<button class="add-cart-button btn btn-success" data-cart-id="{{ offerInfo.id }}">Add to cart</button>
-											{% endif %}
+			<div class="col-md-10 ">
+				<div class="container border my-5 ">
+					<div class="row mx-auto">
+						{% set count = 0 %}
+						{% for offerInfo in allOfferInfo %}
+							<div class="col-xxl-3 col-xl-4 col-lg-6 col-md-12  mb-5">
+								<div
+									class="card h-100">
+									<!-- Product image-->
+									<img
+									src="{{ asset('users_data/' ~ allOfferDirImages[count]['id'] ~ '/products/' ~ allOfferDirImages[count]['dir'] ~ '/' ~ allOfferDirImages[count]['images'][0] ) }}" class="card-img-top" alt="...">
+									<!-- Product details-->
+									<div class="card-body p-4">
+										<div
+											class="text-center">
+											<!-- Product name-->
+											<h5 class="fw-bolder">{{ offerInfo.name }}</h5>
+											<!-- Product price-->
+											{{ offerInfo.price }}$
 										</div>
 									</div>
+									<!-- Product actions-->
+									<div class="card-footer p-4 pt-0 border-top-0 bg-transparent d-flex align-items-center justify-content-center">
+										<a href="{{ path('app_check_product', { 'id': offerInfo.id }) }}" class="btn btn-primary flex-fill mx-2">Check product</a>
+										{% if offerInfo.id in app.session.get('cartsId', '') %}
+											<button class="remove-cart-button btn  btn-secondary text-center flex-fill" data-cart-id="{{ offerInfo.id }}">Remove product</button>
+										{% else %}
+											<button class="add-cart-button btn  btn-success flex-fill" data-cart-id="{{ offerInfo.id }}">Add to cart</button>
+										{% endif %}
+									</div>
 								</div>
-								{% set count = count + 1 %}
-							{% endfor %}
-						</div>
+							</div>
+							{% set count = count + 1 %}
+						{% endfor %}
 					</div>
-				</section>
+				</div>
 			</div>
 		</div>
 	</div>
+
+
 	{# <div class="container-fluid">
-					<div class="row content">
-						<div class="col-sm-3 sidenav">
-							<h4>Categories</h4>
-			
-			
-							{% for category in categories %}
-								<a href="{{ path('app_category', { 'name': category.name }) }}"
-								{% if (actualCategory) and category.id == actualCategory.id %}
-									class="active font-weight-bold text-danger"
-								{% endif %}>
-									{{ category.name }}
-								</a><br>
-							{% endfor %}
-			
-			
-							<div class="input-group">
-			<form action="{% if actualCategory %} {{ path('app_category', { 'name': actualCategory.name }) }} {% else %} {{ path('app_listening') }} {% endif %}" method="GET">
-			    <div class="input-group">
-			        <p><input type="text" class="form-control" placeholder="Find..." name="searchName"></p>
-			        
-					Min Price<input type="number" name="minPrice">
-			        Max Price<input type="number" name="maxPrice">
-			
-					Select by
-					<select id="sort_by" name="sort_by">
-					     {% for option in sortOptions %}
-			            <option value={{ option.sort }} name={{ option.sort }} {% if option.sort == sortBy %}selected{% endif %}>{{ option.label }}</option>
-			        {% endfor %} #}
+															<div class="row content">
+																<div class="col-sm-3 sidenav">
+																	<h4>Categories</h4>
+													
+													
+																	{% for category in categories %}
+																		<a href="{{ path('app_category', { 'name': category.name }) }}"
+																		{% if (actualCategory) and category.id == actualCategory.id %}
+																			class="active font-weight-bold text-danger"
+																		{% endif %}>
+																			{{ category.name }}
+																		</a><br>
+																	{% endfor %}
+													
+													
+																	<div class="input-group">
+													<form action="{% if actualCategory %} {{ path('app_category', { 'name': actualCategory.name }) }} {% else %} {{ path('app_listening') }} {% endif %}" method="GET">
+													    <div class="input-group">
+													        <p><input type="text" class="form-control" placeholder="Find..." name="searchName"></p>
+													        
+															Min Price<input type="number" name="minPrice">
+													        Max Price<input type="number" name="maxPrice">
+													
+															Select by
+															<select id="sort_by" name="sort_by">
+															     {% for option in sortOptions %}
+													            <option value={{ option.sort }} name={{ option.sort }} {% if option.sort == sortBy %}selected{% endif %}>{{ option.label }}</option>
+													        {% endfor %} #}
 
 
 	{# {% if option == sortBy %}selected{% endif %} #}
 
 
 	{# </select>
-					<span class="input-group-btn">
-			            <button type="submit" class="btn btn-primary">
-			                <span class="glyphicon glyphicon-search"></span>
-			            </button>
-							
-			        </span>
-			    </div>
-			</form> 
-							</div>
-						</div>
-			
-						<div class="col-sm-9">
-							{{ app.session.get('cartsId') }}
-							<span class="show-cart-count">{{ app.session.get('cartsCount') }}></span>
-							<div class="d-inline-flex p-2">
-								{% set count = 0 %}
-								{% for offerInfo in allOfferInfo %}
-									<div class="card" style="width: 14rem; margin-right: 1rem">
-										<img src="{{ asset('users_data/' ~ allOfferDirImages[count]['id'] ~ '/products/' ~ allOfferDirImages[count]['dir'] ~ '/' ~ allOfferDirImages[count]['images'][0] ) }}" class="card-img-top" alt="...">
-										<div class="card-body">
-											<h5 class="card-title">{{ offerInfo.name }}</h5>
-											<p class="card-text">Price:
-												{{ offerInfo.price }}</p>
-											<a href="{{ path('app_check_product', { 'id': offerInfo.id }) }}" class="btn btn-primary">Check product</a>
-			
-											{% if offerInfo.id in app.session.get('cartsId', '') %}
-												<button class="remove-cart-button" data-cart-id="{{ offerInfo.id }}">Remove product</button>
-											{% else %}
-												<button class="add-cart-button" data-cart-id="{{ offerInfo.id }}">Add product</button>
-											{% endif %}
-										</div>
-									</div>
-			
-									{% set count = count + 1 %}
-								{% endfor %}
-							</div>
-			
-						</div>
-					</div>
-				</div> #}
+															<span class="input-group-btn">
+													            <button type="submit" class="btn btn-primary">
+													                <span class="glyphicon glyphicon-search"></span>
+													            </button>
+																	
+													        </span>
+													    </div>
+													</form> 
+																	</div>
+																</div>
+													
+																<div class="col-sm-9">
+																	{{ app.session.get('cartsId') }}
+																	<span class="show-cart-count">{{ app.session.get('cartsCount') }}></span>
+																	<div class="d-inline-flex p-2">
+																		{% set count = 0 %}
+																		{% for offerInfo in allOfferInfo %}
+																			<div class="card" style="width: 14rem; margin-right: 1rem">
+																				<img src="{{ asset('users_data/' ~ allOfferDirImages[count]['id'] ~ '/products/' ~ allOfferDirImages[count]['dir'] ~ '/' ~ allOfferDirImages[count]['images'][0] ) }}" class="card-img-top" alt="...">
+																				<div class="card-body">
+																					<h5 class="card-title">{{ offerInfo.name }}</h5>
+																					<p class="card-text">Price:
+																						{{ offerInfo.price }}</p>
+																					<a href="{{ path('app_check_product', { 'id': offerInfo.id }) }}" class="btn btn-primary">Check product</a>
+													
+																					{% if offerInfo.id in app.session.get('cartsId', '') %}
+																						<button class="remove-cart-button" data-cart-id="{{ offerInfo.id }}">Remove product</button>
+																					{% else %}
+																						<button class="add-cart-button" data-cart-id="{{ offerInfo.id }}">Add product</button>
+																					{% endif %}
+																				</div>
+																			</div>
+													
+																			{% set count = count + 1 %}
+																		{% endfor %}
+																	</div>
+													
+																</div>
+															</div>
+														</div> #}
 		{% block javascripts %}
 			<script type="text/javascript"> var canCallFunction1 = true;
 $(document).on('click', '.add-cart-button', function (event) {
