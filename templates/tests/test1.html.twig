@@ -2,52 +2,156 @@
 
 {% block body %}
 
-<div class="slider">
-	<div>
-		<img src="{{ asset('tools/plus.png') }}">
-	</div>
-	<div>
-		<img src="{{ asset('tools/avatar.jpg') }}">
-	</div>
+
+	{# <style>
+	     [class*="col"] {
+	        padding: 1rem;
+	        background-color: #33b5e5;
+	        border: 2px solid #fff;
+	        color: #fff;
+	        text-align: center;
+	    }
+	    </style>
 	
-</div>
-
-<div class='container d-inline-block text-center bg-primary'>
-<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-	  		<img src="{{ asset('tools/avatar.jpg') }}">
-	  		<img src="{{ asset('tools/avatar.jpg') }}">
-	  		<img src="{{ asset('tools/avatar.jpg') }}">
-
-    </div>
-    <div class="carousel-item">
+	    <link rel="stylesheet" href="css/bootstrap.css">
+	</head>
+	<body>
+	    <h2 class="my-5 text-center">Example 1</h2>
+	<class='container col-xxl-2 col-xl-10 col-lg-10 col-md-10 '>
+	    <div class="container my-5">
+	        <div class="row">
+	            <div class="col-md-8">Main Content</div>
+	            <div class="col-md-4">Sidebar</div>
+	        </div>
+	    </div>
 	
-	  		<img src="{{ asset('tools/avatar.jpg') }}">
-	  		<img src="{{ asset('tools/avatar.jpg') }}">
-
-    </div>
-    <div class="carousel-item">
+	          <hr class="my-3">
 	
-	  		<img src="{{ asset('tools/plus.png') }}">
-			<img src="{{ asset('tools/avatar.jpg') }}">
+	    <h2 class="my-5  text-center">Example 2</h2>
+	
+	    <div class="container">
+	        <div class="row">
+	          <div class="col-md-8 text-center">
+	            header
+	            <div class="row text-center">
+	              <div class="col-md-6">article <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quidem accusantium sapiente maiores corrupti impedit, praesentium eaque ex sint numquam sequi.</p></div>
+	              <div class="col-md-6">article <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Incidunt architecto laborum excepturi debitis ipsam quis animi quo beatae hic itaque.</p></div>
+	                <span>footer</span>
+	            </div>
+	          </div>
+	          <div class="col-md-4 d-sm-none d-md-block">sidebar</div>
+	        </div>
+	      </div>
+	
+	      <hr class="my-5">
+	
+	      <h2 class="my-5  text-center"> Example 3</h2>
+	    <div class="container my-5">
+	        <div class="row">
+	            <div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+	            <div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+	            <div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+	            <div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+	            <div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+	            <div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+	            <div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+	            <div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+	            <div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+	            <div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+	            <div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+	            <div class="col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">col-xxl-1 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12</div>
+	             </div>
+	    </div>
+	    </div> #}
 
-    </div>
-  </div>
-  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Next</span>
-  </button>
-</div>
-</div>
 
+	{# <p class="fs-1">.fs-1 text</p>
+		<p class="fs-2">.fs-2 text</p>
+		<p class="fs-3">.fs-3 text</p>
+		<p class="fs-4">.fs-4 text</p>
+		<p class="fs-5">.fs-5 text</p>
+		<p class="fs-6">.fs-6 text</p> #}
+	{# 
+			<div class='container bg-primary'>
+				<div class='row'>
+					<div class="col-lg-3 col-md-6 bg-secondary">
+						<i class=" fa-sharp fa-solid fa-xmark " style="font-size: 3vw;"></i>
+					</div>
+					<div class="col-lg-3 col-md-6 bg-success">
+						<input class="form-check-input" type="checkbox" style="width: 1em; height: 1em; font-size: 3vw;" id="exampleCheckbox">
+					</div>
+		      <div class="col-lg-3 col-md-6">
+						<input class="form-check-input" type="checkbox" style="width: 1em; height: 1em; font-size: 3vw;" id="exampleCheckbox">
+					</div>
+		      <div class="col-lg-3 col-md-6 bg-success">
+						<input class="form-check-input" type="checkbox" style="width: 1em; height: 1em; font-size: 3vw;" id="exampleCheckbox">
+					</div>
+				</div>
+			</div>
+		
+		
+		<div class="form-check">
+		  <input class="form-check-input form-check-input-lg" type="checkbox" value="" id="defaultCheck1">
+		  <label class="form-check-label" for="defaultCheck1">
+		    Large checkbox
+		  </label>
+		</div>
+		
+		<div class="form-check">
+		  <input class="form-check-input form-check-input-sm" type="checkbox" value="" id="defaultCheck2">
+		  <label class="form-check-label" for="defaultCheck2">
+		    Small checkbox
+		  </label>
+		</div>
+		
+		
+		
+			<div class="container-fluid border border-primary border-3 rounded px-lg-5 px-0 mx-0">
+				<form action="" method="POST">
+					<div class="row border border-secondary border-3 rounded d-flex  justify-content-center" data-cart-id="" >
+						<div class="col-11 ">
+							<input type="checkbox" name="product_id[]" value="" class=' flex-fill' data-display="" style="width: 1em; height: 1em; font-size: 3vw;" >
+						</div>
+		
+						<div class="col-1">
+							<i class="remove-cart-button btn fa-sharp fa-solid fa-xmark flex-fill" data-cart-id=""></i>
+						</div>
+					</div>
+					<div class="row border border-secondary border-3 rounded d-flex  justify-content-center" data-cart-id="">
+		
+						<div class="col-lg-3 my-auto ">
+							<img src="{{ asset('tools/avatar.jpg') }}" alt="" class="img-fluid rounded-3">
+						</div>
+						<div class="col-lg-7 text-center">
+							<p class="lead fw-normal mb-2 fs-1">cartInfo.name </p>
+							<span id="">$222</span>
+							<!-- Quantity -->
+							<div class="col-md-4 col-6 mb-3 mx-auto">
+								<label class="mb-2 d-block">Quantity</label>
+								<div class="input-group mb-3">
+									<button class="btn btn-white border quantity-change" type="button" id="button-addon2" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+										<i class="fas fa-minus"></i>
+									</button>
+									<input name="quantity[]" min="1" max="3" data-display="" value="cartInfo.quantityUser" type="number" class="quantity-input form-control form-control-sm w-25" data-price="" data-group="" disabled/>
+									<button class="btn btn-white border quantity-change" type="button" id="button-addon2" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+										<i class="fas fa-plus"></i>
+									</button>
+								</div>
+							</div>
+							<a href="" class="btn btn-primary flex-fill">Check product</a>
+						</div>
+		
+					</div>
+		
+		
+					<div class='summary' data-summary-id=''>
+						Summary = 100k
+					</div>
+					<input type='submit' value='buy' class='' disabled>
+				</form>
+		
+			</div> #}
 
-{% block javascripts %}
-	<script type="text/javascript">
-
-	</script>
-{% endblock %}{% endblock %}
+		{% block javascripts %}<script type="text/javascript"> </script>
+	{% endblock %}
+{% endblock %}

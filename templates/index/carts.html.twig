@@ -13,73 +13,147 @@
   {% if (count == 0 ) %}
   
   
-  <div class="border border-primary">
+  <div class="container border border-primary border-3 rounded p-5">
     <form action="{{ path('app_buy_now') }}" method="POST">
-    <input type="checkbox" name="product_id[]" value="{{ cartInfo.id }}" class='{{ group }}' data-display="{{ cartInfo.id }}">
-    <div data-cart-id="{{ cartInfo.id }}">
-    <img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}"
-      alt="{{ cartInfo.name }}-Image" class="img-fluid rounded-3" width="100px" height="300px">
-    <p class="lead fw-normal mb-2">{{ cartInfo.name }}</p>
-    <input name="quantity[]" min="1" max="{{ cartInfo.quantity }}" data-display="{{ cartInfo.id }}" value="{{ cartInfo.quantityUser  }}" type="number"
-      class="quantity-input form-control form-control-sm w-25" data-price="{{ cartInfo.price }}" data-group="{{ group }}"disabled/>
-    Max: {{ cartInfo.quantity }}<br>
-    <span id="{{ cartInfo.id }}">${{ cartInfo.price }}</span>
-    <i class="remove-cart-button btn fa-sharp fa-solid fa-xmark" data-cart-id="{{ cartInfo.id }}"></i>
-    <a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary">Check product</a>
-    </div>
-    {% elseif not (lastIdOwner == cartInfo.user.id ) %}
-    <div class='summary' data-summary-id='{{ group }}'>
-      Summary = 100k
-    </div>
-    <input type='submit' value='buy' class='{{ group }}' disabled>
+      <div class="row " data-cart-id="{{ cartInfo.id }}">
+        <div class="col d-flex justify-content-between m-3">
+          <input class='btn' data-class='{{ group }}' type="checkbox" name="product_id[]" value="{{ cartInfo.id }}" 
+          data-display="{{ cartInfo.id }}" style='width: 1em; height: 1em; font-size: 2rem;'>
+          <i class="remove-cart-button fa-sharp fa-solid fa-xmark btn" 
+             data-cart-id="{{ cartInfo.id }}" style="font-size: 2rem;"></i>
+        </div>
+      </div>
+      <div class="row d-flex  justify-content-center" data-cart-id="{{ cartInfo.id }}">
+
+        <div class="col-lg-3 my-auto ">
+          <img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}"
+               alt="{{ cartInfo.name }}-Image" class="img-fluid rounded-3" >
+        </div>
+        <div class="col-lg-7 text-center">
+          <p class="lead fw-normal mb-2">{{ cartInfo.name }}</p>
+          <span id="{{ cartInfo.id }}">${{ cartInfo.price }}</span>
+					<!-- Quantity -->
+					<div class="col-md-4 col-6 mb-3 mx-auto">
+					  <label class="mb-2 d-block">Quantity</label>
+						<div class="input-group mb-3">
+							<button class="btn btn-white border quantity-change" type="button" id="button-addon2" data-mdb-ripple-color="dark" 
+                      onclick="this.parentNode.querySelector('input[type=number]').stepDown()" >
+								<i class="fas fa-minus"></i>
+							</button>
+                <input name="quantity[]" min="1" max="{{ cartInfo.quantity }}" data-display="{{ cartInfo.id }}" value="{{ cartInfo.quantityUser  }}" type="number"
+                       class="quantity-input quantity-change form-control form-control-sm w-25" data-price="{{ cartInfo.price }}" data-group="{{ group }}" disabled/> 
+							<button class="btn btn-white border quantity-change" type="button" id="button-addon2" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepUp()" >
+								<i class="fas fa-plus"></i>
+							</button>
+						</div>
+					</div>
+          <a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary flex-fill">Check product</a>
+        </div>
+
+      </div>
+      <hr>
+    
+ 
+      {% elseif not (lastIdOwner == cartInfo.user.id ) %}
+      <div class='summary text-center' data-summary-id='{{ group }}'>
+        Summary = 100k
+      </div>
+      <div class="d-flex justify-content-center">
+        <input class="form-control btn btn-success w-50" data-class="{{ group }}" type="submit" value="buy" disabled>
+      </div>
     </form>
     {% set group = group + 1 %}
   </div>
+  <br> <br>
+  {# End #}
   <br>
-  <br>KONIEC
-  <br>
-  <div class="border border-primary">
+  <div class="container border border-primary border-3 rounded p-5">
   <form action="{{ path('app_buy_now') }}" method="POST">
-    <input type="checkbox" name="product_id[]" value="{{ cartInfo.id }}" class='{{ group }}' data-display="{{ cartInfo.id }}">
-    <div data-cart-id="{{ cartInfo.id }}">
-      <img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}"
-        alt="{{ cartInfo.name }}-Image" class="img-fluid rounded-3" width="100px" height="300px">
+  <div class="row " data-cart-id="{{ cartInfo.id }}">
+        <div class="col d-flex justify-content-between m-3">
+          <input class='btn' data-class='{{ group }}' type="checkbox" name="product_id[]" value="{{ cartInfo.id }}" class='{{ group }}'
+          data-display="{{ cartInfo.id }}" style='width: 1em; height: 1em; font-size: 2rem;'>
+          <i class="remove-cart-button fa-sharp fa-solid fa-xmark btn" 
+             data-cart-id="{{ cartInfo.id }}" style="font-size: 2rem;"></i>
+        </div>
+      </div>
+      <div class="row d-flex  justify-content-center" data-cart-id="{{ cartInfo.id }}">
 
-      <p class="lead fw-normal mb-2">{{ cartInfo.name }}</p>
-
-      <input name="quantity[]" min="1" max="{{ cartInfo.quantity }}" data-display="{{ cartInfo.id }}" value="{{ cartInfo.quantityUser  }}" type="number"
-        class="quantity-input form-control form-control-sm w-25" data-price="{{ cartInfo.price }}" data-group="{{ group }}" disabled/>
-      Max: {{ cartInfo.quantity }}<br>
-      <span id="{{ cartInfo.id }}">${{ cartInfo.price }}</span>
-      <i class="remove-cart-button btn fa-sharp fa-solid fa-xmark" data-cart-id="{{ cartInfo.id }}"></i>
-      <a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary">Check product</a>
-    </div>
+        <div class="col-lg-3 my-auto ">
+          <img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}"
+               alt="{{ cartInfo.name }}-Image" class="img-fluid rounded-3" >
+        </div>
+        <div class="col-lg-7 text-center">
+          <p class="lead fw-normal mb-2">{{ cartInfo.name }}</p>
+          <span id="{{ cartInfo.id }}">${{ cartInfo.price }}</span>
+					<!-- Quantity -->
+					<div class="col-md-4 col-6 mb-3 mx-auto">
+					  <label class="mb-2 d-block">Quantity</label>
+						<div class="input-group mb-3">
+							<button class="btn btn-white border quantity-change" type="button" id="button-addon2" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+								<i class="fas fa-minus"></i>
+							</button>
+                <input name="quantity[]" min="1" max="{{ cartInfo.quantity }}" data-display="{{ cartInfo.id }}" value="{{ cartInfo.quantityUser  }}" type="number"
+                       class="quantity-input form-control form-control-sm w-25" data-price="{{ cartInfo.price }}" data-group="{{ group }}"disabled/> 
+							<button class="btn btn-white border quantity-change" type="button" id="button-addon2" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+								<i class="fas fa-plus"></i>
+							</button>
+						</div>
+					</div>
+          <a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary flex-fill">Check product</a>
+        </div>
+      </div>
+      <hr>
     {% else %}
-    <input type="checkbox" name="product_id[]" value="{{ cartInfo.id }}" class='{{ group }}' data-display="{{ cartInfo.id }}">
-    <div data-cart-id="{{ cartInfo.id }}">
-      <img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}"
-        alt="{{ cartInfo.name }}-Image" class="img-fluid rounded-3" width="100px" height="300px">
+<div class="row " data-cart-id="{{ cartInfo.id }}">
+        <div class="col d-flex justify-content-between m-3">
+          <input class='btn' data-class='{{ group }}' type="checkbox" name="product_id[]" value="{{ cartInfo.id }}" class='{{ group }}'
+          data-display="{{ cartInfo.id }}" style='width: 1em; height: 1em; font-size: 2rem;'>
+          <i class="remove-cart-button fa-sharp fa-solid fa-xmark btn" 
+             data-cart-id="{{ cartInfo.id }}" style="font-size: 2rem;"></i>
+        </div>
+      </div>
+      <div class="row d-flex  justify-content-center" data-cart-id="{{ cartInfo.id }}">
 
-      <p class="lead fw-normal mb-2">{{ cartInfo.name }}</p>
+        <div class="col-lg-3 my-auto ">
+          <img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}"
+               alt="{{ cartInfo.name }}-Image" class="img-fluid rounded-3" >
+        </div>
+        <div class="col-lg-7 text-center">
+          <p class="lead fw-normal mb-2">{{ cartInfo.name }}</p>
+          <span id="{{ cartInfo.id }}">${{ cartInfo.price }}</span>
+					<!-- Quantity -->
+					<div class="col-md-4 col-6 mb-3 mx-auto">
+					  <label class="mb-2 d-block">Quantity</label>
+						<div class="input-group mb-3">
+							<button class="btn btn-white border quantity-change" type="button" id="button-addon2" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+								<i class="fas fa-minus"></i>
+							</button>
+                <input name="quantity[]" min="1" max="{{ cartInfo.quantity }}" data-display="{{ cartInfo.id }}" value="{{ cartInfo.quantityUser  }}" type="number"
+                       class="quantity-input form-control form-control-sm w-25" data-price="{{ cartInfo.price }}" data-group="{{ group }}"disabled/> 
+							<button class="btn btn-white border quantity-change" type="button" id="button-addon2" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+								<i class="fas fa-plus"></i>
+							</button>
+						</div>
+					</div>
+          <a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary flex-fill">Check product</a>
+        </div>
 
-      <input name="quantity[]" min="1" max="{{ cartInfo.quantity }}" data-display="{{ cartInfo.id }}" value="{{ cartInfo.quantityUser  }}" type="number"
-        class="quantity-input form-control form-control-sm w-25" data-price="{{ cartInfo.price }}" data-group="{{ group }}" disabled/>
-        Max: {{ cartInfo.quantity }}<br>
-      <span id="{{ cartInfo.id }}">${{ cartInfo.price }}</span>
-      <i class="remove-cart-button btn fa-sharp fa-solid fa-xmark" data-cart-id="{{ cartInfo.id }}"></i>
-      <a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary">Check product</a>
-    </div>
-    {% endif %}
+      </div>
+       <hr>
+          {% endif %}
     {% set lastIdOwner = cartInfo.user.id %}
 
     {% set count = count + 1 %}
 
     {% endfor %}
     {% if myCartsInfo %}
-  <div class='summary' data-summary-id='{{ group }}'>
+  <div class='summary text-center' data-summary-id='{{ group }}'>
   </div>
-      <input type='submit' value='buy' class='{{ group }}' disabled>
-    </form>
+    <div class="d-flex justify-content-center">
+      <input class="form-control btn btn-success w-50" data-class="{{ group }}" type="submit" value="buy" disabled>
+    </div>
+  </form>
   {% set group = group + 1 %}
 </section>
 {% endif %}
@@ -222,38 +296,58 @@
 
 {% block javascripts %}
 <script type="text/javascript">
-
+// Change status buttons on start
 $(document).ready(function(){
-  $('input[type=checkbox]').prop('checked', false);
+ $('input[type=checkbox]').prop('checked', false);
+  $('.quantity-change').prop('disabled', true);
   $('.quantity-input').each(function(){
     var data = $(this).data('display');
     if ($(this).attr('max') <= 0) {
-            $('input[type=checkbox][data-display="'+data+'"]').prop('disabled', true);
-
+      $('input[type=checkbox][data-display="'+data+'"]').prop('disabled', true);
     }
   });
+  
 });
+
+//  Set summary price on ready
+$(document).ready(function(){
+    $('.quantity-input').each(function() {
+      var displayId = $(this).data('display');
+      var checkbox = $('input[type=checkbox][data-display="' + displayId + '"]');
+      var quantity = $(this).val();
+      var price = $(this).data('price');
+      $('span[id='+displayId+']').text('$' + (quantity * price).toFixed(2));
+    })
+    countSummary();
+})
+
+// Unlock buy button
 $(document).ready(function(){
   $('input[type=checkbox]').change(function()
   {
     var value = ($(this).val());
-    var classCheckbox = $(this).attr('class');
-    
+    var classCheckbox = $(this).data('class');
     if($(this).is(':checked')){
       window['checkboxCount' + classCheckbox] = typeof window['checkboxCount' + classCheckbox] !== 'undefined' ? window['checkboxCount' + classCheckbox] + 1 : 1;
-      $('.quantity-input[data-display="'+value+'"]').prop('disabled', false);
-      $('input[type=submit][class="'+classCheckbox+'"]').prop('disabled', false);
+      $('.quantity-change').prop('disabled', false);
+       console.log($('.quantity-change'));
+      $('input[type=submit][data-class="'+classCheckbox+'"]').prop('disabled', false);
     }
     else{
       window['checkboxCount' + classCheckbox]--;
-      $('.quantity-input[data-display="'+value+'"]').prop('disabled', true);
+      $('.quantity-change').prop('disabled', true);
+      console.log($('.quantity-change'));
       if(window['checkboxCount' + classCheckbox] == 0)
       {
-        $('input[type=submit][class="'+classCheckbox+'"]').prop('disabled', true);
+        $('input[type=submit][data-class="'+classCheckbox+'"]').prop('disabled', true);
       }
     }
+    updateTotal();
+    countSummary();
   })
 })
+
+// Remove cart
 $(document).on('click', '.remove-cart-button', function(event){
   var productId = $(this).data('cart-id');
 	var quantity = $('#quantity-input').val();
@@ -269,53 +363,57 @@ $(document).on('click', '.remove-cart-button', function(event){
   });
 });
 
+
+
+// Change price when quantity change
 $(document).ready(function() {
-  updateTotal();
-  $('.quantity-input').on('change', function() {
+  $('.quantity-change').on('click', function() {
     updateTotal();
     countSummary();
   });
 });
 
+// Set total price
 function updateTotal() {
   $('.quantity-input').each(function() {
     var displayId = $(this).data('display');
-    var quantity = $(this).val();
-    var price = $(this).data('price');
-    $(displayId).text('$' + (quantity * price).toFixed(2));
+    var checkbox = $('input[type=checkbox][data-display="' + displayId + '"]');
+    if (checkbox.is(':checked')) {
+      var quantity = $(this).val();
+      var price = $(this).data('price');
+      $('span[id='+displayId+']').text('$' + (quantity * price).toFixed(2));
+    }
   });
 }
 
 var groupCount = 0;
 
-// Summary
-$(document).ready(function(){
-  countSummary();
-})
 
+
+// Count summary price
 function countSummary()
 {
   $('.summary').each(function(){
-    var summary = $(this).data('summary-id');
-    window['zmienna' + summary] = 0;
+    var summaryId = $(this).data('summary-id');
+    window['zmienna' + summaryId] = 0;
       $('.quantity-input').each(function() {
-        var group = $(this).data('group');
-        
-        if(group == summary)
-        {
-      
+        var displayId = $(this).data('display');
+        var checkbox = $('input[type=checkbox][data-display="' + displayId + '"]');
+        if (checkbox.is(':checked')) {
+          var group = $(this).data('group');
+          if(group == summaryId)
+          {
           var displayId = $(this).data('display');
           var quantity = $(this).val();
           var price = $(this).data('price');
           window['zmienna' + group] += parseFloat(price * quantity);
-
-        }
+          }
+        }      
       });
-    var total = window['zmienna' + summary].toFixed(2);
-    console.log(total);
-    $('.summary[data-summary-id="'+summary+'"]').html(total);
+      var total = window['zmienna' + summaryId].toFixed(2);
+      $('.summary[data-summary-id="'+summaryId+'"]').html('$'+total);
   });
-}
+} 
 </script>
 {% endblock %}
 

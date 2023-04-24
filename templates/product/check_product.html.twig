@@ -14,7 +14,7 @@
 
 
 	<section class="py-5">
-		<div class="container">
+		<div class="container border border-primary  p-3">
 			<div class="row gx-5">
 				<aside class="col-lg-6">
 					<div class=" mb-3 d-flex justify-content-center">
@@ -25,34 +25,32 @@
 							<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
 								<div class="carousel-inner">
 									<div class="carousel-item active">
-
 										{% set imageCount = 0 %}
 										{% set count = 1 %}
-										{% for i in 0..(imagesName|length) %}
+										{% for image in imagesName %}
 											{% if imageCount < 5 * count %}
 												<img class=" display-image" src="{{ asset('users_data/' ~ userOwnerProduct.id ~ '/products/' ~ product.imagesdir ~ '/' ~ imagesName[imageCount]) }}" width="80" height="80"/>
-												{% set imageCount =  imageCount + 1 %}
 											{% else %}
 												{% set count = count + 1 %}
 											</div>
 											<div class="carousel-item">
-											{% endif %}
-										{% endfor %}
-
+												<img class=" display-image" src="{{ asset('users_data/' ~ userOwnerProduct.id ~ '/products/' ~ product.imagesdir ~ '/' ~ imagesName[imageCount]) }}" width="80" height="80"/>
+												{% endif %}
+												{% set imageCount =  imageCount + 1 %}
+											{% endfor %}
+											</div>
+										</div>
+										<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+											<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+											<span class="visually-hidden">Previous</span>
+										</button>
+										<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+											<span class="carousel-control-next-icon" aria-hidden="true"></span>
+											<span class="visually-hidden">Next</span>
+										</button>
 									</div>
 								</div>
-								<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-									<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-									<span class="visually-hidden">Previous</span>
-								</button>
-								<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-									<span class="carousel-control-next-icon" aria-hidden="true"></span>
-									<span class="visually-hidden">Next</span>
-								</button>
 							</div>
-						</div>
-
-					</div>
 					<!-- thumbs-wrap.// -->
 					<!-- gallery-wrap .end// -->
 				</aside>
