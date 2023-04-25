@@ -1,35 +1,82 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello ProductController!{% endblock %}
+{% block title %}Add Delivery{% endblock %}
 {% block body %}
+{{ dump(deliveryTypeArray) }}
 
-    <h1>Add Delivery</h1>
-<form id='my-form' action="{{ path('app_user_add_delivery', {'id': id }) }}" method="POST">
 
-    <input type='checkbox' id='personal_pickup' name='personal_pickup' value='personal_pickup'>
-    <label for='personal_pickup'>  personal_pickup </label><br>
-    <div id='location'></div>
-    <div id='button'></div>
-    <div id='notification'></div>
-    <div id='addedLocation'>
 
-    </div>
-    <input type='checkbox' id='parcel_locker' name='parcel_locker' value='parcel_locker'>
-    <label for='parcel_locker'>  parcel_locker 5$ </label><br>
-    <input type='checkbox' id='courier' name='courier' value='courier'>
-    <label for='courier'>  courier 10$ </label><br>
-    <input type="hidden" name="my_array[]" id="my_array" value="" />
-    <input type="submit" value="ss" />
+
+<div class='container mt-5 '>
+    <form id='my-form' action="{{ path('app_user_add_delivery', {'id': id }) }}" method="POST">
+        <div class='row mx-auto justify-content-center'>
+            <div class='col-lg-5 col-md-12 border border-primary rounded p-5 mx-lg-2 my-md-2  '>
+                <h3>Add Delivery</h3>
+
+                <input type='checkbox' id='personal_pickup' name='personal_pickup' value='personal_pickup'>
+                <label for='personal_pickup'>  personal_pickup </label><br>
+                <div  id='location'></div>
+                <div class='my-1' id='button'></div>
+                <div id='notification'></div>
+            
+                <input type='checkbox' id='parcel_locker' name='parcel_locker' value='parcel_locker'>
+                <label for='parcel_locker'>  parcel_locker 5$ </label><br>
+                <input type='checkbox' id='courier' name='courier' value='courier'>
+                <label for='courier'>  courier 10$ </label><br>
+                <input type="hidden" name="my_array[]" id="my_array" value="" />
+            </div>
+            <div class='col-lg-5 col-md-12 border border-secondary rounded p-5 my-md-2'>
+                <h3>Personal pickup location</h3>
+                <div id='addedLocation'></div>
+            </div>
+        </div>
+        <div class='row mx-auto w-75'>
+            <div class='col '>
+                <input class='form-control btn btn-primary' type="submit" value="Send" />
+            </div>
+        </div>
     </form>
+</div>
 
 
 
 {% block javascripts %}
 <script type="text/javascript">
+
+$(document).ready(function(){
+    var deliveryTypeArray = {{ deliveryTypeArray|json_encode|raw }};
+    var deliveryPersonalPickupLocationArray = {{ deliveryPersonalPickupLocationArray|json_encode|raw }};
+    for(var i=0; i<deliveryTypeArray.length; i++) {
+        if(deliveryTypeArray[i] == 'personal_pickup')
+        {
+            $('input[type=checkbox][name=personal_pickup]').attr('checked', true);
+            $('#location').html('Pickup Location<input id="location-text" type="text">');
+            $('#button').html('<div class="btn btn-secondary ">Add Pickup Location</div>');
+        }
+        else if(deliveryTypeArray[i] == 'parcel_locker')
+        {
+            $('input[type=checkbox][name=parcel_locker]').attr('checked', true);
+        }
+        else if(deliveryTypeArray[i] == 'courier')
+        {
+            $('input[type=checkbox][name=courier]').attr('checked', true);
+        }
+        if(deliveryPersonalPickupLocationArray)
+        console.log(deliveryTypeArray[i]);
+    }
+    for(var i=0; i<deliveryPersonalPickupLocationArray.length; i++) {
+        $('#addedLocation').append(deliveryPersonalPickupLocationArray[i]+'<div data-id="'+deliveryPersonalPickupLocationArray[i]+'" class="deleteDelivery btn fa-sharp fa-solid fa-xmark" ></div><br>');
+    }
+ 
+});
+
+
+
+
 $('input[type=checkbox]#personal_pickup').click(function(){
     if($(this).is(':checked')){
         $('#location').html('Pickup Location<input id="location-text" type="text">');
-        $('#button').html('<div class="btn btn-primary">Add Pickup Location</div>');
+        $('#button').html('<div class="btn btn-secondary ">Add Pickup Location</div>');
     }
     else
     {
@@ -40,9 +87,13 @@ $('input[type=checkbox]#personal_pickup').click(function(){
 var addedLocation = [];
 $('#button').click(function(){
     var add = $('#location-text').val();
-    if(addedLocation.includes(add) || add=='')
+    if(addedLocation.includes(add))
     {
-        showNotification('lokacja już istnieje');
+        showNotification('<div class="alert alert-warning">Location exist</div>');
+    }
+    else if(add=='')
+    {
+        showNotification('<div class="alert alert-warning">Location cannot be empty</div>');
     }
     else
     {

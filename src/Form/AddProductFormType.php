@@ -25,10 +25,12 @@ class AddProductFormType extends AbstractType
             ->add('name', TextType::class)
             ->add('description', TextareaType::class)
             ->add('price', NumberType::class, [
+                'label' => 'Price $',
                 'scale' => 2,
                 'attr' => [
                     'step' => '0.01',
-                    'min' => '0'
+                    'min' => '0',
+                    
                 ]
             ])
             //->add('category_id')

@@ -7,27 +7,28 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.2.2/ol.css">
 <script src="https://cdn.jsdelivr.net/npm/ol@v7.2.2/dist/ol.js"></script>
 <style>
-#map {
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
 
-    top: 0;
-    bottom: 0;
-    height: 400px;
-    width: 100%;
-}
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+
 </style>
-
-
 
 <div class="container">
   <div class="row">
-    <div class="col">
-    {{ form_start(OrderProductFormType) }}
-      {{ form_row(OrderProductFormType.name) }}
-      {{ form_row(OrderProductFormType.last_name) }}
-      {{ form_row(OrderProductFormType.email) }}
-      {{ form_row(OrderProductFormType.phone_number) }}
-      {{ form_row(OrderProductFormType.address) }}
-      {{ form_row(OrderProductFormType.comment) }}
+    <div class="col-lg-6 col-md-12 mx-lg-5 p-5 my-3 border border-primary rounded">
+      {{ form_start(OrderProductFormType) }}
+      {{ form_row(OrderProductFormType.name, {'attr': {'class': 'form-control'}}) }}
+      {{ form_row(OrderProductFormType.last_name, {'attr': {'class': 'form-control'}}) }}
+      {{ form_row(OrderProductFormType.email, {'attr': {'class': 'form-control'}}) }}
+      {{ form_row(OrderProductFormType.phone_number, {'attr': {'class': 'form-control'}}) }}
+      {{ form_row(OrderProductFormType.address, {'attr': {'class': 'form-control'}}) }}
+      {{ form_row(OrderProductFormType.comment, {'attr': {'class': 'form-control'}}) }}
       {# {% for productAndQuantity in productAndQuantityArray %}
         <section class='deliveryFull' data-id='{{ delivery.id }}'>
           <input data-type='{{ delivery.type }}' data-location='{{ delivery.getPersonalPickup() }}' id="delivery-{{ delivery.id }}" class="form-check-input" type="radio" name="deliveryOption" value="{{ delivery.id }}">
@@ -38,67 +39,121 @@
           </label>
         </section>
       {% endfor %} #}
-      <section id='parcelLockerSection'>
-      <div id='map'></div>
-      <div id='popup'>
-        <div id='popup-content'></div>
-      </div>
-      </section>
-      
-  </div>
-
-  <input type='hidden' name='summary' value=''>
-
-  <div class="col">
-
-      {% set count = 0 %}
-          {% for offerInfo in allOfferInfo %}
-          <input type='hidden' name='ownerId' value='{{ offerInfo.user.id }}'>
-          
-      		<img src="{{ asset('users_data/' ~ allOfferDirImages[count]['id'] ~ '/products/' ~ allOfferDirImages[count]['dir'] ~ '/' ~ allOfferDirImages[count]['images'][0] ) }}" class="card-img-top w-25" alt="...">
-          Name  {{ offerInfo.name }}<br>
-          Price  {{ offerInfo.price }}<br>
-          Max quantity  {{ offerInfo.quantity }}<br>
-
-          {{ productIdAndQuantityArray[count]['product_id'] }}
-          <input name='quantity[]' class='quantity-input' type='number' data-display='{{ offerInfo.id }}' data-price='{{ offerInfo.price }}' value="{{ productIdAndQuantityArray[count]['quantity'] }}"
-                 max="{{ offerInfo.quantity }}" min=1>
-          <div class='total-display' data-id='{{ offerInfo.id }}'>Price {{ offerInfo.price }}</div><br>
-          <input name='id-and-quantity[]' type='hidden' data-id={{ offerInfo.id }} data-quantity='1' value=''>
-
-          <br>
-        {% set count = count + 1 %}
-        {% endfor %}
-        {% set count = 0 %}
-        {% for delivery in avalibleDelivery %}
-          <label><input type="radio" class='delivery-type-checkbox' name="delivery-type-checkbox" value="{{ delivery.type }}"  data-id='{{ count }}'
-          {% if delivery.type == 'personal_pickup' %} data-price="0" data-location='{{delivery.personal_pickup}}'
-          {% elseif delivery.type == 'parcel_locker' %} data-price="5" 
-          {% elseif delivery.type == 'courier' %} data-price="10" 
-          {% endif %}>
-          {{ delivery.type }} {{ delivery.personal_pickup }}<div class='delivery-price' data-id='{{ count }}'></div></label>
-          <br>
-          {% set count = count + 1 %}
-        {% endfor %}    
-          <div id='final_location_place' class='d-none'>
-          {{ form_widget(OrderProductFormType.final_location)}}
-          </div>
-        Summary: <div id='summary'></div>
-        Your wallet: {{ app.user.wallet }}<br>
-        <label><input type='radio' class='payment-method' name='payment-method' value='My wallet'>My wallet</label><br>
-        <label><input type='radio' class='payment-method' name='payment-method' value='Cash on Delivery'>Cash on Delivery</label>
     </div>
+    <input type='hidden' name='summary' value=''>
+    
+    {# Products section #}
+    <div class="col border border-success rounded  p-5 my-3 text-center">
+      {% set count = 0 %}
+      {% for offerInfo in allOfferInfo %}
+        <input type='hidden' name='ownerId' value='{{ offerInfo.user.id }}'>
+        <img src="{{ asset('users_data/' ~ allOfferDirImages[count]['id'] ~ '/products/' ~ allOfferDirImages[count]['dir'] ~ '/' ~ allOfferDirImages[count]['images'][0] ) }}" 
+          class="card-img-top w-25" alt="...">
+        <div class='h5'>{{ offerInfo.name }}
+        </div><br>
+        Price:  ${{ offerInfo.price }}<br>
+        {{ productIdAndQuantityArray[count]['product_id'] }}
+        <div class="col-md-4 col-6 mb-3 mx-auto">
+				  <label class="mb-2 d-block">Quantity
+          </label>
+					<div class="input-group mb-3">
+							<button class="btn btn-white border quantity-change" type="button" data-display="{{ offerInfo.id }}" id="button-addon2" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+								<i class="fas fa-minus"></i>
+							</button>
+              <input name='quantity[]' class='quantity-input quantity-change form-control text-center' type='number' data-display='{{ offerInfo.id }}' data-price='{{ offerInfo.price }}' 
+              value="{{ productIdAndQuantityArray[count]['quantity'] }}" max="{{ offerInfo.quantity }}" min=1>
+							<button class="btn btn-white border quantity-change" type="button" data-display="{{ offerInfo.id }}" id="button-addon2" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+								<i class="fas fa-plus"></i>
+							</button>
+          </div>
+				</div>
+        <div class="text-center">Max: {{ offerInfo.quantity }}
+        </div>
+        <div class='total-display' data-id='{{ offerInfo.id }}'>Price {{ offerInfo.price }}
+        </div>
+      
+        <input name='id-and-quantity[]' type='hidden' data-id={{ offerInfo.id }} data-quantity='1' value=''>
+
+
+        <hr>
+        
+        {% set count = count + 1 %}
+      {% endfor %}
+      <section class='border border-secondary rounded'>
+      {% set count = 0 %}
+        {% if (avalibleDelivery) %}
+          {% for delivery in avalibleDelivery %}
+            <label><input type="radio" class='delivery-type-checkbox' name="delivery-type-checkbox" value="{{ delivery.type }}"  data-id='{{ count }}'
+              {% if delivery.type == 'personal_pickup' %} data-price="0" data-location='{{delivery.personal_pickup}}'
+                {% elseif delivery.type == 'parcel_locker' %} data-price="5" 
+                {% elseif delivery.type == 'courier' %} data-price="10" 
+              {% endif %}>
+              {{ delivery.type }} {{ delivery.personal_pickup }}<div class='delivery-price' data-id='{{ count }}'></div>
+            </label><br>
+            
+            {% set count = count + 1 %}
+        {% endfor %}    
+        {% else %}
+        No delivery for these products. You can try ordering these products separately.
+      {% endif %}
+        <div id='final_location_place' class='d-none'>
+          {{ form_widget(OrderProductFormType.final_location, {'attr': {'class': 'form-control'}})}}
+        </div>
+          <section id='parcelLockerSection'>
+            <div id='map'></div>
+            <div id='popup'>
+              <div id='popup-content'></div>
+            </div>
+          </section>
+          Payment method <br>
+          <label><input type='radio' class='payment-method ' name='payment-method' value='My wallet'>  My wallet</label><br>
+          <label><input type='radio' class='payment-method ' name='payment-method' value='Cash on Delivery'>  Cash on Delivery</label>
+          
+          Your wallet: ${{ app.user.wallet }}<br>
+          Summary: <div class='h5' id='summary'></div>
+   
+        </section>
+      </div>
   </div>
+  <div class='row mx-auto ' style='max-width: 75%'>
+    {{ form_row(OrderProductFormType.submit, {'attr': {'class': 'form-control btn btn-primary mx-4 '}}) }}
+  </div>  
 </div>
-{{ form_row(OrderProductFormType.submit) }}
 {{ form_end(OrderProductFormType) }}
 {% block javascripts %}
 <script type="text/javascript">
+
+
+
+$(document).ready(function() {
+  $('.quantity-change').on('click', function() {
+    updateTotal();
+  });
+});
+
 $(document).ready()
 {
   updateTotal();
   displayDeliveryPrice();
+  checkRadioStatus();
 }
+
+//
+function checkRadioStatus()
+{
+  $('input[type="radio"]').each(function() {
+    $('#order_product_form_submit').attr('disabled', false);
+    console.log($(this));
+    if (!$(this).is(':checked')) {
+      $('#order_product_form_submit').attr('disabled', true);
+      console.log('www');
+    }
+  });
+}
+
+$('input[type="radio"]').click(function(){
+  checkRadioStatus();
+})
 
 $('.quantity-input').on('change', function() 
 {
@@ -109,15 +164,17 @@ $('input[name="delivery-type-checkbox"]').on('change', function()
 {
    updateTotal();
 });
+
+
 function displayDeliveryPrice() {
-    
   $('.delivery-type-checkbox').each(function(){
   var price = $(this).data('price');
   var id = $(this).data('id');
-  $('.delivery-price[data-id='+id+']').text(price+'$');
+  $('.delivery-price[data-id='+id+']').text('$'+price);
 })
 }
 
+// Update total price
 function updateTotal() {
   var summary = 0;
   $('.quantity-input').each(function() {
@@ -126,20 +183,23 @@ function updateTotal() {
     var price = $(this).data('price');
     var total = (quantity * price);
     
-    console.log(wallet);
+    console.log('quantity: '+quantity+'   price: '+price);
     $('input[name="id-and-quantity[]"][data-id="'+displayId+'"]').val(displayId+':'+quantity);
     $('.total-display[data-id='+displayId+']').text('$' + (quantity * price).toFixed(2));
     summary = total + summary;
+   
   });
   var wallet = {{ app.user.wallet }}
   var deliveryPrice = $('input[name="delivery-type-checkbox"]:checked').data('price');
   if(!deliveryPrice){deliveryPrice = 0;}
-  $('#summary').text(summary+deliveryPrice+'$');
-  $('input[name="summary"]').val(summary+deliveryPrice);
+  $('#summary').text('$'+(summary+deliveryPrice).toFixed(2));;
+  
+  $('input[name="summary"]').val(summary+deliveryPrice)
   if(wallet < summary+deliveryPrice) { $('input[name="payment-method"][value="My wallet"]').attr("disabled",true); }
   else { $('input[name="payment-method"][value="My wallet"]').attr("disabled",false); }
 }
 
+// Delivery type action
 $('input[name="delivery-type-checkbox"]').change(function() {
   var deliveryId = $(this).val();
   var deliveryType = $(this).data('type');
@@ -147,37 +207,50 @@ $('input[name="delivery-type-checkbox"]').change(function() {
   $('#final_location_place').removeClass('d-none');
   if(deliveryId=='personal_pickup')
   {
-    console.log('a');
     console.log(deliveryLocation);
     $('#map').empty();
+    $('#map').css({
+      'height': '0px',
+    });
     $('#order_product_form_final_location').attr('readonly', true);
     $('#order_product_form_final_location').val(deliveryLocation);
     $('label[for=order_product_form_final_location]').text('Pick up the product here');
   }
   else if(deliveryId=='parcel_locker')
   {
-    console.log(11);
     $('#order_product_form_final_location').attr('readonly', true);
     $('#order_product_form_final_location').val('');
     $('label[for=order_product_form_final_location]').text('Choose parcel locker');
 
-    console.log('b');
     createMap();
   }
   else if(deliveryId=='courier')
   {
-    console.log('c');
     $('#map').empty();
+    $('#map').css({
+      'height': '0px',
+    });
     $('#order_product_form_final_location').attr('readonly', false);
     $('#order_product_form_final_location').val($('#order_product_form_address').val());
     $('label[for=order_product_form_final_location]').text('Enter the delivery address ');
-
   }
 });
 var parcel_locker_choosed;
+
+// Insert parcel-locker position in location
+$(document).on("click", ".choose-parcel-locker", function() {
+  $('#order_product_form_final_location').val(parcel_locker_choosed);
+});
 function createMap()
 {
   // Map
+  $('#map').css({
+    'top': '0',
+    'bottom': '0',
+    'height': '400px',
+    'width': '100%'
+  });
+  
   const key = 'dWCVxevJpUtedw46MjwC';
   const source = new ol.source.TileJSON({
     url: `https://api.maptiler.com/maps/streets-v2/tiles.json?key=${key}`,
@@ -240,9 +313,7 @@ function createMap()
   })
 }
 
-$(document).on("click", ".choose-parcel-locker", function() {
-  $('#order_product_form_final_location').val(parcel_locker_choosed);
-});
+
 
 </script>
 {% endblock %}

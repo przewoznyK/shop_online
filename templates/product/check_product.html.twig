@@ -14,11 +14,12 @@
 
 
 	<section class="py-5">
-		<div class="container border border-primary  p-3">
+		<div class="container border border-primary rounded p-3">
 			<div class="row gx-5">
 				<aside class="col-lg-6">
 					<div class=" mb-3 d-flex justify-content-center">
-						<img style="max-width: 100%; max-height: 100vh; margin: auto;" class="rounded-4 fit" id='main-image' src="{{ asset('users_data/' ~ userOwnerProduct.id ~ '/products/' ~ product.imagesdir ~ '/' ~ imagesName[0]) }}" width="600" height="600"/>
+						<img style="max-width: 100%; max-height: 100vh; margin: auto;" class="rounded-4 fit" id='main-image' 
+							 src="{{ asset('users_data/' ~ userOwnerProduct.id ~ '/products/' ~ product.imagesdir ~ '/' ~ imagesName[0]) }}" width="600" height="600"/>
 					</div>
 					<div class="d-flex justify-content-center mb-3">
 						<div class='container d-inline-block text-center'>
@@ -29,7 +30,8 @@
 										{% set count = 1 %}
 										{% for image in imagesName %}
 											{% if imageCount < 5 * count %}
-												<img class=" display-image" src="{{ asset('users_data/' ~ userOwnerProduct.id ~ '/products/' ~ product.imagesdir ~ '/' ~ imagesName[imageCount]) }}" width="80" height="80"/>
+												<img class=" display-image" 
+													 src="{{ asset('users_data/' ~ userOwnerProduct.id ~ '/products/' ~ product.imagesdir ~ '/' ~ imagesName[imageCount]) }}" width="80" height="80"/>
 											{% else %}
 												{% set count = count + 1 %}
 											</div>
@@ -99,6 +101,8 @@
 										<i class="fas fa-plus"></i>
 									</button>
 								</div>
+								<div class="text-center">Max: {{ product.quantity }}
+            					</div>
 							</div>
 						</div>
 						{% if product.id in app.session.get('cartsId', '') %}

@@ -105,13 +105,99 @@ class ProductController extends AbstractController
         ]);
     }
 
+    #[Route('/user/edit_product/{id}', name: 'app_edit_product')]
+    public function editProduct(EntityManagerInterface $entityManager, Request $request, int $id): Response
+    { {
+
+            /** @var $user User */
+            $user = $this->getUser();
+            $imagesName = [];
+            $product = $entityManager->getRepository(Product::class)->findOneBy(array('id' => $id));
+            $userOwnerProduct = $product->getUser();
+
+            $myProductBool = false;
+
+            $form = $this->createForm(
+                AddProductFormType::class,
+                $product,
+                [
+                    'image_required' => false,
+                    'validation_groups' => ['edit'],
+                ]
+            );
+            $form->handleRequest($request);
+
+            $productImagesDirection = $product->getImagesDir();
+            $dir = scandir('users_data/' . $userOwnerProduct->getId() . '/products/' . $productImagesDirection);
+            foreach ($dir as $file) {
+                if ($file != '.' && $file != '..') {
+                    $imagesName[] = $file;
+                }
+            }
+
+            $id = $user->getId();
+            if ($form->isSubmitted() && $form->isValid()) {
+
+                $product->setName(
+                    $form->get('name')->getData()
+                );
+                $product->setDescription(
+                    $form->get('description')->getData()
+                );
+                $product->setPrice(
+                    $form->get('price')->getData()
+                );
+                $product->setCategory(
+                    $form->get('category')->getData()
+                );
+                $product->setIsPublic(
+                    $form->get('is_public')->getData()
+                );
+                $directionCatalog = 'users_data/' . $user->getId() . '/products/' . $product->getImagesDir();
+
+                $files = $form->get('my_files')->getData();
+                foreach ($files as $file) {
+                    $filename = md5(uniqid()) . '.' . $file->guessExtension();
+                    $file->move(
+                        $directionCatalog,
+                        $filename
+                    );
+                }
+
+                $product->setUpdatedAt(new \DateTime());
+
+                $entityManager->persist($product);
+                $entityManager->flush();
+
+                return new RedirectResponse('/user/add_delivery/112');
+                
+            }
+            return $this->render('product/edit_product.html.twig', [
+                'product' => $product,
+                'imagesName' => $imagesName,
+                'userOwnerProduct' => $userOwnerProduct,
+                'myProductBool' => $myProductBool,
+                'AddProductFormType' => $form->createView(),
+            ]);
+        }
+    }
 
 
     #[Route('/user/add_delivery/{id}', name: 'app_user_add_delivery')]
     public function addDelivery(EntityManagerInterface $entityManager, Request $request, int $id): Response
     {
         $deliveryArray = $entityManager->getRepository(Delivery::class)->findBy(array('product' => $id));
-        
+       
+        $deliveryTypeArray = [];
+        $deliveryPersonalPickupLocationArray = [];
+        foreach ($deliveryArray as $element) {
+            $deliveryTypeArray[] = $element->getType();
+            if($element->getPersonalPickup())
+            {
+                $deliveryPersonalPickupLocationArray[] = $element->getPersonalPickup();
+            }
+        }
+    
         $product = $entityManager->find(Product::class, $id);
         $time = new DateTime();
         $formData = $request->request->all();
@@ -142,8 +228,6 @@ class ProductController extends AbstractController
         
                         $entityManager->persist($newDelivery);
                         $entityManager->flush();
-
-                        dump($addLocation);
                         }
                         
 
@@ -170,7 +254,8 @@ class ProductController extends AbstractController
 
         return $this->render('product/add_delivery.html.twig', [
             'id' => $id,
-            'deliveryArray' => $deliveryArray
+            'deliveryTypeArray' => $deliveryTypeArray,
+            'deliveryPersonalPickupLocationArray' => $deliveryPersonalPickupLocationArray
         ]);
     }
 
@@ -242,85 +327,6 @@ class ProductController extends AbstractController
             'myUser' => $myUser
 
         ]);
-    }
-    #[Route('/user/edit_product/{id}', name: 'app_edit_product')]
-    public function editProduct(EntityManagerInterface $entityManager, Request $request, int $id): Response
-    { {
-
-            /** @var $user User */
-            $user = $this->getUser();
-            $imagesName = [];
-            $product = $entityManager->getRepository(Product::class)->findOneBy(array('id' => $id));
-            $userOwnerProduct = $product->getUser();
-
-            $myProductBool = false;
-
-            $form = $this->createForm(
-                AddProductFormType::class,
-                $product,
-                [
-                    'image_required' => false,
-                    'validation_groups' => ['edit'],
-                ]
-            );
-            $form->handleRequest($request);
-
-            $productImagesDirection = $product->getImagesDir();
-            $dir = scandir('users_data/' . $userOwnerProduct->getId() . '/products/' . $productImagesDirection);
-            foreach ($dir as $file) {
-                if ($file != '.' && $file != '..') {
-                    $imagesName[] = $file;
-                }
-            }
-
-            $id = $user->getId();
-            if ($form->isSubmitted() && $form->isValid()) {
-
-                $product->setName(
-                    $form->get('name')->getData()
-                );
-                $product->setDescription(
-                    $form->get('description')->getData()
-                );
-                $product->setPrice(
-                    $form->get('price')->getData()
-                );
-                $product->setCategory(
-                    $form->get('category')->getData()
-                );
-                $product->setIsPublic(
-                    $form->get('is_public')->getData()
-                );
-                $directionCatalog = 'users_data/' . $user->getId() . '/products/' . $product->getImagesDir();
-
-                $files = $form->get('my_files')->getData();
-                foreach ($files as $file) {
-                    $filename = md5(uniqid()) . '.' . $file->guessExtension();
-                    $file->move(
-                        $directionCatalog,
-                        $filename
-                    );
-                }
-
-                $product->setUpdatedAt(new \DateTime());
-
-                $entityManager->persist($product);
-                $entityManager->flush();
-
-                $id = $user->getId();
-                $url =  $id;
-                //return $this->redirect($request->headers->get('referer'));
-                $referer = $request->headers->get('referer');
-                return $this->redirect($referer);
-            }
-            return $this->render('product/edit_product.html.twig', [
-                'product' => $product,
-                'imagesName' => $imagesName,
-                'userOwnerProduct' => $userOwnerProduct,
-                'myProductBool' => $myProductBool,
-                'AddProductFormType' => $form->createView(),
-            ]);
-        }
     }
 
     #[Route('/user/image_remove/{dir}/{image}', name: 'app_user_image_remove')]

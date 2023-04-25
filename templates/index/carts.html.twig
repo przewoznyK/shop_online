@@ -4,7 +4,17 @@
 {% endblock %}
 
 {% block body %}	
-
+    <style>
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+  
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
 <section>
   {% set lastIdOwner = 0 %}
   {% set group = 0 %}
@@ -36,16 +46,17 @@
 					<div class="col-md-4 col-6 mb-3 mx-auto">
 					  <label class="mb-2 d-block">Quantity</label>
 						<div class="input-group mb-3">
-							<button class="btn btn-white border quantity-change" type="button" id="button-addon2" data-mdb-ripple-color="dark" 
-                      onclick="this.parentNode.querySelector('input[type=number]').stepDown()" >
+							<button class="btn btn-white border quantity-change" type="button" data-display="{{ cartInfo.id }}" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
 								<i class="fas fa-minus"></i>
 							</button>
                 <input name="quantity[]" min="1" max="{{ cartInfo.quantity }}" data-display="{{ cartInfo.id }}" value="{{ cartInfo.quantityUser  }}" type="number"
-                       class="quantity-input quantity-change form-control form-control-sm w-25" data-price="{{ cartInfo.price }}" data-group="{{ group }}" disabled/> 
-							<button class="btn btn-white border quantity-change" type="button" id="button-addon2" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepUp()" >
+                       class="quantity-input quantity-change form-control form-control-sm w-25 text-center" data-price="{{ cartInfo.price }}" data-group="{{ group }}" disabled/> 
+							<button class="btn btn-white border quantity-change" type="button" data-display="{{ cartInfo.id }}" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
 								<i class="fas fa-plus"></i>
-							</button>
-						</div>
+							</button>					
+            </div>
+            <div class="text-center">Max: {{ cartInfo.quantity }}
+            </div>
 					</div>
           <a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary flex-fill">Check product</a>
         </div>
@@ -90,15 +101,17 @@
 					<div class="col-md-4 col-6 mb-3 mx-auto">
 					  <label class="mb-2 d-block">Quantity</label>
 						<div class="input-group mb-3">
-							<button class="btn btn-white border quantity-change" type="button" id="button-addon2" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+							<button class="btn btn-white border quantity-change" type="button" data-display="{{ cartInfo.id }}" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
 								<i class="fas fa-minus"></i>
 							</button>
                 <input name="quantity[]" min="1" max="{{ cartInfo.quantity }}" data-display="{{ cartInfo.id }}" value="{{ cartInfo.quantityUser  }}" type="number"
-                       class="quantity-input form-control form-control-sm w-25" data-price="{{ cartInfo.price }}" data-group="{{ group }}"disabled/> 
-							<button class="btn btn-white border quantity-change" type="button" id="button-addon2" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                       class="quantity-input quantity-change form-control form-control-sm w-25 text-center" data-price="{{ cartInfo.price }}" data-group="{{ group }}" disabled/> 
+							<button class="btn btn-white border quantity-change" type="button" data-display="{{ cartInfo.id }}" id="button-addon2" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
 								<i class="fas fa-plus"></i>
 							</button>
 						</div>
+            <div class="text-center">Max: {{ cartInfo.quantity }}
+            </div>
 					</div>
           <a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary flex-fill">Check product</a>
         </div>
@@ -126,15 +139,17 @@
 					<div class="col-md-4 col-6 mb-3 mx-auto">
 					  <label class="mb-2 d-block">Quantity</label>
 						<div class="input-group mb-3">
-							<button class="btn btn-white border quantity-change" type="button" id="button-addon2" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+							<button class="btn btn-white border quantity-change" type="button" data-display="{{ cartInfo.id }}" id="button-addon2" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
 								<i class="fas fa-minus"></i>
 							</button>
                 <input name="quantity[]" min="1" max="{{ cartInfo.quantity }}" data-display="{{ cartInfo.id }}" value="{{ cartInfo.quantityUser  }}" type="number"
-                       class="quantity-input form-control form-control-sm w-25" data-price="{{ cartInfo.price }}" data-group="{{ group }}"disabled/> 
-							<button class="btn btn-white border quantity-change" type="button" id="button-addon2" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                       class="quantity-input quantity-change form-control form-control-sm w-25 text-center" data-price="{{ cartInfo.price }}" data-group="{{ group }}" disabled/> 
+							<button class="btn btn-white border quantity-change" type="button" data-display="{{ cartInfo.id }}" id="button-addon2" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
 								<i class="fas fa-plus"></i>
 							</button>
-						</div>
+            </div>
+            <div class="text-center">Max: {{ cartInfo.quantity }}
+            </div>
 					</div>
           <a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary flex-fill">Check product</a>
         </div>
@@ -327,16 +342,17 @@ $(document).ready(function(){
   {
     var value = ($(this).val());
     var classCheckbox = $(this).data('class');
+    var dataDisplay = $(this).data('display');
     if($(this).is(':checked')){
       window['checkboxCount' + classCheckbox] = typeof window['checkboxCount' + classCheckbox] !== 'undefined' ? window['checkboxCount' + classCheckbox] + 1 : 1;
-      $('.quantity-change').prop('disabled', false);
+      $('.quantity-change[data-display="'+dataDisplay+'"]').prop('disabled', false);
        console.log($('.quantity-change'));
       $('input[type=submit][data-class="'+classCheckbox+'"]').prop('disabled', false);
     }
     else{
       window['checkboxCount' + classCheckbox]--;
-      $('.quantity-change').prop('disabled', true);
-      console.log($('.quantity-change'));
+   $('.quantity-change[data-display="'+dataDisplay+'"]').prop('disabled', true);
+         console.log($('.quantity-change'));
       if(window['checkboxCount' + classCheckbox] == 0)
       {
         $('input[type=submit][data-class="'+classCheckbox+'"]').prop('disabled', true);
@@ -347,21 +363,7 @@ $(document).ready(function(){
   })
 })
 
-// Remove cart
-$(document).on('click', '.remove-cart-button', function(event){
-  var productId = $(this).data('cart-id');
-	var quantity = $('#quantity-input').val();
-  $.ajax({
-    url: '{{ path('ajax_remove_cart') }}',
-    method: 'POST',
-    data: {productId: productId, quantity: quantity},
-    success: function(response) {
-    $('.show-cart-count').html(response.cartsCount);
-    $('.cart-item[data-cart-id="' + productId + '"]').remove();
-    $('[data-cart-id="' + productId + '"]').empty();
-	  }
-  });
-});
+
 
 
 
@@ -414,6 +416,22 @@ function countSummary()
       $('.summary[data-summary-id="'+summaryId+'"]').html('$'+total);
   });
 } 
+
+// Remove cart
+$(document).on('click', '.remove-cart-button', function(event){
+  var productId = $(this).data('cart-id');
+	var quantity = $('#quantity-input').val();
+  $.ajax({
+    url: '{{ path('ajax_remove_cart') }}',
+    method: 'POST',
+    data: {productId: productId, quantity: quantity},
+    success: function(response) {
+    $('.show-cart-count').html(response.cartsCount);
+    $('.cart-item[data-cart-id="' + productId + '"]').remove();
+    $('[data-cart-id="' + productId + '"]').empty();
+	  }
+  });
+});
 </script>
 {% endblock %}
 
