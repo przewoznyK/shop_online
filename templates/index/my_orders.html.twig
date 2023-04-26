@@ -3,7 +3,7 @@
 {% block title %}Hello BuyNowController!{% endblock %}
 
 {% block body %}
-
+{{dump(myOrdersArray)}}
 {% for myOrders in myOrdersArray %}
 <section class='order-field' data-id={{ myOrders.id }}
    Product: {{ myOrders.product }}<br>

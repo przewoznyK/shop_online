@@ -39,16 +39,17 @@
 </div>
 
 
-
 {% block javascripts %}
 <script type="text/javascript">
-
+var addedLocation = [];
 $(document).ready(function(){
     var deliveryTypeArray = {{ deliveryTypeArray|json_encode|raw }};
     var deliveryPersonalPickupLocationArray = {{ deliveryPersonalPickupLocationArray|json_encode|raw }};
+     addedLocation = deliveryPersonalPickupLocationArray;
     for(var i=0; i<deliveryTypeArray.length; i++) {
         if(deliveryTypeArray[i] == 'personal_pickup')
         {
+            $('#my_array').val(deliveryPersonalPickupLocationArray);
             $('input[type=checkbox][name=personal_pickup]').attr('checked', true);
             $('#location').html('Pickup Location<input id="location-text" type="text">');
             $('#button').html('<div class="btn btn-secondary ">Add Pickup Location</div>');
@@ -65,6 +66,7 @@ $(document).ready(function(){
         console.log(deliveryTypeArray[i]);
     }
     for(var i=0; i<deliveryPersonalPickupLocationArray.length; i++) {
+        
         $('#addedLocation').append(deliveryPersonalPickupLocationArray[i]+'<div data-id="'+deliveryPersonalPickupLocationArray[i]+'" class="deleteDelivery btn fa-sharp fa-solid fa-xmark" ></div><br>');
     }
  
@@ -84,7 +86,7 @@ $('input[type=checkbox]#personal_pickup').click(function(){
         $('#button').empty();
     }
 });
-var addedLocation = [];
+
 $('#button').click(function(){
     var add = $('#location-text').val();
     if(addedLocation.includes(add))

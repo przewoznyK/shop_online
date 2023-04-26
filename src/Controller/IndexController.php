@@ -384,8 +384,32 @@ class IndexController extends AbstractController
     {   
         /** @var $myUser User */
         $myUser = $this->getUser();
+        $i=0;
         $myOrdersArray = $entityManager->getRepository(OrderProduct::class)->findBy(array('buyer'=> $this->getUser()));
-        
+        $myOrdersProductsArray = [];
+        foreach ($myOrdersArray as $element)
+        {
+         $count = 0;
+           if(str_contains($element->getProduct(),'|'))
+           {
+                $elementExplodeArray = explode('|', $element->getProduct());
+                foreach($elementExplodeArray as $elementExplode)
+                {
+                    $myOrdersProductsArray[$i]['id'][$count] = $elementExplode;
+                     $count++;
+                }
+                
+           }
+           else
+           {
+            $myOrdersProductsArray[]['id'][0] = $element->getProduct();
+           }
+          $i++;
+
+        }
+        dump($myOrdersProductsArray);
+        die();
+     
         return $this->render('index/my_orders.html.twig',[
             'myOrdersArray' => $myOrdersArray,
         ]);

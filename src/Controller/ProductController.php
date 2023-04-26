@@ -204,32 +204,48 @@ class ProductController extends AbstractController
         $count = 0;
         $addLocationArray = [];
         if ($formData) {
+            $oldDeliveryArray = $entityManager->getRepository(Delivery::class)->findBy(['product' => $product]);
+            foreach ($oldDeliveryArray as $delivery) {
+                $entityManager->remove($delivery);
+            }
+           
+            $entityManager->flush();
+
             foreach ($formData as $key => $data) {
-                //dd($formData);
+                dump($formData);
+            
                 if($key == 'my_array') {echo 'arrayklucz';}
                 if($key == 'parcel_locker') {echo 'parcel_locker';}
                 
                 if ($key == 'my_array') {
+          
+                    if($data[0])
+                    {
+                   
                     // $array = json_decode($data[0], true);
                     // $explodedArray = explode(',', $array[0]);
                     // print_r($explodedArray);
                         
                         $addLocationArray = explode(',', $data[0]);
+                        $addLocationArray = str_replace(['"', '[', ']'], '', $addLocationArray);
+    
                         foreach($addLocationArray as $addLocation)
                         {
                             $newDelivery = new Delivery();
                             $count++;
                             
-                        $newDelivery->setType('personal_pickup');
-                        $newDelivery->setPersonalPickup($addLocation);
-                        $newDelivery->setProduct($product);
-                        $newDelivery->setPrice(0);
-                        $newDelivery->setDeliveryTime($time);
-        
-                        $entityManager->persist($newDelivery);
-                        $entityManager->flush();
+                            $newDelivery->setType('personal_pickup');
+                            $newDelivery->setPersonalPickup($addLocation);
+                            $newDelivery->setProduct($product);
+                            $newDelivery->setPrice(0);
+                            $newDelivery->setDeliveryTime($time);
+            
+                            $entityManager->persist($newDelivery);
+                            $entityManager->flush();
                         }
-                        
+                    }
+
+                    
 
                     
                 } 
@@ -238,12 +254,12 @@ class ProductController extends AbstractController
                     $newDelivery->setType($data);
                     $newDelivery->setPersonalPickup('');
 
-                $newDelivery->setProduct($product);
-                $newDelivery->setPrice(0);
-                $newDelivery->setDeliveryTime($time);
+                    $newDelivery->setProduct($product);
+                    $newDelivery->setPrice(0);
+                    $newDelivery->setDeliveryTime($time);
 
-                $entityManager->persist($newDelivery);
-                $entityManager->flush();
+                    $entityManager->persist($newDelivery);
+                    $entityManager->flush();
                 }
               
 
