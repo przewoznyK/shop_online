@@ -280,12 +280,14 @@ class ProductController extends AbstractController
     #[Route('/check_product/{id}', name: 'app_check_product')]
     public function checkProduct(EntityManagerInterface $entityManager, Request $request, int $id): Response
     {
-
+        $productNotFoundBool = false;
         $imagesName = [];
         $product = $entityManager->getRepository(Product::class)->findOneBy(array('id' => $id));
+        
+        if($product)
+        {
 
         $userOwnerProduct = $product->getUser();
-
         /** @var $myUser User */
         $myUser = $this->getUser();
 
@@ -330,8 +332,15 @@ class ProductController extends AbstractController
                 $imagesName[] = $file;
             }
         }
-
-
+        }
+        else
+        {
+            $product['id'] = 0; 
+            $userOwnerProduct = 0;
+            $CommentsAndRatingArray = 0;
+            $myUser = 0;
+            $productNotFoundBool = true;
+        }
 
         $myProductBool = false;
         return $this->render('product/check_product.html.twig', [
@@ -340,7 +349,8 @@ class ProductController extends AbstractController
             'userOwnerProduct' => $userOwnerProduct,
             'myProductBool' => $myProductBool,
             'CommentsAndRatingArray' => $CommentsAndRatingArray,
-            'myUser' => $myUser
+            'myUser' => $myUser,
+            'productNotFoundBool' => $productNotFoundBool
 
         ]);
     }

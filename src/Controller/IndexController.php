@@ -382,11 +382,10 @@ class IndexController extends AbstractController
     #[Route('/my_orders', name: 'app_my_orders')]
     public function myOrders(Request $request, EntityManagerInterface $entityManager)
     {   
-        /** @var $myUser User */
-        $myUser = $this->getUser();
+
         $i=0;
         $myOrdersArray = $entityManager->getRepository(OrderProduct::class)->findBy(array('buyer'=> $this->getUser()));
-        $myOrdersProductsArray = [];
+
         foreach ($myOrdersArray as $element)
         {
          $count = 0;
@@ -395,23 +394,74 @@ class IndexController extends AbstractController
                 $elementExplodeArray = explode('|', $element->getProduct());
                 foreach($elementExplodeArray as $elementExplode)
                 {
-                    $myOrdersProductsArray[$i]['id'][$count] = $elementExplode;
-                     $count++;
+                    $element->dir[$count] = $elementExplode;
+                    $count++;
                 }
                 
            }
            else
-           {
-            $myOrdersProductsArray[]['id'][0] = $element->getProduct();
-           }
-          $i++;
-
+           {    
+                $element->dir[0] = $element->getProduct();
+           }                
+           $i++; 
         }
-        dump($myOrdersProductsArray);
-        die();
+        foreach($myOrdersArray as $element)
+        {
+            $count=0;
+            foreach($element->dir as $direction)
+            {
+                $direction = explode(':', $direction);
+                $product = $entityManager->getRepository(Product::class)->find($direction[0]);
+                $element->productId[$count] = $product->getId();
+                unset($element->dir[$count]);
+
+              
      
+                $dir = scandir('users_data/' . $element->getOwner()->getId() . '/products/' .  $product->getImagesDir());
+                foreach ($dir as $file) {
+           
+                    {
+                        if ($file != '.' && $file != '..') {  
+                            
+                        $element->dir[$product->getImagesDir()] = $file;
+                        break;
+                    }
+                    }
+                }
+                
+                $count++;
+            }
+        }
+        usort($myOrdersArray, function ($a, $b) {
+            $status_order = [
+                "pending" => 0,
+                "progressing" => 1,
+                "shipped" => 2,
+                "ready_to_pick_up" => 3,
+                "done" => 4
+            ];
+            $a_val = $status_order[$a->getStatus()] ?? 9999; // Domyślna wartość dla nieznanych statusów
+            $b_val = $status_order[$b->getStatus()] ?? 9999;
+            return $a_val - $b_val;
+        });
+            $myOrdersArrayDone = array(); 
+            foreach($myOrdersArray as $key => $element) {
+                if($element->getFeedback() == 'ok') {
+                    $myOrdersArrayDone[] = $element;
+                    unset($myOrdersArray[$key]);
+                }
+        }
+        $myOrdersArrayProblem = array(); 
+        foreach($myOrdersArray as $key => $element) {
+            if($element->getStatus('problem')) {
+                $myOrdersArrayProblem[] = $element;
+                unset($myOrdersArray[$key]);
+            }
+    }
         return $this->render('index/my_orders.html.twig',[
             'myOrdersArray' => $myOrdersArray,
+            'myOrdersArrayDone' => $myOrdersArrayDone,
+            'myOrdersArrayProblem' => $myOrdersArrayProblem,
         ]);
     }
 }

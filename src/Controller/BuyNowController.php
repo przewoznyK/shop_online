@@ -233,8 +233,15 @@ class BuyNowController extends AbstractController
             $status = 1;
             $feedback = $request->request->get('feedback');
             if ($feedback) {
+                if ($feedback == 'ok')
+                {
+                    $order->setStatus('done');
+                }
+                else{
+                    $order->setStatus('problem');
+                }
                 $order->setFeedback($feedback);
-                $order->setStatus('feedback');
+                
                 $description = $request->request->get('description');
                 if ($description) {
                     $order->setFeedbackDescription($description);

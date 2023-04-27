@@ -1,6 +1,12 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+{% if productNotFoundBool %}
+<div class = 'container border border-warning text-center rounded'>
+<h1>Product Not Found</h1>
+<a href='{{ path('app_index') }}'><h4>Back to main page</h4></a>
+</div>
+{% else %}
 	{% for message in app.flashes('success') %}
 		<div class='alert alert-success'>
 			{{ message }}
@@ -227,6 +233,7 @@
 	      <div id="alert" class="alert-danger"> </div>
 	   </div>
 	</div> #}
+	{% endif %}
 	{% block javascripts %}
 		<script type="text/javascript">
 

@@ -84,8 +84,8 @@ class MyCommand extends Command
                                 $folder = $mainDir . '/users_data/' . $owner->getId() . '/products/' . $images;
                                 $dirForEmail = $url . '/users_data/' . $owner->getId() . '/products/' . $images;
                                 $dir = opendir($folder);
-                                $oneTime = true;
-                                if ($oneTime) {
+                            
+                              
                                     while ($file = readdir($dir)) {
                                         if ($file != '.' && $file != '..') {
                                             $myProductsDirImages[$i]['images'][] = $file;
@@ -94,11 +94,11 @@ class MyCommand extends Command
                                             $productsInfoArray[$i]['productQuantity'] = $priceDetailsArray[$i][1];
 
                                             //  $productsInfoArray
-                                            $oneTime = false;
+                                           break;
                                         }
                                     }
                                     closedir($dir);
-                                }
+                                
                             }
                             $myProductsDirImages[$i]['id'] = $owner->getId();
                             $output->writeln($myProductsDirImages[$i]['id'] = $owner->getId());
@@ -118,8 +118,8 @@ class MyCommand extends Command
                             'feedbackUrl' => $feedbackUrl
                         ]);
                     $this->mailer->send($email);
-                    $order->setStatus('done');
-                    $output->writeln('Change status to done: ' . $order->getId());
+                    $order->setStatus('ready_to_pick_up');
+                    $output->writeln('Change status to ready_to_pick_up: ' . $order->getId());
                 }
             } 
         }
