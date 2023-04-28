@@ -44,7 +44,7 @@
 			</div>
 			{# Carts #}
 			<div class="col-md-10 ">
-				<div class="container border my-5 ">
+				<div class="container border py-5 ">
 					<div class="row mx-auto">
 						{% set count = 0 %}
 						{% for offerInfo in allOfferInfo %}
@@ -61,7 +61,7 @@
 											<!-- Product name-->
 											<h5 class="fw-bolder">{{ offerInfo.name }}</h5>
 											<!-- Product price-->
-											{{ offerInfo.price }}$
+											${{ offerInfo.price }}
 										</div>
 									</div>
 									<!-- Product actions-->
@@ -159,67 +159,63 @@
 																</div>
 															</div>
 														</div> #}
-		{% block javascripts %}
-			<script type="text/javascript"> var canCallFunction1 = true;
+{% block javascripts %}
+<script type="text/javascript"> 
+// Add to cart
+var canCallFunction1 = true;
 $(document).on('click', '.add-cart-button', function (event) {
-event.preventDefault();
-if (canCallFunction1) {
-canCallFunction1 = false;
-setTimeout(() => {
-canCallFunction1 = true;
-}, 2000);
-var productId = $(this).data('cart-id');
-var quantity = $('#quantity-input').val();
-if (quantity == null) 
-quantity = 1;
-
-
-
-$.ajax({
-url: '{{ path('ajax_add_value_to_session') }}',
-method: 'POST',
-data: {
-productId: productId,
-quantity: quantity
-},
-success: function (response) {
-console.log('Value added to session');
-// Aktualizujemy wartość elementu HTML po zakończeniu operacji AJAX
-$('.show-cart-count').html(response.cartsCount);
-$('[data-cart-id="' + productId + '"]').removeClass('add-cart-button').addClass('remove-cart-button').text('Remove product');
-
-}
+	event.preventDefault();
+	if (canCallFunction1) {
+		canCallFunction1 = false;
+		setTimeout(() => {
+			canCallFunction1 = true;
+		}, 2000);
+		var productId = $(this).data('cart-id');
+		var quantity = $('#quantity-input').val();
+		if (quantity == null) 
+			quantity = 1;
+		$.ajax({
+			url: '{{ path('ajax_add_value_to_session') }}',
+			method: 'POST',
+			data: {
+				productId: productId,
+				quantity: quantity
+			},
+			success: function (response) {
+				$('.show-cart-count').html(response.cartsCount);
+				$('[data-cart-id="' + productId + '"]').removeClass('add-cart-button btn-success').addClass('remove-cart-button btn-secondary').text('Remove product');
+			}
+		});
+	}
 });
-}
-});
+// Remove from cart
 var canCallFunction1 = true;
 $(document).on('click', '.remove-cart-button', function (event) {
-event.preventDefault();
-if (canCallFunction1) {
-canCallFunction1 = false;
-setTimeout(() => {
-canCallFunction1 = true;
-}, 2000);
-var productId = $(this).data('cart-id');
-var quantity = $('#quantity-input').val();
-$.ajax({
-url: '{{ path('ajax_remove_cart') }}',
-method: 'POST',
-data: {
-productId: productId,
-quantity: quantity
-},
-success: function (response) {
+	event.preventDefault();
+	if (canCallFunction1) {
+		canCallFunction1 = false;
+		setTimeout(() => {
+			canCallFunction1 = true;
+		}, 2000);
+		var productId = $(this).data('cart-id');
+		var quantity = $('#quantity-input').val();
+		$.ajax({
+			url: '{{ path('ajax_remove_cart') }}',
+			method: 'POST',
+			data: {
+				productId: productId,
+				quantity: quantity
+			},
+			success: function (response) {
+				$('.show-cart-count').html(response.cartsCount);
+				$('.cart-item[data-cart-id="' + productId + '"]').remove();
+				$('[data-cart-id="' + productId + '"]').removeClass('remove-cart-button btn-secondary').addClass('add-cart-button btn-success').text('Add product');
+			}
 
-$('.show-cart-count').html(response.cartsCount);
-$('.cart-item[data-cart-id="' + productId + '"]').remove();
-$('[data-cart-id="' + productId + '"]').removeClass('remove-cart-button').addClass('add-cart-button').text('Add product');
-
-}
+		});
+	}
 });
-}
-});
-		</script>
-	{% endblock %}
+</script>
+{% endblock %}
 
 {% endblock %}

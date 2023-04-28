@@ -188,8 +188,6 @@ class BuyNowController extends AbstractController
             $productCount++;
         }
 
-        dump($deliveryArray);
-        dump($productCount);
         if ($productCount > 1) {
             foreach ($deliveryArray as $delivery) {
                 $deliveryTypeArray[] = $delivery['type'];
@@ -212,7 +210,6 @@ class BuyNowController extends AbstractController
         // dd($deliveryPersonalPickupLocation);
 
 
-
         return $this->render('buy_now/buyNow.html.twig', [
             'controller_name' => 'BuyNowController',
             // 'id' => $productId,
@@ -228,9 +225,15 @@ class BuyNowController extends AbstractController
     {
         $status = 0;
         $order = $entityManager->getRepository(OrderProduct::class)->findOneBy(['token' => $token]);
-        $feedback = $request->request->get('feedback');
+        $orderFeedback = $order->getFeedback();
         if ($order) {
             $status = 1;
+            if($orderFeedback)
+            {
+                return $this->render('buy_now/feedback_product_sent.html.twig', [
+
+                ]);
+            }
             $feedback = $request->request->get('feedback');
             if ($feedback) {
                 if ($feedback == 'ok')
@@ -248,10 +251,9 @@ class BuyNowController extends AbstractController
                 }
                 $entityManager->persist($order);
                 $entityManager->flush();
-                $status = 2;
-                return $this->render('buy_now/feedback_product.html.twig', [
-                    'token' => $token,
-                    'status' => $status
+
+                return $this->render('buy_now/feedback_product_sent.html.twig', [
+
                 ]);
             }
         } else {

@@ -169,7 +169,7 @@ class ProductController extends AbstractController
                 $entityManager->persist($product);
                 $entityManager->flush();
 
-                return new RedirectResponse('/user/add_delivery/112');
+                return new RedirectResponse('/user/add_delivery/'.$product->getId());
                 
             }
             return $this->render('product/edit_product.html.twig', [

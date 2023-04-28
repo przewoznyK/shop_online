@@ -16,6 +16,16 @@
         }
     </style>
 <section>
+
+{% if not (myCartsInfo) %}
+<div class='container border border-info rounded py-5 my-5 text-center'>
+  <h2>  You have empty cart   <i class="fas fa-cart-arrow-down"></i>  </h2>  
+</div>
+
+
+{% else %}
+
+
   {% set lastIdOwner = 0 %}
   {% set group = 0 %}
   {% set count = 0 %}
@@ -23,7 +33,7 @@
   {% if (count == 0 ) %}
   
   
-  <div class="container border border-primary border-3 rounded p-5">
+  <div class="container border border-primary border-3 rounded p-5 my-5">
     <form action="{{ path('app_buy_now') }}" method="POST">
       <div class="row " data-cart-id="{{ cartInfo.id }}">
         <div class="col d-flex justify-content-between m-3">
@@ -172,7 +182,7 @@
   {% set group = group + 1 %}
 </section>
 {% endif %}
-
+{% endif %}
 
 
 
@@ -426,6 +436,7 @@ $(document).on('click', '.remove-cart-button', function(event){
     method: 'POST',
     data: {productId: productId, quantity: quantity},
     success: function(response) {
+      console.log(111);
     $('.show-cart-count').html(response.cartsCount);
     $('.cart-item[data-cart-id="' + productId + '"]').remove();
     $('[data-cart-id="' + productId + '"]').empty();

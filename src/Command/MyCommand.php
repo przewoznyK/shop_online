@@ -118,8 +118,8 @@ class MyCommand extends Command
                             'feedbackUrl' => $feedbackUrl
                         ]);
                     $this->mailer->send($email);
-                    $order->setStatus('ready_to_pick_up');
-                    $output->writeln('Change status to ready_to_pick_up: ' . $order->getId());
+                    $order->setStatus('email_sent');
+                    $output->writeln('Change status to email_sent: ' . $order->getId());
                 }
             } 
         }

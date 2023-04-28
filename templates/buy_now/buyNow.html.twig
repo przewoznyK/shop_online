@@ -57,43 +57,41 @@
 				  <label class="mb-2 d-block">Quantity
           </label>
 					<div class="input-group mb-3">
-							<button class="btn btn-white border quantity-change" type="button" data-display="{{ offerInfo.id }}" id="button-addon2" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-								<i class="fas fa-minus"></i>
-							</button>
-              <input name='quantity[]' class='quantity-input quantity-change form-control text-center' type='number' data-display='{{ offerInfo.id }}' data-price='{{ offerInfo.price }}' 
-              value="{{ productIdAndQuantityArray[count]['quantity'] }}" max="{{ offerInfo.quantity }}" min=1>
-							<button class="btn btn-white border quantity-change" type="button" data-display="{{ offerInfo.id }}" id="button-addon2" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-								<i class="fas fa-plus"></i>
-							</button>
+						<button class="btn btn-white border quantity-change" type="button" data-display="{{ offerInfo.id }}" id="button-addon2" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+							<i class="fas fa-minus"></i>
+						</button>
+            <input name='quantity[]' class='quantity-input quantity-change form-control text-center' type='number' data-display='{{ offerInfo.id }}' data-price='{{ offerInfo.price }}' 
+                   value="{{ productIdAndQuantityArray[count]['quantity'] }}" max="{{ offerInfo.quantity }}" min=1>
+						<button class="btn btn-white border quantity-change" type="button" data-display="{{ offerInfo.id }}" id="button-addon2" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+							<i class="fas fa-plus"></i>
+						</button>
           </div>
 				</div>
         <div class="text-center">Max: {{ offerInfo.quantity }}
         </div>
         <div class='total-display' data-id='{{ offerInfo.id }}'>Price {{ offerInfo.price }}
         </div>
-      
-        <input name='id-and-quantity[]' type='hidden' data-id={{ offerInfo.id }} data-quantity='1' value=''>
+      <input name='id-and-quantity[]' type='hidden' data-id={{ offerInfo.id }} data-quantity='1' value=''>
 
-
-        <hr>
-        
-        {% set count = count + 1 %}
-      {% endfor %}
+    <hr>        
+    {% set count = count + 1 %}
+    {% endfor %}
       <section class='border border-secondary rounded'>
       {% set count = 0 %}
-        {% if (avalibleDelivery) %}
-          {% for delivery in avalibleDelivery %}
-            <label><input type="radio" class='delivery-type-checkbox' name="delivery-type-checkbox" value="{{ delivery.type }}"  data-id='{{ count }}'
+      {% if (avalibleDelivery) %}
+        {% for delivery in avalibleDelivery %}
+          <label>
+            <input type="radio" class='delivery-type-checkbox' name="delivery-type-checkbox" value="{{ delivery.type }}"  data-id='{{ count }}'
               {% if delivery.type == 'personal_pickup' %} data-price="0" data-location='{{delivery.personal_pickup}}'
-                {% elseif delivery.type == 'parcel_locker' %} data-price="5" 
-                {% elseif delivery.type == 'courier' %} data-price="10" 
+              {% elseif delivery.type == 'parcel_locker' %} data-price="5" 
+              {% elseif delivery.type == 'courier' %} data-price="10" 
               {% endif %}>
               {{ delivery.type }} {{ delivery.personal_pickup }}<div class='delivery-price' data-id='{{ count }}'></div>
-            </label><br>
+          </label><br>
             
-            {% set count = count + 1 %}
+          {% set count = count + 1 %}
         {% endfor %}    
-        {% else %}
+      {% else %}
         No delivery for these products. You can try ordering these products separately.
       {% endif %}
         <div id='final_location_place' class='d-none'>

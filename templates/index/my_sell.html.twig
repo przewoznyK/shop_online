@@ -3,13 +3,40 @@
 {% block title %}Hello BuyNowController!{% endblock %}
 
 {% block body %}
-<section id='pending' class='border border-primary'>
-<h1>Waiting for accept</h1>
-{% for myOrders in myOrdersArray %}
-{% if myOrders.status == 'pending' %}
-<div class='order-field' data-id={{ myOrders.id }}>
+<div id='pending' class='container border border-info rounded my-5'>
+<h2 class='text-center my-3'>Waiting for accept  <i class="fas fa-clock"></i></h2> 
 
-    Product: {{ myOrders.product }}<br>
+{% for myOrders in myOrdersArrayPending %}
+<section class='order-field border container my-5 rounded' data-id={{ myOrders.id }}>
+    <div class='row p-2 '>
+        <div class='col'>
+
+            Delivery Type: {{ myOrders.deliveryType }}<br>
+
+            Final Location: {{ myOrders.finalLocation }}<br>
+            Payment Method: {{ myOrders.paymentMethod }}<br>
+            Price: ${{ myOrders.price }}<br>
+
+            {% if (myOrders.isPaid) %}
+                Paid 
+            {% else %}
+                Not Paid 
+            {% endif %}
+            <br>
+            <div class='btn btn-danger delete-order' data-id='{{ myOrders.id }}'>Delete</div>
+            <div class='btn btn-primary order ' data-status='{{myOrders.status}}' data-id='{{ myOrders.id }}' 
+             data-type='{{ myOrders.deliveryType }}'>Accept</div>
+        </div>
+        <div class='col'>
+            {% for key in myOrders.dir|keys %}
+                <a href='{{ path('app_check_product', { 'id': myOrders.id }) }}'> <img src="{{ asset('users_data/' ~ myOrders.owner.id ~ '/products/' ~ key ~ '/' ~ myOrders.dir[key] ) }}"
+                   class="img-fluid rounded-3 m-3" alt="{{ myOrders.name }}-Image"  height='150px' width='150px'></a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endfor %}</div>
+     {# Product: {{ myOrders.product }}<br>
     Price: {{ myOrders.price }}<br>
 
     Comment: {{ myOrders.comment }}<br>
@@ -28,33 +55,44 @@
     <div class='btn btn-danger delete-order' data-id='{{ myOrders.id }}'>Delete</div>
         <div class='btn btn-primary order ' data-status='{{myOrders.status}}' data-id='{{ myOrders.id }}' 
              data-type='{{ myOrders.deliveryType }}'>Accept</div>
-    <br><br><br><br>
-
-</div>
-{% endif %}
-{% endfor %}</section>
-<section id='progressing' class='border border-secondary'>
-<h1>In progress</h1>
-{% for myOrders in myOrdersArray %}
-{% if myOrders.status == 'progressing' %}
-<div class='order-field' data-id={{ myOrders.id }}>
-
-    Product: {{ myOrders.product }}<br>
-    Price: {{ myOrders.price }}<br>
-
-    Comment: {{ myOrders.comment }}<br>
-    Delivery Type: {{ myOrders.deliveryType }}<br>
+    <br><br><br><br>  #}
 
 
-    Final Location: {{ myOrders.finalLocation }}<br>
-    Name: {{ myOrders.name }}<br>
-    Last Name: {{ myOrders.lastName }}<br>
-    Email: {{ myOrders.email }}<br>
-    Address: {{ myOrders.address }}<br>
-    Phone Number: {{ myOrders.phoneNumber }}<br>
-    Payment Method: {{ myOrders.paymentMethod }}<br>
-            Feedback:   {{ myOrders.feedback }}<br>
-    Feedback info:     {{ myOrders.feedbackDescription }}<br>
+
+
+
+<div class='container border border-info rounded my-5' id='progressing'>
+    <h2 class='text-center my-3'>In progress  <i class="fa-solid fa-gear"></i></h2> 
+{% for myOrders in myOrdersArrayProgressing %}
+    <section class='order-field border container my-5 rounded
+    ' data-id={{ myOrders.id }} >
+        <div class='row p-2 '>
+            <div class='col'>
+
+                Delivery Type: {{ myOrders.deliveryType }}<br>
+
+                Final Location: {{ myOrders.finalLocation }}<br>
+                Payment Method: {{ myOrders.paymentMethod }}<br>
+                Price: ${{ myOrders.price }}<br>
+
+                {% if (myOrders.isPaid) %}
+                    Paid 
+                {% else %}
+                    Not Paid 
+                {% endif %}
+                <br>
+                
+            </div>
+            <div class='col'>
+                {% for key in myOrders.dir|keys %}
+                    <a href='{{ path('app_check_product', { 'id': myOrders.id }) }}'> <img src="{{ asset('users_data/' ~ myOrders.owner.id ~ '/products/' ~ key ~ '/' ~ myOrders.dir[key] ) }}"
+                         class="img-fluid rounded-3 m-3" alt="{{ myOrders.name }}-Image"  height='150px' width='150px'></a>
+                {% endfor %}
+
+            </div>
+        </div>
+   
+
     <div class='btn btn-danger delete-order' data-id='{{ myOrders.id }}'>Delete</div>
         <div class='btn btn-primary order ' data-status='{{myOrders.status}}' data-id='{{ myOrders.id }}' 
              data-type='{{ myOrders.deliveryType }}'
@@ -64,197 +102,149 @@
             {% endif %}
             </div>
     <br><br><br><br>
+            </div>
+ </section>
 
-</div>
-{% endif %}
-{% endfor %}</section>
-<section id='ready_to_pick_up' class='border border-success'>
-<h1> Ready to personal pick up </h1>
-{% for myOrders in myOrdersArray %}
-{% if myOrders.status == 'ready_to_pick_up' %}
-<div class='order-field' data-id={{ myOrders.id }}>
+{% endfor %}</div>
 
-    Product: {{ myOrders.product }}<br>
-    Price: {{ myOrders.price }}<br>
+<div class='container border border-info rounded my-5' id='shipped'>
+    <h2 class='text-center my-3'> Shipped <i class="fas fa-truck"></i></h2> 
 
-    Comment: {{ myOrders.comment }}<br>
-    Delivery Type: {{ myOrders.deliveryType }}<br>
+{% for myOrders in myOrdersArrayShipped %}
+        <section class='order-field border container my-5 rounded
+                 ' data-id={{ myOrders.id }}>
+            <div class='row p-2 '>
+                <div class='col'>
 
+                    Delivery Type: {{ myOrders.deliveryType }}<br>
 
-    Final Location: {{ myOrders.finalLocation }}<br>
-    Name: {{ myOrders.name }}<br>
-    Last Name: {{ myOrders.lastName }}<br>
-    Email: {{ myOrders.email }}<br>
-    Address: {{ myOrders.address }}<br>
-    Phone Number: {{ myOrders.phoneNumber }}<br>
-    Payment Method: {{ myOrders.paymentMethod }}<br>
-        Feedback:   {{ myOrders.feedback }}<br>
-    Feedback info:     {{ myOrders.feedbackDescription }}<br>
-    <br><br><br><br>
+                    Final Location: {{ myOrders.finalLocation }}<br>
+                    Payment Method: {{ myOrders.paymentMethod }}<br>
+                    Price: ${{ myOrders.price }}<br>
 
-</div>
-{% endif %}
-{% endfor %}</section>
+                    {% if (myOrders.isPaid) %}
+                        Paid 
+                    {% else %}
+                        Not Paid 
+                    {% endif %}
+                    <br>
+                
+                </div>
+                <div class='col'>
+                    {% for key in myOrders.dir|keys %}
+                        <a href='{{ path('app_check_product', { 'id': myOrders.id }) }}'> <img src="{{ asset('users_data/' ~ myOrders.owner.id ~ '/products/' ~ key ~ '/' ~ myOrders.dir[key] ) }}"
+                            class="img-fluid rounded-3 m-3" alt="{{ myOrders.name }}-Image"  height='150px' width='150px'></a>
+                    {% endfor %}
+                </div>
+            </div>
+       
+ </section>
+{% endfor %}</div>
+<div class='container border border-info rounded my-5' id='ready_to_pick_up'>
+    <h2 class='text-center my-3'> Waiting for feedback  <i class="fas fa-sticky-note"></i></h2> 
+    {% for myOrders in myOrdersArrayWaitingForFeedback %}
+        <section class='order-field border container my-5 rounded
+                 ' data-id={{ myOrders.id }}>
+            <div class='row p-2 '>
+                <div class='col'>
+                    Delivery Type: {{ myOrders.deliveryType }}<br>
 
-<section id='shipped' class='border border-success'>
-<h1> Shipped </h1>
-{% for myOrders in myOrdersArray %}
-{% if myOrders.status == 'shipped' %}
-<div class='order-field' data-id={{ myOrders.id }}>
+                    Final Location: {{ myOrders.finalLocation }}<br>
+                    Payment Method: {{ myOrders.paymentMethod }}<br>
+                    Price: ${{ myOrders.price }}<br>
 
-    Product: {{ myOrders.product }}<br>
-    Price: {{ myOrders.price }}<br>
+                    {% if (myOrders.isPaid) %}
+                        Paid 
+                    {% else %}
+                        Not Paid 
+                    {% endif %}
+                    <br>
+                
+                </div>
+                <div class='col'>
+                    {% for key in myOrders.dir|keys %}
+                        <a href='{{ path('app_check_product', { 'id': myOrders.id }) }}'> <img src="{{ asset('users_data/' ~ myOrders.owner.id ~ '/products/' ~ key ~ '/' ~ myOrders.dir[key] ) }}"
+                            class="img-fluid rounded-3 m-3" alt="{{ myOrders.name }}-Image"  height='150px' width='150px'></a>
+                    {% endfor %}
+                </div>
+            </div>
+       
+ </section>
+{% endfor %}</div>
 
-    Comment: {{ myOrders.comment }}<br>
-    Delivery Type: {{ myOrders.deliveryType }}<br>
+<div class='container border border-danger rounded mb-5'>
+    <h2 class='text-center my-3'>Problem   <i class="fa-solid fa-circle-xmark" style="color: #c43644;"></i></h2>
+    {% for myOrders in myOrdersArrayProblem %}
+    
+    <section class='order-field border container my-5 rounded'>
+        <div class='row'>
+            <div class='col'>
+                <h4>   {{ myOrders.feedback }} </h4>
+                {{ myOrders.feedbackDescription }}<br>
+                
+                Delivery Type: {{ myOrders.deliveryType }}<br>
 
-
-    Final Location: {{ myOrders.finalLocation }}<br>
-    Name: {{ myOrders.name }}<br>
-    Last Name: {{ myOrders.lastName }}<br>
-    Email: {{ myOrders.email }}<br>
-    Address: {{ myOrders.address }}<br>
-    Phone Number: {{ myOrders.phoneNumber }}<br>
-    Payment Method: {{ myOrders.paymentMethod }}<br>
-        Feedback:   {{ myOrders.feedback }}<br>
-    Feedback info:     {{ myOrders.feedbackDescription }}<br>
-    <br><br><br><br>
-
-</div>
-{% endif %}
-{% endfor %}</section>
-
-
-<section id='done' class='border border-success'>
-<h1> Waiting for feedback </h1>
-{% for myOrders in myOrdersArray %}
-{% if myOrders.status == 'done' %}
-<div class='order-field' data-id={{ myOrders.id }}>
-
-    Product: {{ myOrders.product }}<br>
-    Price: {{ myOrders.price }}<br>
-
-    Comment: {{ myOrders.comment }}<br>
-    Delivery Type: {{ myOrders.deliveryType }}<br>
-
-
-    Final Location: {{ myOrders.finalLocation }}<br>
-    Name: {{ myOrders.name }}<br>
-    Last Name: {{ myOrders.lastName }}<br>
-    Email: {{ myOrders.email }}<br>
-    Address: {{ myOrders.address }}<br>
-    Phone Number: {{ myOrders.phoneNumber }}<br>
-    Payment Method: {{ myOrders.paymentMethod }}<br>
-        Feedback:   {{ myOrders.feedback }}<br>
-    Feedback info:     {{ myOrders.feedbackDescription }}<br>
-    <br><br><br><br>
-
-</div>
-{% endif %}
-{% endfor %}</section>
-
-<section id='complete' class='border border-danger'>
-<h1> Complete </h1>
-{% for myOrders in myOrdersArray %}
-{% if myOrders.status == 'feedback' and myOrders.feedback == 'ok'%}
-<div class='order-field' data-id={{ myOrders.id }}>
-
-    Product: {{ myOrders.product }}<br>
-    Price: {{ myOrders.price }}<br>
-
-    Comment: {{ myOrders.comment }}<br>
-    Delivery Type: {{ myOrders.deliveryType }}<br>
+   
+                Final Location: {{ myOrders.finalLocation }}<br>
+                Payment Method: {{ myOrders.paymentMethod }}<br>
+                Price: ${{ myOrders.price }}<br>
 
 
-    Final Location: {{ myOrders.finalLocation }}<br>
-    Name: {{ myOrders.name }}<br>
-    Last Name: {{ myOrders.lastName }}<br>
-    Email: {{ myOrders.email }}<br>
-    Address: {{ myOrders.address }}<br>
-    Phone Number: {{ myOrders.phoneNumber }}<br>
-    Payment Method: {{ myOrders.paymentMethod }}<br>
-    Feedback:   {{ myOrders.feedback }}<br>
-    Feedback info:     {{ myOrders.feedbackDescription }}<br>
-    <br><br><br><br>
-</div>
-{% endif %}
-{% endfor %}</section>
-
-<section id='problem with the product' class='border border-warning'>
-<h1> Problem with the product </h1>
-{% for myOrders in myOrdersArray %}
-{% if myOrders.status == 'feedback' and  myOrders.feedback != 'ok'%}
-<div class='order-field' data-id={{ myOrders.id }}>
-
-    Product: {{ myOrders.product }}<br>
-    Price: {{ myOrders.price }}<br>
-
-    Comment: {{ myOrders.comment }}<br>
-    Delivery Type: {{ myOrders.deliveryType }}<br>
-
-
-    Final Location: {{ myOrders.finalLocation }}<br>
-    Name: {{ myOrders.name }}<br>
-    Last Name: {{ myOrders.lastName }}<br>
-    Email: {{ myOrders.email }}<br>
-    Address: {{ myOrders.address }}<br>
-    Phone Number: {{ myOrders.phoneNumber }}<br>
-    Payment Method: {{ myOrders.paymentMethod }}<br>
-    Feedback:   {{ myOrders.feedback }}<br>
-    Feedback info:     {{ myOrders.feedbackDescription }}<br>
-    <br><br><br><br>
-</div>
-{% endif %}
-{% endfor %}</section>
-{# {% for myOrders in myOrdersArray %}
-
-
-<section class='order-field' data-id={{ myOrders.id }}>
-    Product: {{ myOrders.product }}<br>
-    Price: {{ myOrders.price }}<br>
-
-    Comment: {{ myOrders.comment }}<br>
-    Delivery Type: {{ myOrders.deliveryType }}<br>
-
-
-    Final Location: {{ myOrders.finalLocation }}<br>
-    Name: {{ myOrders.name }}<br>
-    Last Name: {{ myOrders.lastName }}<br>
-    Email: {{ myOrders.email }}<br>
-    Address: {{ myOrders.address }}<br>
-    Phone Number: {{ myOrders.phoneNumber }}<br>
-    Payment Method: {{ myOrders.paymentMethod }}<br>
-
-
-    {% if (myOrders.isPaid) %}
-    Paid 
-    {% else %}
-    Not Paid 
-    {% endif %}
-    <br>
-    {{myOrders.status}}
-    {% if (myOrders.status == 'pending') or (myOrders.status == 'processing') %}
-        <div class='btn btn-danger delete-order' data-id='{{ myOrders.id }}'>Delete</div>
-        <div class='btn btn-primary order ' data-status='{{myOrders.status}}' data-id='{{ myOrders.id }}' data-type='{{ myOrders.deliveryType }}'
-        {% if (myOrders.status == 'pending') %} >Accept
-        {% elseif (myOrders.status == 'processing') %} 
-            {% if (myOrders.deliveryType == 'personal_pickup') %}>Ready to pick up
-            {% elseif (myOrders.deliveryType == 'parcel_locker') %}>Shipped
-            {% elseif (myOrders.deliveryType == 'courier') %}>Shipped
-        {% endif %}
-        {% endif %}
+                {% if (myOrders.isPaid) %}
+                    Paid 
+                {% else %}
+                    Not Paid 
+                {% endif %}
+                <br>
+                {{ myOrders.status }}<br>
+            </div>
+            <div class='col'>
+                {% for key in myOrders.dir|keys %}
+                    <a href='{{ path('app_check_product', { 'id': myOrders.id }) }}'> <img src="{{ asset('users_data/' ~ myOrders.owner.id ~ '/products/' ~ key ~ '/' ~ myOrders.dir[key] ) }}"
+                         class="img-fluid rounded-3 m-3" alt="{{ myOrders.name }}-Image"  height='150px' width='150px'></a>
+                {% endfor %}
+            </div>
         </div>
-    {% elseif myOrders.status == 'feedback' %}:
-         {{ myOrders.feedback }}
-         {{ myOrders.feedbackDescription }}
+    </section>
+    {% endfor %}
+</div>
 
-    {% else %}
-        <div> During shipment </div>
-    {% endif %}
-   <br>
-   <hr>
-</section>
-{% endfor %} #}
+
+<div class='container border border-success rounded'>
+    <h2 class='text-center my-3'>Complete  <i class="fa-sharp fa-solid fa-circle-check" style="color: #4b970c;"></i></h2> 
+    {% for myOrders in myOrdersArrayDone %}
+    
+    <section class='order-field border container my-5 rounded' data-id={{ myOrders.id }}>
+        <div class='row'>
+            <div class='col'>
+                Delivery Type: {{ myOrders.deliveryType }}<br>
+                Final Location: {{ myOrders.finalLocation }}<br>
+                Payment Method: {{ myOrders.paymentMethod }}<br>
+                Price: ${{ myOrders.price }}<br>
+
+
+                {% if (myOrders.isPaid) %}
+                    Paid 
+                {% else %}
+                    Not Paid 
+                {% endif %}
+                <br>
+                    {{ myOrders.status }}
+   
+   
+            </div>
+            <div class='col'>
+                {% for key in myOrders.dir|keys %}
+                    <a href='{{ path('app_check_product', { 'id': myOrders.id }) }}'> <img src="{{ asset('users_data/' ~ myOrders.owner.id ~ '/products/' ~ key ~ '/' ~ myOrders.dir[key] ) }}"
+                         class="img-fluid rounded-3 m-3" alt="{{ myOrders.name }}-Image"  height='150px' width='150px'></a>
+                {% endfor %}
+
+            </div>
+        </div>
+    </section>
+    {% endfor %}
+</div>
+
 
 {% block javascripts %}
 {{ encore_entry_script_tags('app') }}
@@ -279,17 +269,17 @@ $(document).on('click', '.order', function(){
             if(!response.done)
             {
                 $('.order[data-id='+id+']').attr('data-status', response.newStatus);
-                $('.order[data-id='+id+']').text(response.newText);
+            //    $('.order[data-id='+id+']').text(response.newText);
             }
             else
             {
                 $('.order[data-id='+id+']').attr('data-status', response.newStatus);
-                $('.order[data-id='+id+']').text(response.newText).addClass('disabled');
+              //  $('.order[data-id='+id+']').text(response.newText).addClass('disabled');
                 $('.delete-order[data-id='+id+']').remove();
                 $('.order[data-id='+id+']').remove();
             }
 
-            $('.order-field[data-id='+id+']').appendTo($('section[id='+response.newStatus+']'));
+            $('.order-field[data-id='+id+']').appendTo($('div[id='+response.newStatus+']'));
         }
     })
 })

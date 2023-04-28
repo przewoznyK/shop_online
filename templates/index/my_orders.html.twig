@@ -9,17 +9,12 @@
     <h2 class='text-center my-3'>In progress  <i class="fa-solid fa-gear"></i></h2> 
 {% for myOrders in myOrdersArray %}
     <section class='order-field border container my-5 rounded
-    {% if myOrders.feedback == 'ok' %} border-success 
-    {% elseif myOrders.feedback == '' and myOrders.status == 'done' %} border-secondary
-    {% elseif not myOrders.feedback == '' and myOrders.status == 'feedback' %} border-danger
-    {% elseif myOrders.status == 'ready_to_pick_up' %} border-info
 
-    {% endif %}
     ' data-id={{ myOrders.id }}>
         <div class='row p-2 '>
             <div class='col'>
                 <h4>                
-                    {% if myOrders.status == 'ready_to_pick_up' %}
+                    {% if myOrders.status == 'email_sent' %}
                         Your delivery is ready, check your email.
                     {% else %}
                         {{ myOrders.status }}
@@ -43,8 +38,10 @@
             </div>
             <div class='col'>
                 {% for key in myOrders.dir|keys %}
+                    <div class='bg-image hover-zoom'>
                     <a href='{{ path('app_check_product', { 'id': myOrders.id }) }}'> <img src="{{ asset('users_data/' ~ myOrders.owner.id ~ '/products/' ~ key ~ '/' ~ myOrders.dir[key] ) }}"
-                         class="img-fluid rounded-3 m-3" alt="{{ myOrders.name }}-Image"  height='150px' width='150px'></a>
+                         class="img-fluid rounded-3 m-3 " alt="{{ myOrders.name }}-Image"  height='150px' width='150px'></a>
+                    </div>
                 {% endfor %}
 
             </div>

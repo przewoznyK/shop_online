@@ -370,12 +370,118 @@ class IndexController extends AbstractController
     #[Route('/my_sell', name: 'app_my_sell')]
     public function mySell(Request $request, EntityManagerInterface $entityManager)
     {   
-        /** @var $myUser User */
-        $myUser = $this->getUser();
         $myOrdersArray = $entityManager->getRepository(OrderProduct::class)->findBy(array('owner'=> $this->getUser()));
         
+        $i=0;
+        $myOrdersArray = $entityManager->getRepository(OrderProduct::class)->findBy(array('buyer'=> $this->getUser()));
+
+        foreach ($myOrdersArray as $element)
+        {
+         $count = 0;
+           if(str_contains($element->getProduct(),'|'))
+           {
+                $elementExplodeArray = explode('|', $element->getProduct());
+                foreach($elementExplodeArray as $elementExplode)
+                {
+                    $element->dir[$count] = $elementExplode;
+                    $count++;
+                }
+                
+           }
+           else
+           {    
+                $element->dir[0] = $element->getProduct();
+           }                
+           $i++; 
+        }
+        foreach($myOrdersArray as $element)
+        {
+            $count=0;
+            foreach($element->dir as $direction)
+            {
+                $direction = explode(':', $direction);
+                $product = $entityManager->getRepository(Product::class)->find($direction[0]);
+                $element->productId[$count] = $product->getId();
+                unset($element->dir[$count]);
+
+              
+     
+                $dir = scandir('users_data/' . $element->getOwner()->getId() . '/products/' .  $product->getImagesDir());
+                foreach ($dir as $file) {
+           
+                    {
+                        if ($file != '.' && $file != '..') {  
+                            
+                        $element->dir[$product->getImagesDir()] = $file;
+                        break;
+                    }
+                    }
+                }
+                
+                $count++;
+            }
+        }
+       
+
+        $myOrdersArrayPending = array(); 
+        foreach($myOrdersArray as $key => $element) {
+            if($element->getStatus() == 'pending') {
+                $myOrdersArrayPending[] = $element;
+             
+                unset($myOrdersArray[$key]);
+            }
+        }
+        
+        $myOrdersArrayProgressing = array(); 
+        foreach($myOrdersArray as $key => $element) {
+            if($element->getStatus() == 'progressing') {
+                $myOrdersArrayProgressing[] = $element;
+             
+                unset($myOrdersArray[$key]);
+            }
+        }
+
+        $myOrdersArrayShipped= array(); 
+        foreach($myOrdersArray as $key => $element) {
+            if($element->getStatus() == 'shipped') {
+                $myOrdersArrayShipped[] = $element;
+             
+                unset($myOrdersArray[$key]);
+            }
+        }
+
+             $myOrdersArrayWaitingForFeedback= array(); 
+        foreach($myOrdersArray as $key => $element) {
+            if($element->getStatus() == 'ready_to_pick_up' || $element->getStatus() == 'email_sent') {
+                $myOrdersArrayWaitingForFeedback[] = $element;
+             
+                unset($myOrdersArray[$key]);
+            }
+        }
+        $myOrdersArrayDone = array(); 
+        foreach($myOrdersArray as $key => $element) {
+            if($element->getFeedback() == 'ok') {
+                $myOrdersArrayDone[] = $element;       
+                unset($myOrdersArray[$key]);
+            }
+        }
+        
+        $myOrdersArrayProblem = array(); 
+        foreach($myOrdersArray as $key => $element) {
+            if($element->getStatus() == 'problem') {
+                $myOrdersArrayProblem[] = $element; 
+                unset($myOrdersArray[$key]);
+            }
+        }
+
         return $this->render('index/my_sell.html.twig',[
             'myOrdersArray' => $myOrdersArray,
+            'myOrdersArrayPending' => $myOrdersArrayPending,
+            'myOrdersArrayProgressing' => $myOrdersArrayProgressing,
+            'myOrdersArrayShipped' => $myOrdersArrayShipped,
+            'myOrdersArrayWaitingForFeedback' => $myOrdersArrayWaitingForFeedback,
+            'myOrdersArrayDone' => $myOrdersArrayDone,
+            'myOrdersArrayProblem' => $myOrdersArrayProblem,
         ]);
     }
 
@@ -432,32 +538,37 @@ class IndexController extends AbstractController
                 $count++;
             }
         }
+
         usort($myOrdersArray, function ($a, $b) {
             $status_order = [
                 "pending" => 0,
                 "progressing" => 1,
                 "shipped" => 2,
                 "ready_to_pick_up" => 3,
-                "done" => 4
+                "email_sent" => 4,
+                "done" => 5
             ];
             $a_val = $status_order[$a->getStatus()] ?? 9999; // Domyślna wartość dla nieznanych statusów
             $b_val = $status_order[$b->getStatus()] ?? 9999;
             return $a_val - $b_val;
         });
-            $myOrdersArrayDone = array(); 
-            foreach($myOrdersArray as $key => $element) {
-                if($element->getFeedback() == 'ok') {
-                    $myOrdersArrayDone[] = $element;
-                    unset($myOrdersArray[$key]);
-                }
-        }
-        $myOrdersArrayProblem = array(); 
+
+        $myOrdersArrayDone = array(); 
         foreach($myOrdersArray as $key => $element) {
-            if($element->getStatus('problem')) {
-                $myOrdersArrayProblem[] = $element;
+            if($element->getFeedback() == 'ok') {
+                $myOrdersArrayDone[] = $element;       
                 unset($myOrdersArray[$key]);
             }
-    }
+        }
+
+        $myOrdersArrayProblem = array(); 
+        foreach($myOrdersArray as $key => $element) {
+            if($element->getStatus() == 'problem') {
+                $myOrdersArrayProblem[] = $element; 
+                unset($myOrdersArray[$key]);
+            }
+        }
+
         return $this->render('index/my_orders.html.twig',[
             'myOrdersArray' => $myOrdersArray,
             'myOrdersArrayDone' => $myOrdersArrayDone,

@@ -3,22 +3,32 @@
 {% block title %}Hello BuyNowController!{% endblock %}
 
 {% block body %}
-{{ token }}
 <br>
-{% if (status == 0) %}
-Sorry, we dont have this product in database
-{% elseif (status == 1) %}
+
+{% if (status == 1) %}
+<div class='container border border-info rounded py-5'>
+    <div class='row'>
+    <h2> Feedback </h2>
+    </div>
+        <div class='row '>
 
     <form action='{{path('app_feedback_product', {'token': token})}}' method='POST'>
         <label><input type='radio' name='feedback' value='ok'> Everything ok </label><br>
         <label><input type='radio' name='feedback' value='damaged'> The product is damaged </label><br>
         <label><input type='radio' name='feedback' value='content'> Contents of the delivery do not match </label><br>
+        
         <label><input type='radio' name='feedback' value='other'> Other </label><br>
-        <input type='text' name='description'>
-        <input type='submit' value='Send'>
+        
+        Message for owner:
+        <input class='form-control' type='text' name='description'> <br>
+        <input class='form-control btn btn-primary' type='submit' value='Send'>
     </form>
+</div>
+</div>
 {% else %}
-    Thank you for send feedback!
+<div class='container border border-info rounded py-5 text-center'>
+    Thank you for send feedback!<i class="fa-solid fa-face-smile-relaxed"></i><i class="fa-solid fa-gear"></i>
+    </div>
 {% endif %}
 {% block javascripts %}
 <script type="text/javascript">
