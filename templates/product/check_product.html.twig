@@ -1,6 +1,36 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+<style>
+.rating{
+  display : flex;
+  justify-content: center;
+}
+
+.rating input{
+  position : absolute;
+  left     : -100vw;
+}
+
+.rating label{
+  width      : 48px;
+  height     : 48px;
+  padding    : 48px 0 0;
+  overflow   : hidden;
+  background: url('{{ asset('tools/stars.png') }}') no-repeat top left;
+  cursor: pointer;
+}
+
+.rating:not(:hover) input:indeterminate + label,
+.rating:not(:hover) input:checked ~ input + label,
+.rating input:hover ~ input + label{
+  background-position : -48px 0;
+}
+
+.rating:not(:hover) input:focus-visible + label{
+  background-position : -96px 0;
+}
+</style>
 {% if productNotFoundBool %}
 <div class = 'container border border-warning text-center rounded'>
 <h1>Product Not Found</h1>
@@ -19,6 +49,7 @@
 	{% endfor %}
 
 
+	<div id='summaryRate'></div>
 	<section class="py-5">
 		<div class="container border border-primary rounded p-3">
 			<div class="row gx-5">
@@ -125,40 +156,48 @@
 					</div>
 				</main>
 			</div>
-
-
 		</div>
 	</section>
-  <hr>
-<div class='containe mx-auto w-25'>
-			{# Add Review #}
-			{% if is_granted('IS_AUTHENTICATED_FULLY') %}
+    {# Add Review #}
+	{% if is_granted('IS_AUTHENTICATED_FULLY') %}
+		<div class='container mx-auto w-50 border border-secondary rounded p-3 d-flex justify-content-center'>
+			<div class='row text-center m-4'>
+			<h2>Add Review</h2>
 				<form>
-					<select class='form-control' name="rating">
-						<option value="1">1</option>
-						<option value="2">2</option>
-						<option value="3">3</option>
-						<option value="4">4</option>
-						<option value="5">5</option>
-					</select>
-					<input name='comment' type='text' class='form-control mt-5'><br>
-					<button id="SubmitAddReviewProduct" class='form-control btn btn-primary'>Add Review</button>
+					<div class="rating">
+					<input id="rating1" type="radio" name="rating" value="1">
+					<label for="rating1">1</label>
+					<input id="rating2" type="radio" name="rating" value="2">
+					<label for="rating2">2</label>
+					<input id="rating3" type="radio" name="rating" value="3">
+					<label for="rating3">3</label>
+					<input id="rating4" type="radio" name="rating" value="4">
+					<label for="rating4">4</label>
+					<input id="rating5" type="radio" name="rating" value="5">
+					<label for="rating5">5</label>
+					</div>
+ 					<textarea class="form-control mt-3" id="comment" name="comment" rows="4"></textarea>
+
+					<button id="SubmitAddReviewProduct" class='form-control btn btn-primary mt-3'>Send</button>
+					<div id='notification' class='my-5'></div>
 				</form>
-				<div id='successAddReviewMessage'></div>
-			{% endif %}
-			<br><br>
-      </div>
+				
+      		</div>
+      	</div>
+	  	{% endif %}
 	{% if myProductBool %}
 		<a href="{{ path('app_edit_product', {'id': product.id }) }}">
 			Edit
 		</a>
-</div>
 	{% endif %}
+
+</div>
 
 
 	{# Show Review #}
 	<section id='review_section'>
 		{% for commentsAndRating in CommentsAndRatingArray %}
+
 			<section style="background-color: #e7effd;" class='reviewFull' data='{{commentsAndRating.id}}'>
 				<div class="container my-5 py-5 text-dark">
 					<div class="row d-flex justify-content-center">
@@ -169,7 +208,10 @@
 									<div class="card-body p-4">
 										<div class="">
 											<h5>{{ commentsAndRating.author.username }}
-												{{ commentsAndRating.rating }}
+												<input type='hidden' class='rating-count' value='{{commentsAndRating.rating}}'>
+												{% for i in 1..commentsAndRating.rating %}
+													<i class="fas fa-star" style="color: #f8c50d;"></i>
+												{% endfor %}
 											</h5>
 											{% if is_granted('IS_AUTHENTICATED_FULLY') %}
 												{% if commentsAndRating.author.id == myUser.id %}
@@ -233,11 +275,35 @@
 	      <div id="alert" class="alert-danger"> </div>
 	   </div>
 	</div> #}
+
 	{% endif %}
 	{% block javascripts %}
 		<script type="text/javascript">
 
 			// Add Cart
+
+var ratingArray = {{ CommentsAndRatingArray|json_encode|raw }};
+console.log(ratingArray);
+var ratingValue = 0;
+var ratingCount = 0;
+var ratingSummary = 0;
+var ratingDisplay;
+$(document).ready(function(){
+   const starsPath = "{{ asset('tools/star.png') }}";
+   let ratingValue = 0;
+   let ratingCount = 0;
+   $('.rating-count').each(function() {
+      ratingValue += parseInt($(this).val());
+      ratingCount += 1;
+   });
+   const ratingSummary = ratingValue / ratingCount;
+   console.log(ratingSummary);
+   for (let i = 0; i < Math.floor(ratingSummary); i++) {
+      const star = document.createElement('img');
+      star.src = starsPath;
+      $('#summaryRate').append(star);
+   }
+});
 
 
 // Add Reviews Function
@@ -257,7 +323,7 @@ type: 'POST',
 url: '{{ path('ajax_add_reviews_product') }}',
 data: $('form').serialize() + '&productId=' + productId,
 success: function (response) {
-$('#successAddReviewMessage').append('Comment successfully added.<br>').addClass('bg-success text-white p-2');;
+showNotification('<div class="alert alert-success">Comment successfully added.</div>');
 $('#review_section').empty();
 $('#review_section').html(response.html);
 }
@@ -421,7 +487,14 @@ $('#main-image').attr('src', image);
 console.log(1);
 })
 
-
+function showNotification(message)
+{
+    $('#notification').html(message);
+    setTimeout(function()
+    {
+        $('#notification').get(0).style.display = 'none';
+    }, 2000);
+}
 		</script>
 	{% endblock %}
 {% endblock %}

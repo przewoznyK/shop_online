@@ -164,7 +164,12 @@ class SessionController extends AbstractController
                 <div class="card w-100">
                   <div class="card-body p-4">
                     <div class="">
-                      <h5>' . $commentsAndRating->getAuthor()->getUsername() . ' ' . $commentsAndRating->getRating() . '</h5>';
+                      <h5>' . $commentsAndRating->getAuthor()->getUsername() . ' '; 
+                        for ($i=0; $i<$commentsAndRating->getRating(); $i++)
+                        {
+                            $html .= '<i class="fas fa-star" style="color: #f8c50d;"></i>';
+                        }
+                      $html.= '</h5>';
             if ($commentsAndRating->getAuthor()->getId() == $myUser->getId()) {
                 $html .= "<h5><i data-comment-id='" . $commentsAndRating->getId() . "' class='deleteReview fa-sharp fa-solid fa-trash position-absolute top-0 end-0 m-3 btn'></i></h5>";
             }

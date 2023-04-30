@@ -343,6 +343,7 @@ class ProductController extends AbstractController
         }
 
         $myProductBool = false;
+
         return $this->render('product/check_product.html.twig', [
             'product' => $product,
             'imagesName' => $imagesName,
