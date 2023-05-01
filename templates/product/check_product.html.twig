@@ -30,6 +30,16 @@
 .rating:not(:hover) input:focus-visible + label{
   background-position : -96px 0;
 }
+
+#stars{
+	background: url('{{ asset('tools/star-empty.png') }}') repeat-x;
+	min-width: 242px;
+}
+
+.carousel-control-next,
+.carousel-control-prev /*, .carousel-indicators */ {
+    filter: invert(100%);
+}
 </style>
 {% if productNotFoundBool %}
 <div class = 'container border border-warning text-center rounded'>
@@ -48,8 +58,6 @@
 		</div>
 	{% endfor %}
 
-
-	<div id='summaryRate'></div>
 	<section class="py-5">
 		<div class="container border border-primary rounded p-3">
 			<div class="row gx-5">
@@ -100,18 +108,15 @@
 						</h4>
 						<div class="d-flex flex-row my-3">
 							<div class="text-warning mb-1 me-2">
-								<i class="fa fa-star"></i>
-								<i class="fa fa-star"></i>
-								<i class="fa fa-star"></i>
-								<i class="fa fa-star"></i>
-								<i class="fas fa-star-half-alt"></i>
-								<span class="ms-1">
-									4.5
+									<div id='stars'></div>
+								<span id='starsSummary' class="ms-1">
 								</span>
 							</div>
-							<span class="text-muted">
-								<i class="fas fa-shopping-basket fa-sm mx-1"></i>154 orders</span>
-							<span class="text-success ms-2">In stock</span>
+							<span class="text-muted fs-4 mt-2 ms-3">
+								<i class="fas fa-shopping-basket fa-sm mx-1"></i> 
+								{{ product.orderscount is null ? 0 : product.orderscount }}
+								orders</span>
+					
 						</div>
 
 						<div class="mb-3">
@@ -122,7 +127,7 @@
 						<p>
 							{{ product.description }}
 						</p>
-
+						
 						<hr/>
 						<!-- Quantity -->
 						<div class="row mb-4">
@@ -148,11 +153,43 @@
 								Remove from cart</button>
 						{% else %}
 							{% if product.quantity > 0 %}
-								<button class="add-cart-button btn btn-primary" data-cart-id="{{ product.id }}">
+								<button class="add-cart-button btn btn-primary mb-5 ms-1" data-cart-id="{{ product.id }}">
 									<i class="me-1 fa fa-shopping-basket"></i>
 									Add to cart</button>
 							{% endif %}
 						{% endif %}
+						<div class='border rounded text-center'>
+						<h3 class='m-3'> Delivery </h3>
+						{% if deliveryArray is empty %}
+							No delivery for this product
+						{% else %}
+
+						<div class='container'>
+								<div class='row'>
+						 	{% for delivery in deliveryArray %}
+							
+								
+								{% if (delivery.type == 'parcel_locker') %}
+								<div class='col my-3' data-bs-toggle="tooltip" data-bs-placement="top" title="Parcel locker">
+									<img src='{{asset('tools/locker.png') }}'>
+								</div>
+								{% elseif (delivery.type =='courier' )%}
+								<div class='col my-3' data-bs-toggle="tooltip" data-bs-placement="top" title="Courier">
+									<img src='{{asset('tools/delivery-man.png') }}'>
+									</div>
+								{% elseif (delivery.type =='personal_pickup' ) %}
+								<div class='col my-3' data-bs-toggle="tooltip" data-bs-placement="top" title="Personal Pickup">
+									<img src='{{asset('tools/delivery.png') }}'>
+									{{ delivery.personalpickup }}
+									
+									</div>
+								{% endif %}
+							
+							{% endfor %}
+								</div>
+								</div>
+						{% endif %}
+					</div>
 					</div>
 				</main>
 			</div>
@@ -282,35 +319,22 @@
 
 			// Add Cart
 
-var ratingArray = {{ CommentsAndRatingArray|json_encode|raw }};
-console.log(ratingArray);
 var ratingValue = 0;
 var ratingCount = 0;
 var ratingSummary = 0;
 var ratingDisplay;
+var productId = {{ product.id }}
 $(document).ready(function(){
-   const starsPath = "{{ asset('tools/star.png') }}";
-   let ratingValue = 0;
-   let ratingCount = 0;
-   $('.rating-count').each(function() {
-      ratingValue += parseInt($(this).val());
-      ratingCount += 1;
-   });
-   const ratingSummary = ratingValue / ratingCount;
-   console.log(ratingSummary);
-   for (let i = 0; i < Math.floor(ratingSummary); i++) {
-      const star = document.createElement('img');
-      star.src = starsPath;
-      $('#summaryRate').append(star);
-   }
-});
+	showStars();
 
+});
 
 // Add Reviews Function
 var canCallFunction1 = true;
 $(function () {
 $(document).on('click', '#SubmitAddReviewProduct', function (event) {
 event.preventDefault();
+
 if (canCallFunction1) {
 canCallFunction1 = false;
 setTimeout(() => {
@@ -326,6 +350,7 @@ success: function (response) {
 showNotification('<div class="alert alert-success">Comment successfully added.</div>');
 $('#review_section').empty();
 $('#review_section').html(response.html);
+showStars();
 }
 });
 }
@@ -487,6 +512,36 @@ $('#main-image').attr('src', image);
 console.log(1);
 })
 
+function showStars()
+{
+	$('#stars').empty();
+   const starsPath = "{{ asset('tools/star.png') }}";
+   const starsEmptyPath = "{{ asset('tools/star-empty.png') }}";
+   let ratingValue = 0;
+   let ratingCount = 0;
+   $('.rating-count').each(function() {
+      ratingValue += parseInt($(this).val());
+      ratingCount += 1;
+   });
+   console.log('ratingcount: '+ratingCount);
+   const ratingSummary = ratingValue / ratingCount;
+	if(ratingSummary){
+		for (let i = 0; i < Math.floor(ratingSummary); i++) {
+			const star = document.createElement('img');
+			star.src = starsPath;
+			$('#stars').append(star);
+		}
+		if (ratingSummary % 1 !== 0){
+				let clipValue = (1 - ratingSummary % 1) * 100;
+				const star = document.createElement('img');
+				star.src = starsPath;
+				star.style.clipPath = `inset(0 ${clipValue}% 0 0)`;
+				$('#stars').append(star);
+		}	
+		$('#starsSummary').html(ratingSummary.toFixed(2)+' out of '+ ratingCount + ' user ratings');
+   }
+
+}
 function showNotification(message)
 {
     $('#notification').html(message);

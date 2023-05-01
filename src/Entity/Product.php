@@ -61,6 +61,9 @@ class Product
     #[ORM\Column]
     private ?bool $is_deleted = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $ordersCount = null;
+
     public function __construct()
     {
         $this->delivery = new ArrayCollection();
@@ -256,6 +259,18 @@ class Product
     public function setIsDeleted(bool $is_deleted): self
     {
         $this->is_deleted = $is_deleted;
+
+        return $this;
+    }
+
+    public function getOrdersCount(): ?int
+    {
+        return $this->ordersCount;
+    }
+
+    public function setOrdersCount(?int $ordersCount): self
+    {
+        $this->ordersCount = $ordersCount;
 
         return $this;
     }

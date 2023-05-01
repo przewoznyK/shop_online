@@ -341,7 +341,9 @@ class ProductController extends AbstractController
             $myUser = 0;
             $productNotFoundBool = true;
         }
-
+        
+        // Take delivery options
+        $deliveryArray = $entityManager->getRepository(Delivery::class)->findBy(['product' => $product->getId()]);
         $myProductBool = false;
 
         return $this->render('product/check_product.html.twig', [
@@ -351,7 +353,8 @@ class ProductController extends AbstractController
             'myProductBool' => $myProductBool,
             'CommentsAndRatingArray' => $CommentsAndRatingArray,
             'myUser' => $myUser,
-            'productNotFoundBool' => $productNotFoundBool
+            'productNotFoundBool' => $productNotFoundBool,
+            'deliveryArray' => $deliveryArray
 
         ]);
     }

@@ -3,16 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\ProductReview;
-use App\Entity\User;
 use App\Entity\Product;
 use DateTime;
-use App\Controller\asset;
 use App\Entity\Delivery;
 use App\Entity\OrderProduct;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -165,6 +161,8 @@ class SessionController extends AbstractController
                   <div class="card-body p-4">
                     <div class="">
                       <h5>' . $commentsAndRating->getAuthor()->getUsername() . ' '; 
+                        $html .="<input type='hidden' class='rating-count' value='".$commentsAndRating->getRating()."'>";
+
                         for ($i=0; $i<$commentsAndRating->getRating(); $i++)
                         {
                             $html .= '<i class="fas fa-star" style="color: #f8c50d;"></i>';
@@ -425,4 +423,6 @@ class SessionController extends AbstractController
         return new JsonResponse(['id' => $orderId]);
 
     }
+
+
 }

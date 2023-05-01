@@ -20,141 +20,113 @@
 
 
 
-	</head>
-	<body>
-	
-</span>
-		{# {% block javascripts %}
-	{{ encore_entry_script_tags('app') }}
-<script>
+</head>
+<body>
+<style>
+.badge {
+  position: relative;
+  display: inline-block;
+	color: black;
+  font-size: 24px;
+}
 
-$(document).on('click', '.add-cart-button', function(event){
-    var productId = $(this).data('cart-id');
-	var quantity = $('#quantity-input').val();
-	if(quantity == null) quantity = 1;
-    $.ajax({
-      url: '{{ path('ajax_add_value_to_session') }}',
-      method: 'POST',
-      data: {productId: productId, quantity: quantity},
-      success: function(response) {
-        console.log('Value added to session');
-        // Aktualizujemy wartość elementu HTML po zakończeniu operacji AJAX
-        $('.show-cart-count').html(response.cartsCount);
-        $('[data-cart-id="' + productId + '"]').removeClass('add-cart-button').addClass('remove-cart-button').text('Remove product');
-      
-      }
-    });
-  });
-
-
-$(document).on('click', '.remove-cart-button', function(event){
-    var productId = $(this).data('cart-id');
-	var quantity = $('#quantity-input').val();
-    $.ajax({
-      url: '{{ path('ajax_remove_cart') }}',
-      method: 'POST',
-      data: {productId: productId, quantity: quantity},
-      success: function(response) {
-        
-			$('.show-cart-count').html(response.cartsCount);
-        	$('.cart-item[data-cart-id="' + productId + '"]').remove();
-			$('[data-cart-id="' + productId + '"]').removeClass('remove-cart-button').addClass('add-cart-button').text('Add product');
-
-      
-	  }
-    });
-  });
-
-$(document).ready(function() {
-  updateTotal();
-  
-  $('.quantity-input').on('change', function() {
-    updateTotal();
-  });
-});
-
-function updateTotal() {
-  $('.quantity-input').each(function() {
-    var displayId = $(this).data('display');
-    var quantity = $(this).val();
-    var price = $(this).data('price');
-    $(displayId).text('$' + (quantity * price).toFixed(2));
-  });
+.badge-number {
+  position: absolute;
+  bottom: 0px;
+  right: 3px;
+  background-color: blue;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 20px;
 }
 
 
+</style>
+</span>
 
-
-</script>
-		{% endblock %} #}
-<span class="show-cart-count">{{ app.session.get('cartsCount') }}</span>
-
-
-		<nav class="navbar navbar-expand-lg bg-body-tertiary">
-			<div class="container-fluid">
-				<a class="navbar-brand" href="{{ path('app_index') }}">Navbar</a>
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="collapse navbar-collapse" id="navbarNav">
-					<ul class="navbar-nav">
-
-						{% if is_granted('IS_AUTHENTICATED_FULLY') %}
-							<li class="nav-item float-end">
-								<a class="nav-link" href="{{ path('app_logout') }}">Logout</a>
-							</li>
-              				<li class="nav-item">
-								<a class="nav-link" href="{{ path('app_user') }}">Profile</a>
-								Welcome {{ app.user ? app.user.email }} Wallet: {{ app.user.wallet }}
-							</li>
-							</li class="nav-item">
-								<a class="nav-link" href="{{ path('app_my_sell') }}">My sell</a>
-							<li>
-							</li class="nav-item">
-								<a class="nav-link" href="{{ path('app_my_orders') }}">My orders</a>
-							<li>
-						{% else %}
-							<li class="nav-item">
-								<a class="nav-link" href="{{ path('app_login') }}">Login</a>
-							</li>
-							<li class="nav-item">
-								<a class="nav-link" href="{{ path('app_register') }}">Register</a>
-							</li>
-            
-						{% endif %}
-						<li class="nav-item">
-								<a class="nav-link" href="{{ path('app_carts') }}">Carts</a>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</nav>
-		{% block body %}{% endblock %}
-
-		<div class="container">
-			<footer class="py-3 my-4">
-				<ul class="nav justify-content-center border-bottom pb-3 mb-3">
+<nav class='navbar navbar-expand-md bg-body-tertiary'>
+	<div class='container-fluid'>
+		<a class="navbar-brand mx-2" href="{{ path('app_index') }}"><i class="fas fa-store fa-2x"></i></a>
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse flex-grow-0" id="navbarNav">
+			<ul class="navbar-nav">
+				{% if is_granted('IS_AUTHENTICATED_FULLY') %}
 					<li class="nav-item">
-						<a href="#" class="nav-link px-2 text-muted">Home</a>
+						<a class="nav-link ms-3" href="{{ path('app_my_sell') }}">My sell</a>
 					</li>
-					<li class="nav-item">
-						<a href="#" class="nav-link px-2 text-muted">Features</a>
+					<li class="nav-item ms-3">
+						<a class="nav-link" href="{{ path('app_my_orders') }}">My orders</a>
 					</li>
-					<li class="nav-item">
-						<a href="#" class="nav-link px-2 text-muted">Pricing</a>
+					<li class="nav-item ms-3">
+						<a class="nav-link" href="{{ path('app_carts') }}">
+							<span class="badge"><i class="fas fa-shopping-cart"></i>
+							<span class="badge-number show-cart-count">{{ app.session.get('cartsCount') }}</span>
+						</span></a>
 					</li>
-					<li class="nav-item">
-						<a href="#" class="nav-link px-2 text-muted">FAQs</a>
+					
+					<li class="nav-item ms-3">
+						<a class="nav-link d-flex" href="{{ path('app_carts') }}">
+							<span class="fs-4 text-center text-dark"><i class="fas fa-wallet"></i>
+							<span class="fs-6">${{ app.session.get('wallet') }}</span>
+						</span></a>
 					</li>
-					<li class="nav-item">
-						<a href="#" class="nav-link px-2 text-muted">About</a>
+					<li class="nav-item me-5">
+						<div class="dropdown">
+							<a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+								<img src="{{ asset('users_data/' ~ app.session.get('userId') ~ '/avatar/avatar.jpg') }}" alt="avatar" width='60px'>
+							</a>
+							<ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+								<li><a class="dropdown-item" href="{{ path('app_user') }}">Profile</a></li>
+								<li><a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a></li>
+							</ul>
+						</div>		
 					</li>
-				</ul>
-				<p class="text-center text-muted">© 2022 Company, Inc</p>
-			</footer>
+				{% else %}
+					<li class="nav-item mx-3 my-3">
+						<a class="btn btn-primary" href="{{ path('app_login') }}">	Login </a>
+					</li>
+
+					<li class="nav-item mx-3 my-3">
+						<a class="btn btn-success" href="{{ path('app_register') }}">	Register </a>
+					</li>
+				{% endif %}
+			</ul>
 		</div>
+	</div>
+</nav>
 
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+{% block body %}{% endblock %}
+<div class="container">
+	<footer class="py-3 my-4">
+		<ul class="nav justify-content-center border-bottom pb-3 mb-3">
+			<li class="nav-item">
+				<a href="#" class="nav-link px-2 text-muted">Home</a>
+			</li>
+			<li class="nav-item">
+				<a href="#" class="nav-link px-2 text-muted">Features</a>
+			</li>
+			<li class="nav-item">
+				<a href="#" class="nav-link px-2 text-muted">Pricing</a>
+			</li>
+			<li class="nav-item">
+				<a href="#" class="nav-link px-2 text-muted">FAQs</a>
+			</li>
+			<li class="nav-item">
+				<a href="#" class="nav-link px-2 text-muted">About</a>
+			</li>
+		</ul>
+		<p class="text-center text-muted">© 2022 Company, Inc</p>
+	</footer>
+</div>
 
-	</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+
+</body>
 </html>
+

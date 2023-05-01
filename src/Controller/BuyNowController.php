@@ -47,6 +47,14 @@ class BuyNowController extends AbstractController
                 $elementExplode = explode(':', $element);
                 $product = $entityManager->getRepository(Product::class)->find($elementExplode[0]);
                 $productPrice = $product->getPrice();
+                if($product->getOrdersCount())
+                {
+                    $product->setOrdersCount($product->getOrdersCount() + $elementExplode[1]);
+                }
+                else
+                {
+                    $product->setOrdersCount($elementExplode[1]);
+                }
                 if ($priceDetails) {
                     $priceDetails .= '+' . $productPrice . '*' . $elementExplode[1];
                 } else {

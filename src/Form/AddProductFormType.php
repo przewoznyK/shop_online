@@ -55,7 +55,9 @@ class AddProductFormType extends AbstractType
                 ]
               
             ])
-            ->add('submit', SubmitType::class)
+            ->add('submit', SubmitType::class,[
+                'label' => 'Save and add delivery'
+            ])
         ;
     }
 

@@ -5,19 +5,17 @@
 
 	<div class="container-fluid" style="max-width: 70%;">
 		<div class="row ">
-			<div class="col-md-4 col-sm-10">
+			<div class="col-md-4 col-sm-10 me-4">
 				<h1 class="h3 mb-3 font-weight-normal">Add Product</h1>
 				{{ form_start(AddProductFormType) }}
 				{{ form_row(AddProductFormType.name, {'attr': {'class': 'form-control'}}) }}
-				{{ form_row(AddProductFormType.price, {'attr': {'class': 'form-control'}}) }}
-				{{ form_row(AddProductFormType.quantity, {'attr': {'class': 'form-control'}}) }}
-				{{ form_row(AddProductFormType.category, {'attr': {'class': 'form-control'}}) }}
-
-				{{ form_row(AddProductFormType.my_files, {'attr': {'class': 'form-control'}}) }}
-
-				{{ form_row(AddProductFormType.description, {'attr': {'class': 'form-control', 'style': 'height: 6em;' }}) }}
-				{{ form_row(AddProductFormType.is_public) }}
-				{{ form_row(AddProductFormType.submit, {'attr': {'class': 'btn btn-primary'}}) }}
+				<p>{{ form_row(AddProductFormType.price, {'attr': {'class': 'form-control'}}) }}</p>
+				<p>{{ form_row(AddProductFormType.quantity, {'attr': {'class': 'form-control'}}) }}</p>
+				<p>{{ form_row(AddProductFormType.category, {'attr': {'class': 'form-control'}}) }}</p>
+				<p>{{ form_row(AddProductFormType.my_files, {'attr': {'class': 'form-control'}}) }}</p>
+				<p>{{ form_row(AddProductFormType.description, {'attr': {'class': 'form-control', 'style': 'height: 6em;' }}) }}</p>
+				<p>{{ form_row(AddProductFormType.is_public) }}</p>
+				<p>{{ form_row(AddProductFormType.submit, {'attr': {'class': 'btn btn-primary'}}) }}</p>
 				{{ form_end(AddProductFormType) }}
 
 			</div>
