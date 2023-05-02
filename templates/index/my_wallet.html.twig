@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Wallet
+{% endblock %}
+
+{% block body %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-color/2.1.2/jquery.color.min.js"></script>
+
+
+<div class='container border border-info rounded py-5 my-5 text-center'>
+    <h2>Your wallet
+        <i class="fas fa-wallet"></i><br>
+        <div id='wallet'>
+            ${{ app.session.get('wallet') }}</div>
+    </h2>
+    <div class='container mt-5'>
+        <div class='row justify-content-center'>
+            <div class='col d-flex justify-content-center '>
+                <div class="card btn" data-value='100' style="width: 14rem; background-color: #F0F8FF; font-size: 20px;">
+                    <div class="card-body p-5">
+                        Add $100<br>
+                        to your wallet
+                    </div>
+                </div>
+            </div>
+            <div class='col d-flex justify-content-center '>
+                <div class="card btn" data-value='500' style="width: 14rem; background-color: #F0F8FF; font-size: 20px;">
+                    <div class="card-body p-5">
+                        Add $500<br>
+                        to your wallet
+                    </div>
+                </div>
+            </div>
+            
+            <div class='col d-flex justify-content-center '>
+                <div class="card btn" data-value='1000' style="width: 14rem; background-color: #F0F8FF; font-size: 20px;">
+                    <div class="card-body p-5">
+                        Add $1000<br>
+                        to your wallet
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+			{% block javascripts %}
+				<script type="text/javascript">
+
+$(".card").hover(function () {
+   $(this).stop(true, true).animate({width: "+=30", height: "+=10px",fontSize: "+=5px" , backgroundColor : '#6495ED'}, 500);
+}, function () {
+    $(this).stop(true, true).animate({width: "-=30", height: "-=10px",fontSize: "-=5px", backgroundColor : '#F0F8FF'}, 500);
+});
+
+var canCallFunction1 = true;
+$(document).on('click', '.card', function () {
+    	if (canCallFunction1) {
+		canCallFunction1 = false;
+		setTimeout(() => {
+			canCallFunction1 = true;
+		}, 500);
+    var card = $(this).data('value');
+    $.ajax({
+        url: '{{ path('ajax_update_wallet') }}',
+        method: 'POST',
+        data: {
+        card: card
+        },
+        success: function (response) {
+            $('#wallet').html('$' + response.value);
+            $('#walletNav').html('$' + response.value);
+            
+        }
+    })
+}})
+</script>
+{% endblock %}
+{% endblock %}

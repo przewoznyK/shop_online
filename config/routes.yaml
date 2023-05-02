@@ -52,3 +52,8 @@ ajax_my_orders:
     path: /ajax/my_orders
     controller: App\Controller\SessionController::myOrders
     methods: [POST]
+
+ajax_update_wallet:
+    path: /ajax/update_wallet
+    controller: App\Controller\SessionController::updateWallet
+    methods: [POST]

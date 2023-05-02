@@ -25,7 +25,7 @@ class AfterLoginListener
        
         $myCarts = $myUser->getCarts();
         if ($myCarts) {
-            $myCartsId = explode(',', $myCarts);
+            $myCartsId = explode('|', $myCarts);
             $session->set('cartsId', $myCarts);
             $session->set('cartsCount', count($myCartsId));
         }

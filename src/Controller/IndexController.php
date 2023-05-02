@@ -117,7 +117,11 @@ class IndexController extends AbstractController
     #[Route('/carts', name: 'app_carts')]
     public function carts(EntityManagerInterface $entityManager, SessionInterface $session)
     {
-
+        $response = new Response();
+        $response->headers->set('Cache-Control', 'no-cache, must-revalidate');
+        $response->headers->set('Expires', 'Sat, 26 Jul 1997 05:00:00 GMT');
+        $response->headers->set('Pragma', 'no-cache');
+      
         
         $myCarts = $session->get('cartsId');
         if ($myCarts) {
@@ -573,6 +577,14 @@ class IndexController extends AbstractController
             'myOrdersArray' => $myOrdersArray,
             'myOrdersArrayDone' => $myOrdersArrayDone,
             'myOrdersArrayProblem' => $myOrdersArrayProblem,
+        ]);
+    }
+    #[Route('/my_wallet', name: 'app_my_wallet')]
+    public function myWallet(Request $request, EntityManagerInterface $entityManager)
+    {
+
+        return $this->render('index/my_wallet.html.twig',[
+
         ]);
     }
 }

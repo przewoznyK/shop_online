@@ -5,11 +5,11 @@
 
 {% block body %}
 
-	<div class="container-fluid my-5 border">
+	<div class="container-fluid my-5">
 		<div
 			class="row justify-content-center">
 			{# Side bar #}
-			<div class="col-xxl-2 col-xl-10 col-lg-10 col-md-10  ps-5 border">
+			<div class="col-xxl-2 col-xl-10 col-lg-10 col-md-10  ps-5 border rounded">
 				<h4 class='mt-5'>Categories</h4>
 				{% for category in categories %}
 					<a class="text-decoration-none {% if (actualCategory) and category.id == actualCategory.id %}active font-weight-bold text-danger{% endif %}" href="{{ path('app_category', { 'name': category.name }) }}">
@@ -44,7 +44,7 @@
 			</div>
 			{# Carts #}
 			<div class="col-md-10 ">
-				<div class="container border py-5 ">
+				<div class="container border rounded py-5 ">
 					<div class="row mx-auto">
 						{% set count = 0 %}
 						{% for offerInfo in allOfferInfo %}
@@ -93,7 +93,7 @@ $(document).on('click', '.add-cart-button', function (event) {
 		canCallFunction1 = false;
 		setTimeout(() => {
 			canCallFunction1 = true;
-		}, 2000);
+		}, 500);
 		var productId = $(this).data('cart-id');
 		var quantity = $('#quantity-input').val();
 		if (quantity == null) 
@@ -122,7 +122,7 @@ $(document).on('click', '.remove-cart-button', function (event) {
 		canCallFunction1 = false;
 		setTimeout(() => {
 			canCallFunction1 = true;
-		}, 2000);
+		}, 500);
 		var productId = $(this).data('cart-id');
 		var quantity = $('#quantity-input').val();
 		$.ajax({

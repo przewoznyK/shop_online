@@ -14,88 +14,91 @@
         input[type=number] {
             -moz-appearance: textfield;
         }
+        hr{
+          margin-top: 10px;
+        }
     </style>
 <section>
-
+<div id='emptySpace'></div>
 {% if not (myCartsInfo) %}
 <div class='container border border-info rounded py-5 my-5 text-center'>
   <h2>  You have empty cart   <i class="fas fa-cart-arrow-down"></i>  </h2>  
 </div>
 
-
 {% else %}
 
-
-  {% set lastIdOwner = 0 %}
-  {% set group = 0 %}
-  {% set count = 0 %}
+{% set lastIdOwner = 0 %}
+{% set group = 0 %}
+{% set groupProductsCount = 0 %}
+{% set count = 0 %}
   {% for cartInfo in myCartsInfo %}
-  {% if (count == 0 ) %}
-  
-  
-  <div class="container border border-primary border-3 rounded p-5 my-5">
-    <form action="{{ path('app_buy_now') }}" method="POST">
-      <div class="row " data-cart-id="{{ cartInfo.id }}">
-        <div class="col d-flex justify-content-between m-3">
-          <input class='btn' data-class='{{ group }}' type="checkbox" name="product_id[]" value="{{ cartInfo.id }}" 
-          data-display="{{ cartInfo.id }}" style='width: 1em; height: 1em; font-size: 2rem;'>
-          <i class="remove-cart-button fa-sharp fa-solid fa-xmark btn" 
-             data-cart-id="{{ cartInfo.id }}" style="font-size: 2rem;"></i>
-        </div>
-      </div>
-      <div class="row d-flex  justify-content-center" data-cart-id="{{ cartInfo.id }}">
-
-        <div class="col-lg-3 my-auto ">
-          <img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}"
-               alt="{{ cartInfo.name }}-Image" class="img-fluid rounded-3" >
-        </div>
-        <div class="col-lg-7 text-center">
-          <p class="lead fw-normal mb-2">{{ cartInfo.name }}</p>
-          <span id="{{ cartInfo.id }}">${{ cartInfo.price }}</span>
-					<!-- Quantity -->
-					<div class="col-md-4 col-6 mb-3 mx-auto">
-					  <label class="mb-2 d-block">Quantity</label>
-						<div class="input-group mb-3">
-							<button class="btn btn-white border quantity-change" type="button" data-display="{{ cartInfo.id }}" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-								<i class="fas fa-minus"></i>
-							</button>
-                <input name="quantity[]" min="1" max="{{ cartInfo.quantity }}" data-display="{{ cartInfo.id }}" value="{{ cartInfo.quantityUser  }}" type="number"
-                       class="quantity-input quantity-change form-control form-control-sm w-25 text-center" data-price="{{ cartInfo.price }}" data-group="{{ group }}" disabled/> 
-							<button class="btn btn-white border quantity-change" type="button" data-display="{{ cartInfo.id }}" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-								<i class="fas fa-plus"></i>
-							</button>					
+    {# Display first product #}
+    {% if (count == 0 ) %}
+      <div class="container border border-primary border-3 rounded p-5 my-5" data-group='{{ group }}'>
+        <form action="{{ path('app_buy_now') }}" method="POST">
+          <div class="row " data-cart-id="{{ cartInfo.id }}">
+            <div class="col d-flex justify-content-between m-3">
+              <input class='btn' data-group='{{ group }}' type="checkbox" name="product_id[]" value="{{ cartInfo.id }}" 
+                     data-display="{{ cartInfo.id }}" style='width: 1em; height: 1em; font-size: 2rem;' autocomplete='off'>
+              <i class="remove-cart-button fa-sharp fa-solid fa-xmark btn" 
+                 data-cart-id="{{ cartInfo.id }}" data-group="{{ group }}" style="font-size: 2rem;"></i>
             </div>
-            <div class="text-center">Max: {{ cartInfo.quantity }}
+          </div>
+          <div class="row d-flex  justify-content-center" data-cart-id="{{ cartInfo.id }}">
+            <div class="col-lg-3 my-auto ">
+              <img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}"
+                  alt="{{ cartInfo.name }}-Image" class="img-fluid rounded-3" >
             </div>
-					</div>
-          <a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary flex-fill">Check product</a>
-        </div>
-
-      </div>
-      <hr>
-    
- 
+            <div class="col-lg-7 text-center">
+              <p class="lead fw-normal mb-2">{{ cartInfo.name }}</p>
+              <span id="{{ cartInfo.id }}">${{ cartInfo.price }}</span>
+              <!-- Quantity -->
+              <div class="col-md-4 col-6 mb-3 mx-auto">
+                <label class="mb-2 d-block">Quantity</label>
+                <div class="input-group mb-3">
+                  <button class="btn btn-white border quantity-change" type="button" data-display="{{ cartInfo.id }}" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <input name="quantity[]" min="1" max="{{ cartInfo.quantity }}" data-display="{{ cartInfo.id }}" value="{{ cartInfo.quantityUser  }}" type="number"
+                         class="quantity-input quantity-change form-control form-control-sm w-25 text-center" data-price="{{ cartInfo.price }}" data-group="{{ group }}" disabled/> 
+                  <button class="btn btn-white border quantity-change" type="button" data-display="{{ cartInfo.id }}" data-mdb-ripple-color="dark" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                    <i class="fas fa-plus"></i>
+                  </button>					
+                </div>
+                <div class="text-center">Max: {{ cartInfo.quantity }}</div>
+              </div>
+            <a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary flex-fill mb-3">Check product</a>
+          </div>
+          
+          <hr>
+        </div>  
+        {% set groupProductsCount = groupProductsCount + 1 %}
+        {# Check if next product is from the same owner #}
       {% elseif not (lastIdOwner == cartInfo.user.id ) %}
-      <div class='summary text-center' data-summary-id='{{ group }}'>
-        Summary = 100k
-      </div>
-      <div class="d-flex justify-content-center">
-        <input class="form-control btn btn-success w-50" data-class="{{ group }}" type="submit" value="buy" disabled>
-      </div>
-    </form>
+        <input type='hidden' value='{{ groupProductsCount }} ' data-group='{{ group }}'>
+          {% set groupProductsCount = 0 %}
+          <div class='summary text-center' data-summary-id='{{ group }}'>
+            Summary = 100k
+          </div>
+          <div class="d-flex justify-content-center">
+            <input class="form-control btn btn-success w-50" data-group="{{ group }}" type="submit" value="buy" disabled>
+          </div>
+        </form>
     {% set group = group + 1 %}
+    
   </div>
   <br> <br>
   {# End #}
   <br>
-  <div class="container border border-primary border-3 rounded p-5">
+  <div class="container border border-primary border-3 rounded p-5" data-group='{{ group }}'>
   <form action="{{ path('app_buy_now') }}" method="POST">
+
   <div class="row " data-cart-id="{{ cartInfo.id }}">
         <div class="col d-flex justify-content-between m-3">
-          <input class='btn' data-class='{{ group }}' type="checkbox" name="product_id[]" value="{{ cartInfo.id }}" class='{{ group }}'
-          data-display="{{ cartInfo.id }}" style='width: 1em; height: 1em; font-size: 2rem;'>
-          <i class="remove-cart-button fa-sharp fa-solid fa-xmark btn" 
-             data-cart-id="{{ cartInfo.id }}" style="font-size: 2rem;"></i>
+          <input class='btn' data-group='{{ group }}' type="checkbox" name="product_id[]" value="{{ cartInfo.id }}" group='{{ group }}'
+          data-display="{{ cartInfo.id }}" style='width: 1em; height: 1em; font-size: 2rem;' autocomplete='off'>
+              <i class="remove-cart-button fa-sharp fa-solid fa-xmark btn" 
+                 data-cart-id="{{ cartInfo.id }}" data-group="{{ group }}" style="font-size: 2rem;"></i>
         </div>
       </div>
       <div class="row d-flex  justify-content-center" data-cart-id="{{ cartInfo.id }}">
@@ -123,17 +126,20 @@
             <div class="text-center">Max: {{ cartInfo.quantity }}
             </div>
 					</div>
-          <a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary flex-fill">Check product</a>
+            <a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary flex-fill mb-3">Check product</a>
         </div>
       </div>
+
       <hr>
+         {% set groupProductsCount = groupProductsCount + 1 %}
     {% else %}
+     
 <div class="row " data-cart-id="{{ cartInfo.id }}">
         <div class="col d-flex justify-content-between m-3">
-          <input class='btn' data-class='{{ group }}' type="checkbox" name="product_id[]" value="{{ cartInfo.id }}" class='{{ group }}'
-          data-display="{{ cartInfo.id }}" style='width: 1em; height: 1em; font-size: 2rem;'>
-          <i class="remove-cart-button fa-sharp fa-solid fa-xmark btn" 
-             data-cart-id="{{ cartInfo.id }}" style="font-size: 2rem;"></i>
+          <input class='btn' data-group='{{ group }}' type="checkbox" name="product_id[]" value="{{ cartInfo.id }}"
+          data-display="{{ cartInfo.id }}" style='width: 1em; height: 1em; font-size: 2rem;' autocomplete="off">
+                      <i class="remove-cart-button fa-sharp fa-solid fa-xmark btn" 
+                 data-cart-id="{{ cartInfo.id }}" data-group="{{ group }}" style="font-size: 2rem;"></i>
         </div>
       </div>
       <div class="row d-flex  justify-content-center" data-cart-id="{{ cartInfo.id }}">
@@ -161,169 +167,44 @@
             <div class="text-center">Max: {{ cartInfo.quantity }}
             </div>
 					</div>
-          <a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary flex-fill">Check product</a>
+            <a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary flex-fill mb-3">Check product</a>
         </div>
-
+        <hr>
       </div>
-       <hr>
+       {% set groupProductsCount = groupProductsCount + 1 %}
           {% endif %}
     {% set lastIdOwner = cartInfo.user.id %}
 
     {% set count = count + 1 %}
 
     {% endfor %}
-    {% if myCartsInfo %}
+
+          <input type='hidden' value='{{ groupProductsCount }}' data-group='{{ group }}'>
+
   <div class='summary text-center' data-summary-id='{{ group }}'>
   </div>
     <div class="d-flex justify-content-center">
-      <input class="form-control btn btn-success w-50" data-class="{{ group }}" type="submit" value="buy" disabled>
+      <input class="form-control btn btn-success w-50" data-group="{{ group }}" type="submit" value="buy" disabled>
     </div>
   </form>
   {% set group = group + 1 %}
 </section>
+
 {% endif %}
-{% endif %}
-
-
-
-
-
-{# <section class="h-100" style="background-color: #eee;">
-  <div class="container h-100 py-5">
-    <div class="row d-flex justify-content-center align-items-center h-100">
-      <div class="col-10">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h3 class="fw-normal mb-0 text-black">Shopping Cart</h3>
-          <div>
-            <p class="mb-0">
-              <span class="text-muted">Sort by:</span>
-              <a href="#!" class="text-body">price 
-                <i class="fas fa-angle-down mt-1"></i>
-              </a>
-            </p>
-          </div>
-        </div>
-      {% set lastIdOwner = 0 %}
-      {% set count = 0 %}
-      {{dump(myCartsInfo)}}
-	    {% for cartInfo in myCartsInfo %}
-
-      {% if (lastIdOwner == cartInfo.user.id ) %}
-                <div class="card-body p-4">
-            <div class="row d-flex justify-content-between align-items-center">
-              <div class="col-md-2 col-lg-2 col-xl-2">
-              	<img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}" class="card-img-top" 
-                     alt="{{ cartInfo.name }}-Image" class="img-fluid rounded-3">
-              </div>
-              <div class="col-md-3 col-lg-3 col-xl-3">
-                <p class="lead fw-normal mb-2">{{ cartInfo.name }}</p>
-              </div>
-              <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
-                <input min="1" max="{{ cartInfo.quantity }}" data-display="#{{ cartInfo.id }}" value="{{ cartInfo.quantityUser  }}" type="number"
-                  class="quantity-input form-control form-control-sm" data-price="{{ cartInfo.price }}" />
-                  Max: {{ cartInfo.quantity }}<br>
-              </div>
-              <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                <h5 class="mb-0">
-                  <span id="{{ cartInfo.id }}">${{ cartInfo.price }}</span>
-                </h5>
-              </div>
-              <div class="col-md-1 col-lg-1 col-xl-1 text-end">
-                <a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary">Check product</a>
-                <a href="{{ path('app_buy_now', { 'productId': cartInfo.id }) }}" class="btn btn-primary">Buy Now</a>
-					      <button class="remove-cart-button" data-cart-id="{{ cartInfo.id }}">Remove product</button>
-              </div>
-            </div>
-            
-          </div>
-</div>
-      </div>
-
-      {% else %}
-      <div class="cart-item" >
-        <div class="card rounded-3 mb-4">
-          <div class="card-body p-4" data-cart-id="{{ cartInfo.id }}">
-            <div class="row d-flex justify-content-between align-items-center">
-              <div class="col-md-2 col-lg-2 col-xl-2">
-              	<img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}" class="card-img-top" 
-                     alt="{{ cartInfo.name }}-Image" class="img-fluid rounded-3">
-              </div>
-              <div class="col-md-3 col-lg-3 col-xl-3">
-                <p class="lead fw-normal mb-2">{{ cartInfo.name }}</p>
-              </div>
-              <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
-                <input min="1" max="{{ cartInfo.quantity }}" data-display="#{{ cartInfo.id }}" value="{{ cartInfo.quantityUser  }}" type="number"
-                  class="quantity-input form-control form-control-sm" data-price="{{ cartInfo.price }}" />
-                  Max: {{ cartInfo.quantity }}<br>
-              </div>
-              <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                <h5 class="mb-0">
-                  <span id="{{ cartInfo.id }}">${{ cartInfo.price }}</span>
-                </h5>
-              </div>
-              <div class="col-md-1 col-lg-1 col-xl-1 text-end">
-              <i class="remove-cart-button btn fa-sharp fa-solid fa-xmark" data-cart-id="{{ cartInfo.id }}"></i>
-                <a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary">Check product</a>
-                <a href="{{ path('app_buy_now', { 'productId': cartInfo.id }) }}" class="btn btn-primary">Buy Now</a>
-
-                
-              </div>
-            </div>
-          </div>
-
-      {% endif %}
-      {% set lastIdOwner = cartInfo.user.id %}
-
-		  {% set count = count + 1 %}
-      
-	    {% endfor %}
-      <div class="card mb-4">
-        <div class="card-body p-4 d-flex flex-row">
-          <div class="form-outline flex-fill">
-            <input type="text" id="form1" class="form-control form-control-lg" />
-            <label class="form-label" for="form1">Discound code</label>
-          </div>
-          <button type="button" class="btn btn-outline-warning btn-lg ms-3">Apply</button>
-        </div>
-      </div>
-        <div class="card">
-          <div class="card-body">
-            <button type="button" class="btn btn-warning btn-block btn-lg">Proceed to Pay</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section> #}
-
-
-{# <h2>My Carts</h2>
-<div class="d-inline-flex p-2">
-	{% set count = 0 %}
-
-	{% for cartInfo in myCartsInfo %}
-     <div class="cart-item" data-cart-id="{{ cartInfo.id }}">
-		<div class="card" style="width: 14rem; margin-right: 1rem">
-			<img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}" class="card-img-top" alt="...">
-			<div class="card-body">
-				<h5 class="card-title">{{ cartInfo.name }}</h5>
-				<p class="card-text">Price:
-					{{ cartInfo.price }}</p>
-				<a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary">Check product</a>
-					<button class="remove-cart-button" data-cart-id="{{ cartInfo.id }}">Remove product</button>
-			</div>
-		</div>
-    </div>
-		{% set count = count + 1 %}
-      
-	{% endfor %}
-</div> #}
 
 {% block javascripts %}
 <script type="text/javascript">
+
+(function () {
+    window.onpageshow = function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    };
+})();
 // Change status buttons on start
 $(document).ready(function(){
- $('input[type=checkbox]').prop('checked', false);
+
   $('.quantity-change').prop('disabled', true);
   $('.quantity-input').each(function(){
     var data = $(this).data('display');
@@ -351,13 +232,13 @@ $(document).ready(function(){
   $('input[type=checkbox]').change(function()
   {
     var value = ($(this).val());
-    var classCheckbox = $(this).data('class');
+    var classCheckbox = $(this).data('group');
     var dataDisplay = $(this).data('display');
     if($(this).is(':checked')){
       window['checkboxCount' + classCheckbox] = typeof window['checkboxCount' + classCheckbox] !== 'undefined' ? window['checkboxCount' + classCheckbox] + 1 : 1;
       $('.quantity-change[data-display="'+dataDisplay+'"]').prop('disabled', false);
        console.log($('.quantity-change'));
-      $('input[type=submit][data-class="'+classCheckbox+'"]').prop('disabled', false);
+      $('input[type=submit][data-group="'+classCheckbox+'"]').prop('disabled', false);
     }
     else{
       window['checkboxCount' + classCheckbox]--;
@@ -365,7 +246,7 @@ $(document).ready(function(){
          console.log($('.quantity-change'));
       if(window['checkboxCount' + classCheckbox] == 0)
       {
-        $('input[type=submit][data-class="'+classCheckbox+'"]').prop('disabled', true);
+        $('input[type=submit][data-group="'+classCheckbox+'"]').prop('disabled', true);
       }
     }
     updateTotal();
@@ -430,6 +311,7 @@ function countSummary()
 // Remove cart
 $(document).on('click', '.remove-cart-button', function(event){
   var productId = $(this).data('cart-id');
+  var group = $(this).data('group');
 	var quantity = $('#quantity-input').val();
   $.ajax({
     url: '{{ path('ajax_remove_cart') }}',
@@ -440,7 +322,25 @@ $(document).on('click', '.remove-cart-button', function(event){
     $('.show-cart-count').html(response.cartsCount);
     $('.cart-item[data-cart-id="' + productId + '"]').remove();
     $('[data-cart-id="' + productId + '"]').empty();
-	  }
+    console.log(group);
+    var newGroupValue = $('input[type=hidden][data-group='+group+']').val();
+    newGroupValue = parseInt(newGroupValue) - 1;
+    $('input[type=hidden][data-group='+group+']').val(newGroupValue);
+    console.log($('input[type=hidden][data-group='+group+']').val());
+ // console.log('value: '+$(this).val());
+ // console.log($(this).data('group'));
+
+    if ($('input[type=hidden][data-group='+group+']').val() == 0)
+    {
+      $('.container[data-group='+group+']').remove();
+          console.log('contenery '+$('.container').length);
+      if ($('.container').length == 1) {
+        $('section').append("<div class='container border border-info rounded py-5 my-5 text-center'>" +
+          "<h2> You have empty cart <i class='fas fa-cart-arrow-down'></i> </h2>" +
+        "</div>");
+        console.log('powinno dzialac');
+      }
+	  }}
   });
 });
 </script>

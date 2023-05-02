@@ -424,5 +424,16 @@ class SessionController extends AbstractController
 
     }
 
+    public function updateWallet(Request $request, EntityManagerInterface $entityManager, SessionInterface $session)
+    {
+        $card = $request->request->get('card');
 
+        /** @var $myUser User */
+        $myUser = $this->getUser();
+        $myUser->setWallet($myUser->getWallet()+$card);
+        $session->set('wallet', $myUser->getWallet());
+        $entityManager->persist($myUser);
+        $entityManager->flush();
+        return new JsonResponse(['value' => $myUser->getWallet()]);
+    }
 }
