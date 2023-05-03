@@ -9,6 +9,8 @@ use App\Entity\Delivery;
 use App\Entity\OrderProduct;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -80,7 +82,6 @@ class SessionController extends AbstractController
             $cartsIdAndQuantityArray[$keyValue[0]] = $keyValue[1];
         }
 
-        dump($cartsIdAndQuantityArray);
         // Delete data product
         foreach ($cartsIdAndQuantityArray as $key => $value) {
             if ($key == $productId) {
@@ -436,4 +437,41 @@ class SessionController extends AbstractController
         $entityManager->flush();
         return new JsonResponse(['value' => $myUser->getWallet()]);
     }
+
+    public function deleteImageProduct(Request $request)
+    {
+        $image = $request->request->get('image');
+        $image = substr($image, 1);
+        if(file_exists($image))
+        {
+            
+            $fileManager = new Filesystem();
+            $fileManager->remove($image);
+        }
+
+                                
+        return new JsonResponse(['value' => 1]);
+    }
+    public function addImageProduct(Request $request)
+    {
+        $files = $request->files->get('doc');
+        $targetDirectory = 'users_data/';
+        
+        $testArray = [];
+        foreach ($files as $file) {
+            if ($file->getError() == UPLOAD_ERR_OK) {
+                $newFilename = uniqid() . '.' . $file->getClientOriginalExtension();
+    
+                $file->move($targetDirectory, $newFilename);
+    
+                $testArray[] = $newFilename;
+            } 
+        }
+    
+        return new JsonResponse([
+            'success' => true,
+            'message' => $testArray,
+        ]);
+    }
+
 }

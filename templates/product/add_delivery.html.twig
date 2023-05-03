@@ -2,10 +2,6 @@
 
 {% block title %}Add Delivery{% endblock %}
 {% block body %}
-{{ dump(deliveryTypeArray) }}
-
-
-
 
 <div class='container mt-5 '>
     <form id='my-form' action="{{ path('app_user_add_delivery', {'id': id }) }}" method="POST">

@@ -29,7 +29,7 @@
 				{% if myPageBool %}
 				{{ form_start(editProfile)}}
 					<label for='edit_profile_form_avatar' class='btn label' data-toggle="tooltip" data-placement="top" title="Tooltip on top">
-						<img src="{{ asset('users_data/' ~ userId ~ '/avatar/avatar.jpg') }}" alt="avatar" class="img-fluid img-thumbnail rounded" width='200px'>
+						<img src="{{ asset('users_data/' ~ userId ~ '/avatar/avatar.jpg') }}" alt="avatar" class="img-fluid img-thumbnail rounded" id='upload-img' width='200px'>
 						{{ form_widget(editProfile.avatar, {'attr': {'class': 'visually-hidden'}}) }}
 					</label>
 					<h1>{{ username }}</h1>
@@ -171,8 +171,18 @@
 												{% set count = count + 1 %}
 											{% endfor %}{% else %} 
 											<i class="bi bi-person-circle">ss</i>{% endif %}</div>#}
-											{% block javascripts %}
-			<script type="text/javascript"> 
+{% block javascripts %}
+<script type="text/javascript"> 
+
+$(function(){
+	$('#edit_profile_form_avatar').change(function(event){
+		var update = URL.createObjectURL(event.target.files[0]);
+		$('#upload-img').attr('src', update);
+		$('#avatar-nav').attr('src', update);
+		console.log(event);
+	})
+})
+
 $(document).on('click', '.delete-product', function () {
 id = $(this).data('id');
 $.ajax({

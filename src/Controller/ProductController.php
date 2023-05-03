@@ -24,12 +24,9 @@ class ProductController extends AbstractController
     #[Route('/user/create_product', name: 'app_create_product')]
     public function index(EntityManagerInterface $entityManager, Request $request): Response
     {
-        // $category = new Category();
-        // $category->setName('Computer Peripherals');
-        // $product = new Product();
-        // $entityManager->persist($category);
-        // $entityManager->persist($product);
-        // $entityManager->flush();
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_login');
+        }
         /** @var $user User */
         $user = $this->getUser();
         $product = new Product();
@@ -99,7 +96,7 @@ class ProductController extends AbstractController
         $form_create_delivery = $this->createForm(DeliveryFormType::class, $delivery);
 
 
-        return $this->render('product/index.html.twig', [
+        return $this->render('product/create_product.html.twig', [
             'AddProductFormType' => $form_create_product->createView(),
             'AddDeliveryFormType' => $form_create_delivery->createView(),
         ]);
@@ -109,11 +106,19 @@ class ProductController extends AbstractController
     public function editProduct(EntityManagerInterface $entityManager, Request $request, int $id): Response
     { {
 
-            /** @var $user User */
-            $user = $this->getUser();
+
+            /** @var $myUser User */
+            $myUser = $this->getUser();
             $imagesName = [];
             $product = $entityManager->getRepository(Product::class)->findOneBy(array('id' => $id));
             $userOwnerProduct = $product->getUser();
+          
+            if (!$this->getUser() ) {
+                return $this->redirectToRoute('app_login');
+            }
+            if ($userOwnerProduct->getId() != $myUser->getId()) {
+                return $this->redirectToRoute('app_index');
+            }
 
             $myProductBool = false;
 
@@ -135,7 +140,7 @@ class ProductController extends AbstractController
                 }
             }
 
-            $id = $user->getId();
+            $id = $myUser->getId();
             if ($form->isSubmitted() && $form->isValid()) {
 
                 $product->setName(
@@ -153,7 +158,7 @@ class ProductController extends AbstractController
                 $product->setIsPublic(
                     $form->get('is_public')->getData()
                 );
-                $directionCatalog = 'users_data/' . $user->getId() . '/products/' . $product->getImagesDir();
+                $directionCatalog = 'users_data/' . $myUser->getId() . '/products/' . $product->getImagesDir();
 
                 $files = $form->get('my_files')->getData();
                 foreach ($files as $file) {
@@ -186,6 +191,19 @@ class ProductController extends AbstractController
     #[Route('/user/add_delivery/{id}', name: 'app_user_add_delivery')]
     public function addDelivery(EntityManagerInterface $entityManager, Request $request, int $id): Response
     {
+        /** @var $myUser User */
+        $myUser = $this->getUser();
+        $product = $entityManager->find(Product::class, $id);
+
+        $userOwnerProduct = $product->getUser();
+
+        if (!$this->getUser() ) {
+            return $this->redirectToRoute('app_login');
+        }
+        if ($userOwnerProduct->getId() != $myUser->getId()) {
+            return $this->redirectToRoute('app_index');
+        }
+
         $deliveryArray = $entityManager->getRepository(Delivery::class)->findBy(array('product' => $id));
        
         $deliveryTypeArray = [];
@@ -198,7 +216,6 @@ class ProductController extends AbstractController
             }
         }
     
-        $product = $entityManager->find(Product::class, $id);
         $time = new DateTime();
         $formData = $request->request->all();
         $count = 0;
@@ -212,7 +229,6 @@ class ProductController extends AbstractController
             $entityManager->flush();
 
             foreach ($formData as $key => $data) {
-                dump($formData);
             
                 if($key == 'my_array') {echo 'arrayklucz';}
                 if($key == 'parcel_locker') {echo 'parcel_locker';}
@@ -221,10 +237,6 @@ class ProductController extends AbstractController
           
                     if($data[0])
                     {
-                   
-                    // $array = json_decode($data[0], true);
-                    // $explodedArray = explode(',', $array[0]);
-                    // print_r($explodedArray);
                         
                         $addLocationArray = explode(',', $data[0]);
                         $addLocationArray = str_replace(['"', '[', ']'], '', $addLocationArray);
@@ -360,9 +372,10 @@ class ProductController extends AbstractController
     }
 
     #[Route('/user/image_remove/{dir}/{image}', name: 'app_user_image_remove')]
-    public function productImageRemove(EntityManagerInterface $entityManager, Request $request, string $dir, string $image): Response
+    public function productImageRemove(Request $request, string $dir, string $image): Response
     {
-        /** @var $user User */
+        try{
+                    /** @var $user User */
         $user = $this->getUser();
         $this->denyAccessUnlessGranted('ROLE_USER');
         $fileManager = new Filesystem();
@@ -371,34 +384,9 @@ class ProductController extends AbstractController
 
         $referer = $request->headers->get('referer');
         return $this->redirect($referer);
-    }
+        } catch(\Exception $e) {
+            $this->addFlash('error', 'Wystąpił błąd. Spróbuj ponownie później.');
+            return $this->redirectToRoute('app_index');        }
 
-    #[Route('/user/remove_product/{id}', name: 'app_user_remove_product')]
-    public function removeProduct(EntityManagerInterface $entityManager, Request $request, string $id): Response
-    {
-        /** @var $user User */
-        $user = $this->getUser();
-        $this->denyAccessUnlessGranted('ROLE_USER');
-        $filesystem = new Filesystem();
-        $finder = new Finder();
-        $product = $entityManager->getRepository(Product::class)->findOneBy(array('id' => $id));
-        if ($product) {
-            $dir = 'users_data/' . $user->getId() . '/products/' . $product->getImagesDir();
-
-            if ($filesystem->exists($dir)) {
-                $files = $finder->in($dir)->ignoreDotFiles(false)->files();
-
-                foreach ($files as $file) {
-                    $filesystem->remove($file->getRealPath());
-                }
-
-                $filesystem->remove($dir);
-            }
-            $entityManager->remove($product);
-            $entityManager->flush();
-        }
-
-        $referer = $request->headers->get('referer');
-        return $this->redirect($referer);
     }
 }

@@ -62,7 +62,7 @@ class Product
     private ?bool $is_deleted = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $ordersCount = null;
+    private ?int $orders_count = null;
 
     public function __construct()
     {
@@ -265,12 +265,12 @@ class Product
 
     public function getOrdersCount(): ?int
     {
-        return $this->ordersCount;
+        return $this->orders_count;
     }
 
-    public function setOrdersCount(?int $ordersCount): self
+    public function setOrdersCount(?int $orders_count): self
     {
-        $this->ordersCount = $ordersCount;
+        $this->orders_count = $orders_count;
 
         return $this;
     }

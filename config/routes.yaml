@@ -57,3 +57,14 @@ ajax_update_wallet:
     path: /ajax/update_wallet
     controller: App\Controller\SessionController::updateWallet
     methods: [POST]
+
+ajax_delete_image_product:
+    path: /ajax/delete_image_product
+    controller: App\Controller\SessionController::deleteImageProduct
+    methods: [POST]
+    
+ajax_add_image_product:
+    path: /ajax/add_image_product
+    controller: App\Controller\SessionController::addImageProduct
+    methods: [POST]
+    

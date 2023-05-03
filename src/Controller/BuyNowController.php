@@ -210,12 +210,6 @@ class BuyNowController extends AbstractController
             $avalibleDelivery = $deliveryArray;
         }
 
-        // $countValues = array_count_values($deliveryTypeArray);
-        // dump($countValues);
-        // $avalibleDelivery = array_filter($countValues, function($value){
-        //     return $value > 1;
-        // });
-        // dd($deliveryPersonalPickupLocation);
 
 
         return $this->render('buy_now/buyNow.html.twig', [

@@ -5,9 +5,6 @@ namespace App\Controller;
 use App\Entity\Category;
 use App\Entity\OrderProduct;
 use App\Entity\Product;
-use App\Entity\User;
-use App\Form\ProductSortFormType;
-use App\Service\CartService;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,48 +12,32 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Constraints\Length;
+
 
 class IndexController extends AbstractController
 {
-    public function createSortForm(Request $request)
+    #[Route('/', name: 'app_index')]
+    public function index(EntityManagerInterface $entityManager, Request $request)
     {
 
 
         $sortOptions = [
             'price_asc' => [
-                'label' => 'Cena rosnąco',
+                'label' => 'Price ascending',
                 'sort' => 'price_asc',
                 'orderBy' => 'p.price',
                 'direction' => 'ASC'
             ],
             'price_desc' => [
-                'label' => 'Cena malejąco',
+                'label' => 'Price descending',
                 'sort' => 'price_desc',
                 'orderBy' => 'p.price',
                 'direction' => 'DESC'
-            ]
-        ];
-
-        $sortBy = $request->query->get('sort_by') ?? null;
-    }
-
-    #[Route('/', name: 'app_index')]
-    public function index(EntityManagerInterface $entityManager, SessionInterface $session, Request $request)
-    {
-
-
-        $sortOptions = [
-            'price_asc' => [
-                'label' => 'Cena rosnąco',
-                'sort' => 'price_asc',
-                'orderBy' => 'p.price',
-                'direction' => 'ASC'
             ],
-            'price_desc' => [
-                'label' => 'Cena malejąco',
-                'sort' => 'price_desc',
-                'orderBy' => 'p.price',
+            'orders_count_desc' => [
+                'label' => 'Popularity',
+                'sort' => 'orders_count_desc',
+                'orderBy' => 'p.orders_count',
                 'direction' => 'DESC'
             ]
         ];
@@ -69,7 +50,7 @@ class IndexController extends AbstractController
             ->where(Criteria::expr()->eq('is_public', true))
             ->andWhere(Criteria::expr()->gt('quantity', 0));
         $allOffer = $entityManager->getRepository(Product::class)->matching($criteria);
-
+        $noFound = false;
 
         if ($allOffer) {
             foreach ($allOffer as $allOfferTakeId) {
@@ -100,105 +81,56 @@ class IndexController extends AbstractController
             $allOfferId = 0;
             $allOfferInfo = 0;
             $allOfferDirImages = 0;
+            $noFound = true;
         }
-        //  $cartsCount = $cartService->getCartsCount($session);
+       
+
         return $this->render('index/index.html.twig', [
             'allOfferId' => $allOfferId,
             'allOfferInfo' => $allOfferInfo,
             'allOfferDirImages' => $allOfferDirImages,
-            //'cartsCount' => $cartsCount,
             'categories' => $categories,
             'actualCategory' => null,
             'sortOptions' => $sortOptions,
-            'sortBy' => $sortBy
+            'sortBy' => $sortBy,
+            'noFound' => $noFound
         ]);
     }
 
-    #[Route('/carts', name: 'app_carts')]
-    public function carts(EntityManagerInterface $entityManager, SessionInterface $session)
-    {
-        $response = new Response();
-        $response->headers->set('Cache-Control', 'no-cache, must-revalidate');
-        $response->headers->set('Expires', 'Sat, 26 Jul 1997 05:00:00 GMT');
-        $response->headers->set('Pragma', 'no-cache');
-      
-        
-        $myCarts = $session->get('cartsId');
-        if ($myCarts) {
-            $cartsIdArray = explode('|', $myCarts);
-            $cartsIdAndQuantityArray = array();
-            foreach ($cartsIdArray as $cart) {
-                $keyValue = explode(':', $cart);
-                $cartsIdAndQuantityArray[$keyValue[0]] = $keyValue[1];
-            }
-            $myCartsDirImages =  array();
-            $myCartsInfo = array();
-            $i = 0;
-            foreach (array_keys($cartsIdAndQuantityArray) as $myCartId) {
-                $productUser = $entityManager->getRepository(Product::class)->find($myCartId);
-                if ($productUser) {
-                    $myCartsInfo[] = $productUser;
-                    $myCartsInfo[$i]->quantityUser = array_values($cartsIdAndQuantityArray)[$i];
-                    $myCartsDirImages[$i]['dir'] = $productUser->getImagesDir();
-                    $owner = $productUser->getUser();
-                    foreach ($myCartsDirImages[$i] as $images) {
-                        $dir = scandir('users_data/' . $owner->getId() . '/products/' . $images);
-                        foreach ($dir as $file) {
-                            if ($file != '.' && $file != '..') {
-                                $myCartsDirImages[$i]['images'][] = $file;
-                            }
-                        }
-                    }
-                    $myCartsDirImages[$i]['id'] = $owner->getId();
-                    $i++;
-                }
-            }
-        } else {
-            $myCartsId = 0;
-            $myCartsInfo = [];
-            $myCartsDirImages = [];
-            $cartsIdAndQuantityArray = [];
-        }
-        usort($myCartsInfo, function ($a, $b) {
-            return strcmp($a->getUserId(), $b->getUserId());
-        });
-        usort($myCartsDirImages, function ($a, $b) {
-            return strcmp($a['id'], $b['id']);
-        });
-        //sort($myCartsInfo);
-        return $this->render('index/carts.html.twig', [
-            'myCartsIdAndQuantityArray' => $cartsIdAndQuantityArray,
-            'myCartsInfo' => $myCartsInfo,
-            'myCartsDirImages' => $myCartsDirImages,
-        ]);
-    }
 
     #[Route('/category/{name}', name: 'app_category')]
     public function findWithCategory(EntityManagerInterface $entityManager, string $name, Request $request)
     {
-        //$sortForm = $this->createSortForm($request);
 
 
         $sortOptions = [
             'price_asc' => [
-                'label' => 'Cena rosnąco',
+                'label' => 'Price ascending',
                 'sort' => 'price_asc',
                 'orderBy' => 'p.price',
                 'direction' => 'ASC'
             ],
             'price_desc' => [
-                'label' => 'Cena malejąco',
+                'label' => 'Price descending',
                 'sort' => 'price_desc',
                 'orderBy' => 'p.price',
                 'direction' => 'DESC'
+            ],
+            'orders_count_desc' => [
+                'label' => 'Popularity',
+                'sort' => 'orders_count_desc',
+                'orderBy' => 'p.orders_count',
+                'direction' => 'DESC'
             ]
         ];
-
-
         // Take all categories
         $categories = $entityManager->getRepository(Category::class)->findAll();
         // Take one category with name category
         $value = $entityManager->getRepository(Category::class)->findOneBy(['name' => $name]);
+        if(!$value)
+        {
+            return $this->redirectToRoute('app_index');
+        }
         // Take value from Search form
         $minPrice = $request->query->get('minPrice') ?? null;
         $maxPrice = $request->query->get('maxPrice') ?? null;
@@ -269,7 +201,9 @@ class IndexController extends AbstractController
             $allOfferId = 0;
             $allOfferInfo = 0;
             $allOfferDirImages = 0;
+            $noFound = true;
         }
+       
         return $this->render('index/index.html.twig', [
             'allOfferId' => $allOfferId,
             'allOfferInfo' => $allOfferInfo,
@@ -277,24 +211,34 @@ class IndexController extends AbstractController
             'actualCategory' => $value,
             'categories' => $categories,
             'sortOptions' => $sortOptions,
-            'sortBy' => $sortBy
+            'sortBy' => $sortBy,
+            'noFound' => $noFound
         ]);
     }
 
     #[Route('/listenig', name: 'app_listening')]
     public function findByString(Request $request, EntityManagerInterface $entityManager)
     {
+        $noFound = false;
+
+
         $sortOptions = [
             'price_asc' => [
-                'label' => 'Cena rosnąco',
+                'label' => 'Price ascending',
                 'sort' => 'price_asc',
                 'orderBy' => 'p.price',
                 'direction' => 'ASC'
             ],
             'price_desc' => [
-                'label' => 'Cena malejąco',
+                'label' => 'Price descending',
                 'sort' => 'price_desc',
                 'orderBy' => 'p.price',
+                'direction' => 'DESC'
+            ],
+            'orders_count_desc' => [
+                'label' => 'Popularity',
+                'sort' => 'orders_count_desc',
+                'orderBy' => 'p.orders_count',
                 'direction' => 'DESC'
             ]
         ];
@@ -325,6 +269,7 @@ class IndexController extends AbstractController
                 ->setParameter('maxPrice', $maxPrice);
         }
 
+        
         $allOffer = $allOffer->setParameter('isPublic', true)
             ->getQuery()
             ->getResult();
@@ -359,7 +304,9 @@ class IndexController extends AbstractController
             $allOfferId = 0;
             $allOfferInfo = 0;
             $allOfferDirImages = 0;
+            $noFound = true;
         }
+
         return $this->render('index/index.html.twig', [
             'allOfferId' => $allOfferId,
             'allOfferInfo' => $allOfferInfo,
@@ -367,13 +314,81 @@ class IndexController extends AbstractController
             'actualCategory' => null,
             'categories' => $categories,
             'sortOptions' => $sortOptions,
-            'sortBy' => $sortBy
+            'sortBy' => $sortBy,
+            'noFound' => $noFound
+        ]);
+    }
+    #[Route('/carts', name: 'app_carts')]
+    public function carts(EntityManagerInterface $entityManager, SessionInterface $session)
+    {
+
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $response = new Response();
+        $response->headers->set('Cache-Control', 'no-cache, must-revalidate');
+        $response->headers->set('Expires', 'Sat, 26 Jul 1997 05:00:00 GMT');
+        $response->headers->set('Pragma', 'no-cache');
+      
+        
+        $myCarts = $session->get('cartsId');
+        if ($myCarts) {
+            $cartsIdArray = explode('|', $myCarts);
+            $cartsIdAndQuantityArray = array();
+            foreach ($cartsIdArray as $cart) {
+                $keyValue = explode(':', $cart);
+                $cartsIdAndQuantityArray[$keyValue[0]] = $keyValue[1];
+            }
+            $myCartsDirImages =  array();
+            $myCartsInfo = array();
+            $i = 0;
+            foreach (array_keys($cartsIdAndQuantityArray) as $myCartId) {
+                $productUser = $entityManager->getRepository(Product::class)->find($myCartId);
+                if ($productUser) {
+                    $myCartsInfo[] = $productUser;
+                    $myCartsInfo[$i]->quantityUser = array_values($cartsIdAndQuantityArray)[$i];
+                    $myCartsDirImages[$i]['dir'] = $productUser->getImagesDir();
+                    $owner = $productUser->getUser();
+                    foreach ($myCartsDirImages[$i] as $images) {
+                        $dir = scandir('users_data/' . $owner->getId() . '/products/' . $images);
+                        foreach ($dir as $file) {
+                            if ($file != '.' && $file != '..') {
+                                $myCartsDirImages[$i]['images'][] = $file;
+                            }
+                        }
+                    }
+                    $myCartsDirImages[$i]['id'] = $owner->getId();
+                    $i++;
+                }
+            }
+        } else {
+            $myCartsId = 0;
+            $myCartsInfo = [];
+            $myCartsDirImages = [];
+            $cartsIdAndQuantityArray = [];
+        }
+        usort($myCartsInfo, function ($a, $b) {
+            return strcmp($a->getUserId(), $b->getUserId());
+        });
+        usort($myCartsDirImages, function ($a, $b) {
+            return strcmp($a['id'], $b['id']);
+        });
+        //sort($myCartsInfo);
+        return $this->render('index/carts.html.twig', [
+            'myCartsIdAndQuantityArray' => $cartsIdAndQuantityArray,
+            'myCartsInfo' => $myCartsInfo,
+            'myCartsDirImages' => $myCartsDirImages,
         ]);
     }
 
+
     #[Route('/my_sell', name: 'app_my_sell')]
-    public function mySell(Request $request, EntityManagerInterface $entityManager)
+    public function mySell(EntityManagerInterface $entityManager)
     {   
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_login');
+        }
         $myOrdersArray = $entityManager->getRepository(OrderProduct::class)->findBy(array('owner'=> $this->getUser()));
         
         $i=0;
@@ -490,9 +505,11 @@ class IndexController extends AbstractController
     }
 
     #[Route('/my_orders', name: 'app_my_orders')]
-    public function myOrders(Request $request, EntityManagerInterface $entityManager)
+    public function myOrders(EntityManagerInterface $entityManager)
     {   
-
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_login');
+        }
         $i=0;
         $myOrdersArray = $entityManager->getRepository(OrderProduct::class)->findBy(array('buyer'=> $this->getUser()));
 
@@ -580,9 +597,11 @@ class IndexController extends AbstractController
         ]);
     }
     #[Route('/my_wallet', name: 'app_my_wallet')]
-    public function myWallet(Request $request, EntityManagerInterface $entityManager)
+    public function myWallet()
     {
-
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_login');
+        }
         return $this->render('index/my_wallet.html.twig',[
 
         ]);

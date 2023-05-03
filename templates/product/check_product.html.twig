@@ -107,22 +107,24 @@
 						</h4>
 						<div class="d-flex flex-row my-3">
 							<div class="text-warning mb-1 me-2">
-									<div id='stars'></div>
-								<span id='starsSummary' class="ms-1">
-								</span>
+								<div id='stars'></div>
+								<span id='starsSummary' class="ms-1"></span>
 							</div>
+							<div class='container'>
 							<span class="text-muted fs-4 mt-2 ms-3">
 								<i class="fas fa-shopping-basket fa-sm mx-1"></i> 
-								{{ product.orderscount is null ? 0 : product.orderscount }}
-								orders</span>
-								<a class='text-decoration-none' href="{{ path('app_user', {'id': userOwnerProduct.id}) }}">
-								<div class="card mx-5" style="width: 6rem;">
+								{{ product.orderscount is null ? 0 : product.orderscount }} orders
+							</span>
+							<a class='text-decoration-none' href="{{ path('app_user', {'id': userOwnerProduct.id})|replace({'?id=': '/'}) }}">
+								<div class="card mx-5 mt-5" style="width: 6rem;">
 									<img  src="{{ asset('users_data/' ~ userOwnerProduct.id ~ '/avatar/avatar.jpg')}}">
 									<div class="card-body">
 										<p class="card-text text-center ">{{ userOwnerProduct.username }}</p>
 									</div>
-									</div></a>
-								
+								</div>
+							</a>
+
+						</div>
 						</div>
 
 						<div class="mb-3">
