@@ -22,24 +22,25 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProductController extends AbstractController
 {
     #[Route('/user/create_product', name: 'app_create_product')]
-    public function index(EntityManagerInterface $entityManager, Request $request): Response
+    public function index(EntityManagerInterface $entityManager, Request $request, Filesystem $filesystem): Response
     {
+        /** @var $myUser User */
+        $myUser = $this->getUser();
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_login');
         }
-        /** @var $user User */
-        $user = $this->getUser();
+        $id = $myUser->getId();
         $product = new Product();
 
-        // Create product form
-        $form_create_product = $this->createForm(AddProductFormType::class, $product, [
-            'image_required' => true,
-            'validation_groups' => ['create'],
-        ]);
-        $form_create_product->handleRequest($request);
-        if ($user) {
 
-            $id = $user->getId();
+
+        // Create product form
+        $form_create_product = $this->createForm(AddProductFormType::class, $product);
+        $form_create_product->handleRequest($request);
+   
+
+
+
             if ($form_create_product->isSubmitted() && $form_create_product->isValid()) {
 
                 $product->setName(
@@ -58,19 +59,13 @@ class ProductController extends AbstractController
                     $form_create_product->get('is_public')->getData()
                 );
                 $nameCatalog = $form_create_product->get('name')->getData() . uniqid();
-                $directionCatalog = 'users_data/' . $id . '/products/' . $nameCatalog;
-                $filesystem = new Filesystem();
-                $filesystem->mkdir($directionCatalog);
-                $product->setImagesDir($nameCatalog);
-
-                $files = $form_create_product->get('my_files')->getData();
-                foreach ($files as $file) {
-                    $filename = md5(uniqid()) . '.' . $file->guessExtension();
-                    $file->move(
-                        $directionCatalog,
-                        $filename
-                    );
+                $directionCatalog = 'users_data/' . $id . '/products';
+                $files = scandir($directionCatalog.'/temp');
+                if (count($files) <= 2) {
+                    $filesystem->copy('tools/no-image.png', $directionCatalog.'/temp/no-image.png');
                 }
+                $filesystem->rename($directionCatalog.'/temp', $directionCatalog.'/'.$nameCatalog);
+                $product->setImagesDir($nameCatalog);
 
                 $user = $entityManager->find(User::class, $id);
                 $product->setCreatedAt(new \DateTime());
@@ -90,23 +85,24 @@ class ProductController extends AbstractController
                 $url = 'add_delivery/' . $id;
                 return new RedirectResponse($url);
             }
-        }
 
-        $delivery = new Delivery();
-        $form_create_delivery = $this->createForm(DeliveryFormType::class, $delivery);
-
-
+            $nameCatalog = 'temp';
+            $directionCatalog = 'users_data/' . $id . '/products/' . $nameCatalog;
+    
+            if ($filesystem->exists($directionCatalog)) {
+                $filesystem->remove($directionCatalog);
+            }
+                    $filesystem->mkdir($directionCatalog);
+            
         return $this->render('product/create_product.html.twig', [
             'AddProductFormType' => $form_create_product->createView(),
-            'AddDeliveryFormType' => $form_create_delivery->createView(),
         ]);
     }
 
     #[Route('/user/edit_product/{id}', name: 'app_edit_product')]
     public function editProduct(EntityManagerInterface $entityManager, Request $request, int $id): Response
-    { {
-
-
+    { 
+        {
             /** @var $myUser User */
             $myUser = $this->getUser();
             $imagesName = [];
@@ -122,14 +118,7 @@ class ProductController extends AbstractController
 
             $myProductBool = false;
 
-            $form = $this->createForm(
-                AddProductFormType::class,
-                $product,
-                [
-                    'image_required' => false,
-                    'validation_groups' => ['edit'],
-                ]
-            );
+            $form = $this->createForm(AddProductFormType::class, $product);
             $form->handleRequest($request);
 
             $productImagesDirection = $product->getImagesDir();
@@ -158,17 +147,6 @@ class ProductController extends AbstractController
                 $product->setIsPublic(
                     $form->get('is_public')->getData()
                 );
-                $directionCatalog = 'users_data/' . $myUser->getId() . '/products/' . $product->getImagesDir();
-
-                $files = $form->get('my_files')->getData();
-                foreach ($files as $file) {
-                    $filename = md5(uniqid()) . '.' . $file->guessExtension();
-                    $file->move(
-                        $directionCatalog,
-                        $filename
-                    );
-                }
-
                 $product->setUpdatedAt(new \DateTime());
 
                 $entityManager->persist($product);
@@ -313,7 +291,7 @@ class ProductController extends AbstractController
                     
                 }
             foreach ($CommentsAndRatingArray as $key => $productReview) {
-                if (is_int($key)) { // upewnij się, że to jest obiekt ProductReview
+                if (is_int($key)) {
                     $upVotesCheck = $myUser->getUpVoteReviews();
                     $downVotesCheck = $myUser->getDownVoteReviews();
                     $productReview->upVotesCheck = $upVotesCheck;
@@ -325,7 +303,7 @@ class ProductController extends AbstractController
         } else {
 
             foreach ($CommentsAndRatingArray as $key => $productReview) {
-                if (is_int($key)) { // upewnij się, że to jest obiekt ProductReview
+                if (is_int($key)) { 
                     $upVotesCheck = 0;
                     $downVotesCheck = 0;
                     $productReview->upVotesCheck = $upVotesCheck;

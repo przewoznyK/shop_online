@@ -1,33 +1,119 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Add Product
-{% endblock %}
 {% block body %}
+<style>
 
-	<div class='container border rounded mt-5' style="max-width: 50%;">
-		<div class="row">
-			<div class='col-sm-10 col-md-8 my-5 mx-auto'>
-                <h1 class="h3 mb-3 font-weight-normal">Add Product</h1>
+.image-container {
+  position: relative;
+  width: 100%;
+  max-width: 200px;
+  min-width: 100px;
+    margin: 10px;
+  }
+
+.image-container img {
+  width: 100%;
+  height: auto;
+
+  }
+
+.icon-container {
+  position: absolute;
+  top: 15%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  background-color: #555;
+  color: white;
+  font-size: 16px;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 5px;
+  text-align: center;
+  opacity: 0.7;
+}
+
+.icon-container i {
+
+  color: white;
+}
+
+</style>
+
+	<div class="container-fluid" style="max-width: 70%;">
+		<div class="row ">
+			<div class="col-md-4 col-sm-10 me-4">
+				<h1 class="h3 mb-3 font-weight-normal">Add Product</h1>
 				{{ form_start(AddProductFormType) }}
-				{{ form_row(AddProductFormType.name, {'attr': {'class': 'form-control'}}) }}
-				{{ form_row(AddProductFormType.price, {'attr': {'class': 'form-control'}}) }}
-				{{ form_row(AddProductFormType.quantity, {'attr': {'class': 'form-control'}}) }}
-				{{ form_row(AddProductFormType.category, {'attr': {'class': 'form-control'}}) }}
-
-				{{ form_row(AddProductFormType.my_files, {'attr': {'class': 'form-control'}}) }}
-
-				{{ form_row(AddProductFormType.description, {'attr': {'class': 'form-control', 'style': 'height: 6em;' }}) }}
-				{{ form_row(AddProductFormType.is_public) }}
-				{{ form_row(AddProductFormType.submit, {'attr': {'class': 'btn btn-primary'}}) }}
+				<p>{{ form_row(AddProductFormType.name, {'attr': {'class': 'form-control'}}) }}</p>
+				<p>{{ form_row(AddProductFormType.price, {'attr': {'class': 'form-control'}}) }}</p>
+				<p>{{ form_row(AddProductFormType.quantity, {'attr': {'class': 'form-control'}}) }}</p>
+				<p>{{ form_row(AddProductFormType.category, {'attr': {'class': 'form-control'}}) }}</p>
+				<p><input type='file' class='form-control' name='add-images' id='add-images' multiple accept="image/png, image/jpeg"><p>
+				<p>{{ form_row(AddProductFormType.description, {'attr': {'class': 'form-control', 'style': 'height: 6em;' }}) }}</p>
+				<p>{{ form_row(AddProductFormType.is_public) }}</p>
+				<p>{{ form_row(AddProductFormType.submit, {'attr': {'class': 'btn btn-primary'}}) }}</p>
 				{{ form_end(AddProductFormType) }}
 
 			</div>
+			<div class="col mt-5">
+				<div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center" id='image-section'>
+					{% set count = 0 %}
+				</div>
+			</div>
 		</div>
 	</div>
+{% block javascripts %}
+<script type="text/javascript">
+var productImagesDir = 'temp';
 
-	<br>
-	<br>
-	<br>
+$('body').on('click', '.delete-image', function() {
+	var id = $(this).data('id');
+	var image = $('.image[data-id='+id+']').attr('src');
 
+	$.ajax({
+		type: 'POST',
+		url: '{{ path('ajax_delete_image_product') }}',
+		data: { image: image, productImagesDir: productImagesDir },
+		success: function(response)
+		{	
+			$('.image-container[data-id='+id+']').remove();
+		}
+	})
+})
+		
+$(function(){
+    $('#add-images').change(function(event){
 
+        var data = new FormData();
+        var count = {{ count }};
+
+		
+        for (var i = 0; i < event.target.files.length; i++) {
+            var file = event.target.files[i];
+            data.append('doc[]', file, file.name);
+        }
+		data.append('productImagesDir', productImagesDir);
+        $.ajax({
+            type: 'POST',
+            url: '{{ path('ajax_add_image_product') }}',
+            data: data,
+            processData: false,
+            contentType: false,
+            cache: false,
+            success: function(response) {
+				for (var i = 0; i < response.imagesName.length; i++) {
+					count++;
+					var  file = response.imagesName[i];
+					var folder = '/'+response.targetDirectory+'/'+file;
+					var newImageContainer = $('<div class="image-container" data-id='+count+'> <img class="image" data-id='+count+' src='+folder+'> <div class="icon-container delete-image" data-id='+count+'> <i class="fa-solid fa-x"></i></div></div>');
+					$('#image-section').append(newImageContainer);	
+					console.log(response.targetDirectory+'/'+file);
+				}
+            },
+        });
+    });
+});
+</script>
+{% endblock %}
 {% endblock %}

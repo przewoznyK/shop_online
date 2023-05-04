@@ -438,8 +438,15 @@ class SessionController extends AbstractController
         return new JsonResponse(['value' => $myUser->getWallet()]);
     }
 
-    public function deleteImageProduct(Request $request)
+    public function deleteImageProduct(Request $request, Filesystem $filesystem)
     {
+        /** @var $myUser User */
+        $myUser = $this -> getUser();
+              
+        $folderName = $request->request->get('productImagesDir');
+        $targetDirectory = 'users_data/' . $myUser->getId() . '/products/' . $folderName;
+        
+        
         $image = $request->request->get('image');
         $image = substr($image, 1);
         if(file_exists($image))
@@ -449,28 +456,35 @@ class SessionController extends AbstractController
             $fileManager->remove($image);
         }
 
-                                
+        $files = scandir($targetDirectory);
+        if (count($files) <= 2) {
+            $filesystem->copy('tools/no-image.png', $targetDirectory.'/no-image.png');
+        }
+       
         return new JsonResponse(['value' => 1]);
     }
     public function addImageProduct(Request $request)
     {
+        /** @var $myUser User */
+        $myUser = $this -> getUser();
         $files = $request->files->get('doc');
-        $targetDirectory = 'users_data/';
-        
-        $testArray = [];
+        $folderName = $request->request->get('productImagesDir');
+        $targetDirectory = 'users_data/' . $myUser->getId() . '/products/' . $folderName;
+        $imagesName = [];
         foreach ($files as $file) {
             if ($file->getError() == UPLOAD_ERR_OK) {
                 $newFilename = uniqid() . '.' . $file->getClientOriginalExtension();
     
                 $file->move($targetDirectory, $newFilename);
     
-                $testArray[] = $newFilename;
+                $imagesName[] = $newFilename;
             } 
         }
     
         return new JsonResponse([
             'success' => true,
-            'message' => $testArray,
+            'imagesName' => $imagesName,
+            'targetDirectory' => $targetDirectory,
         ]);
     }
 

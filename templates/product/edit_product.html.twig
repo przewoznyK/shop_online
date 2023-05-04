@@ -49,7 +49,7 @@
 				<p>{{ form_row(AddProductFormType.price, {'attr': {'class': 'form-control'}}) }}</p>
 				<p>{{ form_row(AddProductFormType.quantity, {'attr': {'class': 'form-control'}}) }}</p>
 				<p>{{ form_row(AddProductFormType.category, {'attr': {'class': 'form-control'}}) }}</p>
-				<p>{{ form_row(AddProductFormType.my_files, {'attr': {'class': 'form-control'}}) }}</p>
+				<p><input type='file' class='form-control' name='add-images' id='add-images' multiple accept="image/png, image/jpeg"><p>
 				<p>{{ form_row(AddProductFormType.description, {'attr': {'class': 'form-control', 'style': 'height: 6em;' }}) }}</p>
 				<p>{{ form_row(AddProductFormType.is_public) }}</p>
 				<p>{{ form_row(AddProductFormType.submit, {'attr': {'class': 'btn btn-primary'}}) }}</p>
@@ -62,54 +62,47 @@
 					{% for image in imagesName %}
 						<div class='image-container ' data-id='{{count}}'>
 							<img class="image" data-id='{{count}}' src="{{ asset('users_data/' ~ userOwnerProduct.id ~ '/products/' ~ product.imagesdir ~ '/' ~ image) }}"/>
-							{% if imagesName|length > 1 %}
-								{# <a href="{{ path('app_user_image_remove', { 'dir': product.imagesdir, 'image': image }) }}">
-									<div class="btn btn-danger btn-sm mx-4">Delete</div>
-								</a> #}
 								<div class='icon-container delete-image' data-id='{{count}}'>
 									<i class="fa-solid fa-x "></i>
 								</div>
-							{% endif %}
 						</div>
 						{% set count = count + 1 %}
 					{% endfor %}
 				</div>
 			</div>
-			<input type='file' name='add-images' id='add-images' multiple accept="image/png, image/jpeg">
 		</div>
 	</div>
 {% block javascripts %}
 <script type="text/javascript">
+var productImagesDir = '{{ product.imagesdir }}';
+
 $('body').on('click', '.delete-image', function() {
-		var id = $(this).data('id');
+	var id = $(this).data('id');
 	var image = $('.image[data-id='+id+']').attr('src');
 
 	$.ajax({
 		type: 'POST',
 		url: '{{ path('ajax_delete_image_product') }}',
-		data: { image: image },
+		data: { image: image, productImagesDir: productImagesDir },
 		success: function(response)
 		{	
 			$('.image-container[data-id='+id+']').remove();
-			if($('.image-container').length == 1)
-			{
-				$('.icon-container').remove();
-			}
 		}
 	})
 })
-
+		
 $(function(){
     $('#add-images').change(function(event){
 
         var data = new FormData();
-        var count = 0;
+        var count = {{ count }};
+
+		
         for (var i = 0; i < event.target.files.length; i++) {
-            count++;
             var file = event.target.files[i];
             data.append('doc[]', file, file.name);
         }
-		data.append('productId', productId);
+		data.append('productImagesDir', productImagesDir);
         $.ajax({
             type: 'POST',
             url: '{{ path('ajax_add_image_product') }}',
@@ -118,11 +111,15 @@ $(function(){
             contentType: false,
             cache: false,
             success: function(response) {
-                console.log(response.message);
+				for (var i = 0; i < response.imagesName.length; i++) {
+					count++;
+					var  file = response.imagesName[i];
+					var folder = '/'+response.targetDirectory+'/'+file;
+					var newImageContainer = $('<div class="image-container" data-id='+count+'> <img class="image" data-id='+count+' src='+folder+'> <div class="icon-container delete-image" data-id='+count+'> <i class="fa-solid fa-x"></i></div></div>');
+					$('#image-section').append(newImageContainer);	
+					console.log(response.targetDirectory+'/'+file);
+				}
             },
-            error: function(xhr, status, error) {
-                // obsłuż błąd
-            }
         });
     });
 });

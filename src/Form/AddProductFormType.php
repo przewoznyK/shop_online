@@ -39,12 +39,6 @@ class AddProductFormType extends AbstractType
             ->add('category', EntityType::class, [
                 'class' => Category::class
             ])
-            ->add('my_files', FileType::class, [
-                'mapped' => false,
-                'label' => 'Upload Images',
-                'multiple' => true,
-                'required' => $options['image_required']
-            ])
             ->add('is_public', CheckboxType::class,[
                 'attr' => ['class' => 'form-check-input'],
                 'required' => false
@@ -65,10 +59,6 @@ class AddProductFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Product::class,
-            'image_required' => true,
-            'validation_groups' => ['Default'],
         ]);
-
-        $resolver->setAllowedTypes('validation_groups', ['string', 'array']);
     }
 }
