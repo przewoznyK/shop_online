@@ -13,10 +13,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 
 class BuyNowController extends AbstractController
@@ -63,7 +61,6 @@ class BuyNowController extends AbstractController
             }
             // Delete carts from order
             // Reset array
-            //  $idAndQuantityArray = $allData['id-and-quantity'];
             /** @var $myUser User */
             $myUser = $this->getUser();
             $myCarts = $myUser->getCarts();
@@ -258,9 +255,7 @@ class BuyNowController extends AbstractController
 
                 ]);
             }
-        } else {
-            echo 'nmie ma';
-        }
+        } 
         return $this->render('buy_now/feedback_product.html.twig', [
             'token' => $token,
             'status' => $status

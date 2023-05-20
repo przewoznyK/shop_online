@@ -9,11 +9,12 @@ use App\Entity\Delivery;
 use App\Entity\OrderProduct;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+
 
 class SessionController extends AbstractController
 {
@@ -44,9 +45,6 @@ class SessionController extends AbstractController
             $entity->persist($myUser);
             $entity->flush();
         }
-        // $this->addFlash('success', 'Product successfully add to cart!');
-
-
 
         return new JsonResponse(['cartsCount' => $cartsCount]);
     }
@@ -180,9 +178,7 @@ class SessionController extends AbstractController
                       <div class="d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center">
                         ';
-            // if (in_array( $commentsAndRating->getId(),$commentsAndRating->upVotesCheck))
             if ((in_array($commentsAndRating->getId(), (explode('|', $commentsAndRating->upVotesCheck))))) {
-                // tablica zawiera wartość 1 dla tego obiektu ProductReview
 
                 $html .= '<i class="undoVote fas fa-thumbs-up me-1 btn" style="color: blue;" data-comment-id="' . $commentsAndRating->getId() . '" data-type="upVote">' . $commentsAndRating->getUpVote() . '</i>';
             } else {
@@ -353,7 +349,6 @@ class SessionController extends AbstractController
         $order = $entityManager->getRepository(OrderProduct::class)->find($orderId);
         $done = false;
          $newStatus = '11';
-        // $newText = '111';
         if ($orderStatus == 'pending') {
             $newStatus = 'progressing';
 
@@ -438,8 +433,10 @@ class SessionController extends AbstractController
         return new JsonResponse(['value' => $myUser->getWallet()]);
     }
 
-    public function deleteImageProduct(Request $request, Filesystem $filesystem)
+    public function deleteImageProduct(Request $request, Filesystem $filesystem, ParameterBagInterface $params)
     {
+        $mainDir = $params->get('app.mainDir');
+
         /** @var $myUser User */
         $myUser = $this -> getUser();
               
@@ -449,6 +446,7 @@ class SessionController extends AbstractController
         
         $image = $request->request->get('image');
         $image = substr($image, 1);
+        $image = str_replace($mainDir, '', $image);
         if(file_exists($image))
         {
             
@@ -463,29 +461,75 @@ class SessionController extends AbstractController
        
         return new JsonResponse(['value' => 1]);
     }
-    public function addImageProduct(Request $request)
+    public function addImageProduct(Request $request, ParameterBagInterface $params)
     {
+        $mainDir = $params->get('app.mainDir');
+
         /** @var $myUser User */
         $myUser = $this -> getUser();
         $files = $request->files->get('doc');
         $folderName = $request->request->get('productImagesDir');
         $targetDirectory = 'users_data/' . $myUser->getId() . '/products/' . $folderName;
         $imagesName = [];
+
         foreach ($files as $file) {
             if ($file->getError() == UPLOAD_ERR_OK) {
                 $newFilename = uniqid() . '.' . $file->getClientOriginalExtension();
     
                 $file->move($targetDirectory, $newFilename);
-    
+                $isEmpty = array_diff(scandir($targetDirectory.'/main/'), array('.', '..'));
                 $imagesName[] = $newFilename;
+                if(empty($isEmpty))
+                {   
+                    copy($targetDirectory. '/' . $newFilename, $targetDirectory.'/main/'. $newFilename);
+            
+                }
             } 
         }
-    
+        
         return new JsonResponse([
             'success' => true,
             'imagesName' => $imagesName,
-            'targetDirectory' => $targetDirectory,
+            'targetDirectory' => $mainDir.$targetDirectory,
         ]);
     }
 
+    public function changeMainImageProduct(Request $request)
+    {
+        $imgSrc = $request->request->get('imgSrc');
+        $imgName = $request->request->get('imgName');
+        $tempBool = $request->request->get('tempBool');
+   
+        if($tempBool == 'true')
+        {
+            $imgSrc = substr($imgSrc, 8);
+        }
+        else 
+        {
+            $imgSrc = substr($imgSrc, 1);
+        }
+        $fileManager = new Filesystem();
+        $files= glob($imgSrc.'/main/*');
+        foreach ($files as $file) {
+            $fileManager->remove($file);
+        }
+       copy($imgSrc. '/' . $imgName, $imgSrc.'/main/'. $imgName);
+        return new JsonResponse([
+            'success' => $tempBool,
+        ]);
+    }
+
+    public function executeMyCommand()
+    {
+
+   $currentDirectory = dirname(__FILE__);
+       $consolePath = $currentDirectory . '/../../bin/console';
+       $output = [];
+       exec('/usr/local/bin/php82 '.$consolePath.' my:command 2>&1', $output, $returnCode);
+
+        return new JsonResponse([
+            'success' => $output,
+        ]);
+
+    }
 }

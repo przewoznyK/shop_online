@@ -12,15 +12,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class IndexController extends AbstractController
 {
     #[Route('/', name: 'app_index')]
-    public function index(EntityManagerInterface $entityManager, Request $request)
+    public function index(EntityManagerInterface $entityManager, Request $request, AuthenticationUtils $authenticationUtils)
     {
 
-
+        $noFound = false;
         $sortOptions = [
             'price_asc' => [
                 'label' => 'Price ascending',
@@ -52,39 +52,43 @@ class IndexController extends AbstractController
         $allOffer = $entityManager->getRepository(Product::class)->matching($criteria);
         $noFound = false;
 
-        if ($allOffer) {
+      
+            $allOfferId = [];
             foreach ($allOffer as $allOfferTakeId) {
                 $allOfferId[] = $allOfferTakeId->getId();
             }
-            $allOfferDirImages =  array();
-            $allOfferInfo = array();
-            $i = 0;
-            foreach ($allOfferId as $myCartId) {
-                $productUser = $entityManager->getRepository(Product::class)->find($myCartId);
-                $allOfferInfo[] = $productUser;
+            if($allOfferId)
+            {
+                $allOfferDirImages =  array();
+                $allOfferInfo = array();
+                $i = 0;    
+                foreach ($allOfferId as $myCartId) {
 
-                $allOfferDirImages[$i]['dir'] = $productUser->getImagesDir();
-                $owner = $productUser->getUser();
-                foreach ($allOfferDirImages[$i] as $images) {
-                    $dir = scandir('users_data/' . $owner->getId() . '/products/' . $images);
-                    foreach ($dir as $file) {
-                        if ($file != '.' && $file != '..') {
-                            $allOfferDirImages[$i]['images'][] = $file;
+                    $productUser = $entityManager->getRepository(Product::class)->find($myCartId);
+                    $allOfferInfo[] = $productUser;
+
+                    $allOfferDirImages[$i]['dir'] = $productUser->getImagesDir();
+                    $owner = $productUser->getUser();
+                    foreach ($allOfferDirImages[$i] as $images) {
+                        $dir = scandir('users_data/' . $owner->getId() . '/products/' . $images .'/main/');
+                        foreach ($dir as $file) {
+                            if ($file != '.' && $file != '..') {
+                                $allOfferDirImages[$i]['images'][] = $file;
+                            }
                         }
                     }
-                }
-                $allOfferDirImages[$i]['id'] = $owner->getId();
+                    $allOfferDirImages[$i]['id'] = $owner->getId();
 
-                $i++;
+                    $i++;
             }
-        } else {
-            $allOfferId = 0;
-            $allOfferInfo = 0;
-            $allOfferDirImages = 0;
-            $noFound = true;
-        }
+            } else {
+                $allOfferId = 0;
+                $allOfferInfo = 0;
+                $allOfferDirImages = 0;
+                $noFound = true;
+            }
        
-
+            
         return $this->render('index/index.html.twig', [
             'allOfferId' => $allOfferId,
             'allOfferInfo' => $allOfferInfo,
@@ -102,7 +106,7 @@ class IndexController extends AbstractController
     public function findWithCategory(EntityManagerInterface $entityManager, string $name, Request $request)
     {
 
-
+        $noFound = false;
         $sortOptions = [
             'price_asc' => [
                 'label' => 'Price ascending',
@@ -186,7 +190,7 @@ class IndexController extends AbstractController
                 $owner = $productUser->getUser();
 
                 foreach ($allOfferDirImages[$i] as $images) {
-                    $dir = scandir('users_data/' . $owner->getId() . '/products/' . $images);
+                    $dir = scandir('users_data/' . $owner->getId() . '/products/' . $images .'/main/');
                     foreach ($dir as $file) {
                         if ($file != '.' && $file != '..') {
                             $allOfferDirImages[$i]['images'][] = $file;
@@ -289,7 +293,7 @@ class IndexController extends AbstractController
                 $owner = $productUser->getUser();
 
                 foreach ($allOfferDirImages[$i] as $images) {
-                    $dir = scandir('users_data/' . $owner->getId() . '/products/' . $images);
+                    $dir = scandir('users_data/' . $owner->getId() . '/products/' . $images .'/main/');
                     foreach ($dir as $file) {
                         if ($file != '.' && $file != '..') {
                             $allOfferDirImages[$i]['images'][] = $file;
@@ -351,7 +355,7 @@ class IndexController extends AbstractController
                     $myCartsDirImages[$i]['dir'] = $productUser->getImagesDir();
                     $owner = $productUser->getUser();
                     foreach ($myCartsDirImages[$i] as $images) {
-                        $dir = scandir('users_data/' . $owner->getId() . '/products/' . $images);
+                        $dir = scandir('users_data/' . $owner->getId() . '/products/' . $images. '/main/');
                         foreach ($dir as $file) {
                             if ($file != '.' && $file != '..') {
                                 $myCartsDirImages[$i]['images'][] = $file;
@@ -544,7 +548,7 @@ class IndexController extends AbstractController
 
               
      
-                $dir = scandir('users_data/' . $element->getOwner()->getId() . '/products/' .  $product->getImagesDir());
+                $dir = scandir('users_data/' . $element->getOwner()->getId() . '/products/' .  $product->getImagesDir(). '/main/');
                 foreach ($dir as $file) {
            
                     {
@@ -569,10 +573,18 @@ class IndexController extends AbstractController
                 "email_sent" => 4,
                 "done" => 5
             ];
-            $a_val = $status_order[$a->getStatus()] ?? 9999; // Domyślna wartość dla nieznanych statusów
+            $a_val = $status_order[$a->getStatus()] ?? 9999;
             $b_val = $status_order[$b->getStatus()] ?? 9999;
             return $a_val - $b_val;
         });
+
+        $myOrdersArrayReady = array(); 
+        foreach($myOrdersArray as $key => $element) {
+            if($element->getStatus() == 'ready_to_pick_up' || $element->getStatus() == 'email_sent') {
+                $myOrdersArrayReady[] = $element; 
+                unset($myOrdersArray[$key]);
+            }
+        }
 
         $myOrdersArrayDone = array(); 
         foreach($myOrdersArray as $key => $element) {
@@ -594,6 +606,7 @@ class IndexController extends AbstractController
             'myOrdersArray' => $myOrdersArray,
             'myOrdersArrayDone' => $myOrdersArrayDone,
             'myOrdersArrayProblem' => $myOrdersArrayProblem,
+            'myOrdersArrayReady' => $myOrdersArrayReady,
         ]);
     }
     #[Route('/my_wallet', name: 'app_my_wallet')]

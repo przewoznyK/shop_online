@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello UserPageController!
+{% block title %}My Carts
 {% endblock %}
 
 {% block body %}	
@@ -46,7 +46,7 @@
           </div>
           <div class="row d-flex  justify-content-center" data-cart-id="{{ cartInfo.id }}">
             <div class="col-lg-3 my-auto ">
-              <img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}"
+              <img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/main/' ~ myCartsDirImages[count]['images'][0] ) }}"
                   alt="{{ cartInfo.name }}-Image" class="img-fluid rounded-3" >
             </div>
             <div class="col-lg-7 text-center">
@@ -78,7 +78,6 @@
         <input type='hidden' value='{{ groupProductsCount }} ' data-group='{{ group }}'>
           {% set groupProductsCount = 0 %}
           <div class='summary text-center' data-summary-id='{{ group }}'>
-            Summary = 100k
           </div>
           <div class="d-flex justify-content-center">
             <input class="form-control btn btn-success w-50" data-group="{{ group }}" type="submit" value="buy" disabled>
@@ -104,7 +103,7 @@
       <div class="row d-flex  justify-content-center" data-cart-id="{{ cartInfo.id }}">
 
         <div class="col-lg-3 my-auto ">
-          <img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}"
+          <img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/main/' ~ myCartsDirImages[count]['images'][0] ) }}"
                alt="{{ cartInfo.name }}-Image" class="img-fluid rounded-3" >
         </div>
         <div class="col-lg-7 text-center">
@@ -145,7 +144,7 @@
       <div class="row d-flex  justify-content-center" data-cart-id="{{ cartInfo.id }}">
 
         <div class="col-lg-3 my-auto ">
-          <img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}"
+          <img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/main/' ~ myCartsDirImages[count]['images'][0] ) }}"
                alt="{{ cartInfo.name }}-Image" class="img-fluid rounded-3" >
         </div>
         <div class="col-lg-7 text-center">

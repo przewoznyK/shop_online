@@ -32,14 +32,9 @@ class ProductController extends AbstractController
         $id = $myUser->getId();
         $product = new Product();
 
-
-
         // Create product form
         $form_create_product = $this->createForm(AddProductFormType::class, $product);
         $form_create_product->handleRequest($request);
-   
-
-
 
             if ($form_create_product->isSubmitted() && $form_create_product->isValid()) {
 
@@ -58,11 +53,12 @@ class ProductController extends AbstractController
                 $product->setIsPublic(
                     $form_create_product->get('is_public')->getData()
                 );
-                $nameCatalog = $form_create_product->get('name')->getData() . uniqid();
+                $nameCatalog = str_replace(' ' , '_',$form_create_product->get('name')->getData() . uniqid());
                 $directionCatalog = 'users_data/' . $id . '/products';
                 $files = scandir($directionCatalog.'/temp');
-                if (count($files) <= 2) {
+                if (count($files) <= 3) {
                     $filesystem->copy('tools/no-image.png', $directionCatalog.'/temp/no-image.png');
+                    $filesystem->copy('tools/no-image.png', $directionCatalog.'/temp/main/no-image.png');
                 }
                 $filesystem->rename($directionCatalog.'/temp', $directionCatalog.'/'.$nameCatalog);
                 $product->setImagesDir($nameCatalog);
@@ -93,7 +89,7 @@ class ProductController extends AbstractController
                 $filesystem->remove($directionCatalog);
             }
                     $filesystem->mkdir($directionCatalog);
-            
+                    $filesystem->mkdir($directionCatalog.'/main');
         return $this->render('product/create_product.html.twig', [
             'AddProductFormType' => $form_create_product->createView(),
         ]);
@@ -106,6 +102,7 @@ class ProductController extends AbstractController
             /** @var $myUser User */
             $myUser = $this->getUser();
             $imagesName = [];
+            $mainImageName;
             $product = $entityManager->getRepository(Product::class)->findOneBy(array('id' => $id));
             $userOwnerProduct = $product->getUser();
           
@@ -124,11 +121,18 @@ class ProductController extends AbstractController
             $productImagesDirection = $product->getImagesDir();
             $dir = scandir('users_data/' . $userOwnerProduct->getId() . '/products/' . $productImagesDirection);
             foreach ($dir as $file) {
-                if ($file != '.' && $file != '..') {
+                $filePath = 'users_data/' . $userOwnerProduct->getId() . '/products/' . $productImagesDirection . '/' . $file;
+                if ($file != '.' && $file != '..' && is_file($filePath)) {
                     $imagesName[] = $file;
                 }
             }
-
+            $dir = scandir('users_data/' . $userOwnerProduct->getId() . '/products/' . $productImagesDirection.'/main');
+            foreach ($dir as $file) {
+                $filePath = 'users_data/' . $userOwnerProduct->getId() . '/products/' . $productImagesDirection . '/' . $file;
+                if ($file != '.' && $file != '..' && is_file($filePath)) {
+                    $mainImageName = $file;
+                }
+            }
             $id = $myUser->getId();
             if ($form->isSubmitted() && $form->isValid()) {
 
@@ -158,6 +162,7 @@ class ProductController extends AbstractController
             return $this->render('product/edit_product.html.twig', [
                 'product' => $product,
                 'imagesName' => $imagesName,
+                'mainImageName' => $mainImageName,
                 'userOwnerProduct' => $userOwnerProduct,
                 'myProductBool' => $myProductBool,
                 'AddProductFormType' => $form->createView(),
@@ -207,9 +212,6 @@ class ProductController extends AbstractController
             $entityManager->flush();
 
             foreach ($formData as $key => $data) {
-            
-                if($key == 'my_array') {echo 'arrayklucz';}
-                if($key == 'parcel_locker') {echo 'parcel_locker';}
                 
                 if ($key == 'my_array') {
           
@@ -312,13 +314,17 @@ class ProductController extends AbstractController
                 }
             }
         }
-
+        // Take delivery options
+        $deliveryArray = $entityManager->getRepository(Delivery::class)->findBy(['product' => $product->getId()]);
+        
 
         // Display product images
         $productImagesDirection = $product->getImagesDir();
+       
         $dir = scandir('users_data/' . $userOwnerProduct->getId() . '/products/' . $productImagesDirection);
         foreach ($dir as $file) {
-            if ($file != '.' && $file != '..') {
+            $filePath = 'users_data/' . $userOwnerProduct->getId() . '/products/' . $productImagesDirection . '/' . $file;
+            if ($file != '.' && $file != '..' && is_file($filePath)) {
                 $imagesName[] = $file;
             }
         }
@@ -330,10 +336,9 @@ class ProductController extends AbstractController
             $CommentsAndRatingArray = 0;
             $myUser = 0;
             $productNotFoundBool = true;
+            $deliveryArray = 0;
         }
         
-        // Take delivery options
-        $deliveryArray = $entityManager->getRepository(Delivery::class)->findBy(['product' => $product->getId()]);
         $myProductBool = false;
 
         return $this->render('product/check_product.html.twig', [

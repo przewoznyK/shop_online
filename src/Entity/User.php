@@ -32,7 +32,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -46,6 +46,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $downVoteReviews = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $token = null;
+
+    #[ORM\Column(length: 10, nullable: true)]
+    private ?int $verify = null;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Product::class)]
     private Collection $products;
@@ -149,6 +155,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function removeEmail()
+    {
+        $this->email = null;
+    }
+
     public function getDescription(): ?string
     {
         return $this->description;
@@ -193,6 +204,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDownVoteReviews(?string $downVoteReviews): self
     {
         $this->downVoteReviews = $downVoteReviews;
+
+        return $this;
+    }
+
+    public function getToken(): ?string
+    {
+        return $this->token;
+    }
+
+    public function setToken(?string $token): self
+    {
+        $this->token = $token;
+
+        return $this;
+    }
+
+    public function getVerify(): ?int
+    {
+        return $this->verify;
+    }
+
+    public function setVerify(?int $verify): self
+    {
+        $this->verify = $verify;
 
         return $this;
     }

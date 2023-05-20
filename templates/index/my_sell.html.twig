@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello BuyNowController!{% endblock %}
+{% block title %}My Sell{% endblock %}
 
 {% block body %}
 <div id='pending' class='container border border-info rounded my-5'>
@@ -28,36 +28,21 @@
              data-type='{{ myOrders.deliveryType }}'>Accept</div>
         </div>
         <div class='col'>
-            {% for key in myOrders.dir|keys %}
-                <a href='{{ path('app_check_product', { 'id': myOrders.id }) }}'> <img src="{{ asset('users_data/' ~ myOrders.owner.id ~ '/products/' ~ key ~ '/' ~ myOrders.dir[key] ) }}"
-                   class="img-fluid rounded-3 m-3" alt="{{ myOrders.name }}-Image"  height='150px' width='150px'></a>
-            {% endfor %}
+              {% set count = 0 %}
+                {% set product = myOrders.product %}
+                {% set parts = product|split('|') %}
+                {% for key in myOrders.dir|keys %}
+                    {% set productSplit = parts[count]|split(':') %}
+                    {% set count = count + 1 %}
+                    <div class='bg-image hover-zoom'>
+                    <a href='{{ path('app_check_product', { 'id': productSplit[0] }) }}'> <img src="{{ asset('users_data/' ~ myOrders.owner.id ~ '/products/' ~ key ~ '/' ~ myOrders.dir[key] ) }}"
+                         class="img-fluid rounded-3 m-3 " alt="{{ myOrders.name }}-Image"  height='150px' width='150px'></a>
+                    </div>
+                {% endfor %}
         </div>
     </div>
 </section>
 {% endfor %}</div>
-     {# Product: {{ myOrders.product }}<br>
-    Price: {{ myOrders.price }}<br>
-
-    Comment: {{ myOrders.comment }}<br>
-    Delivery Type: {{ myOrders.deliveryType }}<br>
-
-
-    Final Location: {{ myOrders.finalLocation }}<br>
-    Name: {{ myOrders.name }}<br>
-    Last Name: {{ myOrders.lastName }}<br>
-    Email: {{ myOrders.email }}<br>
-    Address: {{ myOrders.address }}<br>
-    Phone Number: {{ myOrders.phoneNumber }}<br>
-    Payment Method: {{ myOrders.paymentMethod }}<br>
-            Feedback:   {{ myOrders.feedback }}<br>
-    Feedback info:     {{ myOrders.feedbackDescription }}<br>
-    <div class='btn btn-danger delete-order' data-id='{{ myOrders.id }}'>Delete</div>
-        <div class='btn btn-primary order ' data-status='{{myOrders.status}}' data-id='{{ myOrders.id }}' 
-             data-type='{{ myOrders.deliveryType }}'>Accept</div>
-    <br><br><br><br>  #}
-
-
 
 
 
@@ -84,9 +69,16 @@
                 
             </div>
             <div class='col'>
+                  {% set count = 0 %}
+                {% set product = myOrders.product %}
+                {% set parts = product|split('|') %}
                 {% for key in myOrders.dir|keys %}
-                    <a href='{{ path('app_check_product', { 'id': myOrders.id }) }}'> <img src="{{ asset('users_data/' ~ myOrders.owner.id ~ '/products/' ~ key ~ '/' ~ myOrders.dir[key] ) }}"
-                         class="img-fluid rounded-3 m-3" alt="{{ myOrders.name }}-Image"  height='150px' width='150px'></a>
+                    {% set productSplit = parts[count]|split(':') %}
+                    {% set count = count + 1 %}
+                    <div class='bg-image hover-zoom'>
+                    <a href='{{ path('app_check_product', { 'id': productSplit[0] }) }}'> <img src="{{ asset('users_data/' ~ myOrders.owner.id ~ '/products/' ~ key ~ '/main/' ~ myOrders.dir[key] ) }}"
+                         class="img-fluid rounded-3 m-3 " alt="{{ myOrders.name }}-Image"  height='150px' width='150px'></a>
+                    </div>
                 {% endfor %}
 
             </div>
@@ -131,16 +123,23 @@
                 
                 </div>
                 <div class='col'>
-                    {% for key in myOrders.dir|keys %}
-                        <a href='{{ path('app_check_product', { 'id': myOrders.id }) }}'> <img src="{{ asset('users_data/' ~ myOrders.owner.id ~ '/products/' ~ key ~ '/' ~ myOrders.dir[key] ) }}"
-                            class="img-fluid rounded-3 m-3" alt="{{ myOrders.name }}-Image"  height='150px' width='150px'></a>
-                    {% endfor %}
+              {% set count = 0 %}
+                {% set product = myOrders.product %}
+                {% set parts = product|split('|') %}
+                {% for key in myOrders.dir|keys %}
+                    {% set productSplit = parts[count]|split(':') %}
+                    {% set count = count + 1 %}
+                    <div class='bg-image hover-zoom'>
+                    <a href='{{ path('app_check_product', { 'id': productSplit[0] }) }}'> <img src="{{ asset('users_data/' ~ myOrders.owner.id ~ '/products/' ~ key ~ '/main/' ~ myOrders.dir[key] ) }}"
+                         class="img-fluid rounded-3 m-3 " alt="{{ myOrders.name }}-Image"  height='150px' width='150px'></a>
+                    </div>
+                {% endfor %}
                 </div>
             </div>
        
  </section>
 {% endfor %}</div>
-<div class='container border border-info rounded my-5' id='ready_to_pick_up'>
+<div class='container border border-warning rounded my-5' id='ready_to_pick_up'>
     <h2 class='text-center my-3'> Waiting for feedback  <i class="fas fa-sticky-note"></i></h2> 
     {% for myOrders in myOrdersArrayWaitingForFeedback %}
         <section class='order-field border container my-5 rounded
@@ -162,10 +161,17 @@
                 
                 </div>
                 <div class='col'>
-                    {% for key in myOrders.dir|keys %}
-                        <a href='{{ path('app_check_product', { 'id': myOrders.id }) }}'> <img src="{{ asset('users_data/' ~ myOrders.owner.id ~ '/products/' ~ key ~ '/' ~ myOrders.dir[key] ) }}"
-                            class="img-fluid rounded-3 m-3" alt="{{ myOrders.name }}-Image"  height='150px' width='150px'></a>
-                    {% endfor %}
+              {% set count = 0 %}
+                {% set product = myOrders.product %}
+                {% set parts = product|split('|') %}
+                {% for key in myOrders.dir|keys %}
+                    {% set productSplit = parts[count]|split(':') %}
+                    {% set count = count + 1 %}
+                    <div class='bg-image hover-zoom'>
+                    <a href='{{ path('app_check_product', { 'id': productSplit[0] }) }}'> <img src="{{ asset('users_data/' ~ myOrders.owner.id ~ '/products/' ~ key ~ '/main/' ~ myOrders.dir[key] ) }}"
+                         class="img-fluid rounded-3 m-3 " alt="{{ myOrders.name }}-Image"  height='150px' width='150px'></a>
+                    </div>
+                {% endfor %}
                 </div>
             </div>
        
@@ -199,9 +205,16 @@
                 {{ myOrders.status }}<br>
             </div>
             <div class='col'>
+              {% set count = 0 %}
+                {% set product = myOrders.product %}
+                {% set parts = product|split('|') %}
                 {% for key in myOrders.dir|keys %}
-                    <a href='{{ path('app_check_product', { 'id': myOrders.id }) }}'> <img src="{{ asset('users_data/' ~ myOrders.owner.id ~ '/products/' ~ key ~ '/' ~ myOrders.dir[key] ) }}"
-                         class="img-fluid rounded-3 m-3" alt="{{ myOrders.name }}-Image"  height='150px' width='150px'></a>
+                    {% set productSplit = parts[count]|split(':') %}
+                    {% set count = count + 1 %}
+                    <div class='bg-image hover-zoom'>
+                    <a href='{{ path('app_check_product', { 'id': productSplit[0] }) }}'> <img src="{{ asset('users_data/' ~ myOrders.owner.id ~ '/products/' ~ key ~ '/main/' ~ myOrders.dir[key] ) }}"
+                         class="img-fluid rounded-3 m-3 " alt="{{ myOrders.name }}-Image"  height='150px' width='150px'></a>
+                    </div>
                 {% endfor %}
             </div>
         </div>
@@ -222,22 +235,23 @@
                 Payment Method: {{ myOrders.paymentMethod }}<br>
                 Price: ${{ myOrders.price }}<br>
 
-
-                {% if (myOrders.isPaid) %}
-                    Paid 
-                {% else %}
-                    Not Paid 
-                {% endif %}
                 <br>
                     {{ myOrders.status }}
    
    
             </div>
             <div class='col'>
+               {% set count = 0 %}
+                {% set product = myOrders.product %}
+                {% set parts = product|split('|') %}
                 {% for key in myOrders.dir|keys %}
-                    <a href='{{ path('app_check_product', { 'id': myOrders.id }) }}'> <img src="{{ asset('users_data/' ~ myOrders.owner.id ~ '/products/' ~ key ~ '/' ~ myOrders.dir[key] ) }}"
-                         class="img-fluid rounded-3 m-3" alt="{{ myOrders.name }}-Image"  height='150px' width='150px'></a>
-                {% endfor %}
+                    {% set productSplit = parts[count]|split(':') %}
+                    {% set count = count + 1 %}
+                    <div class='bg-image hover-zoom'>
+                    <a href='{{ path('app_check_product', { 'id': productSplit[0] }) }}'> <img src="{{ asset('users_data/' ~ myOrders.owner.id ~ '/products/' ~ key ~ '/main/' ~ myOrders.dir[key] ) }}"
+                         class="img-fluid rounded-3 m-3 " alt="{{ myOrders.name }}-Image"  height='150px' width='150px'></a>
+                    </div>
+                {% endfor %} 
 
             </div>
         </div>
@@ -257,9 +271,6 @@ $(document).on('click', '.order', function(){
     $(this).removeData('status');
     status = $(this).data('status');
     type = $(this).data('type');
-    console.log(id);
-    console.log(status);
-    console.log(type);
     $.ajax({
         url: '{{ path('ajax_order_from_buyers') }}',
         method: 'POST',
@@ -269,12 +280,10 @@ $(document).on('click', '.order', function(){
             if(!response.done)
             {
                 $('.order[data-id='+id+']').attr('data-status', response.newStatus);
-            //    $('.order[data-id='+id+']').text(response.newText);
             }
             else
             {
                 $('.order[data-id='+id+']').attr('data-status', response.newStatus);
-              //  $('.order[data-id='+id+']').text(response.newText).addClass('disabled');
                 $('.delete-order[data-id='+id+']').remove();
                 $('.order[data-id='+id+']').remove();
             }

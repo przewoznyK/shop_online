@@ -1,4 +1,6 @@
 {% extends 'base.html.twig' %}
+{% block title %}Edit product
+{% endblock %}
 
 {% block body %}
 <style>
@@ -12,8 +14,8 @@
   }
 
 .image-container img {
-  width: 100%;
-  height: auto;
+  width: 150px;
+  height: 110px;
 
   }
 
@@ -49,7 +51,7 @@
 				<p>{{ form_row(AddProductFormType.price, {'attr': {'class': 'form-control'}}) }}</p>
 				<p>{{ form_row(AddProductFormType.quantity, {'attr': {'class': 'form-control'}}) }}</p>
 				<p>{{ form_row(AddProductFormType.category, {'attr': {'class': 'form-control'}}) }}</p>
-				<p><input type='file' class='form-control' name='add-images' id='add-images' multiple accept="image/png, image/jpeg"><p>
+				<p><input type='file' class='form-control' name='add-images' id='add-images' multiple accept=".jpg,.jpeg,.png,.webp"><p>
 				<p>{{ form_row(AddProductFormType.description, {'attr': {'class': 'form-control', 'style': 'height: 6em;' }}) }}</p>
 				<p>{{ form_row(AddProductFormType.is_public) }}</p>
 				<p>{{ form_row(AddProductFormType.submit, {'attr': {'class': 'btn btn-primary'}}) }}</p>
@@ -61,10 +63,15 @@
 					{% set count = 0 %}
 					{% for image in imagesName %}
 						<div class='image-container ' data-id='{{count}}'>
-							<img class="image" data-id='{{count}}' src="{{ asset('users_data/' ~ userOwnerProduct.id ~ '/products/' ~ product.imagesdir ~ '/' ~ image) }}"/>
+							<img class="image p-3" data-id='{{count}}' src="{{ asset('users_data/' ~ userOwnerProduct.id ~ '/products/' ~ product.imagesdir ~ '/' ~ image) }}"/>
 								<div class='icon-container delete-image' data-id='{{count}}'>
 									<i class="fa-solid fa-x "></i>
 								</div>
+								{% if mainImageName == image %}	
+									<div class="btn btn-success main-image-btn mx-3 main-exist" data-id='{{count}}'>Main image</div>
+								{% else %}
+									<div class="btn btn-warning main-image-btn mx-3" data-id='{{count}}'>Main image</div>
+								{% endif %}
 						</div>
 						{% set count = count + 1 %}
 					{% endfor %}
@@ -93,7 +100,31 @@ $('body').on('click', '.delete-image', function() {
 		
 $(function(){
     $('#add-images').change(function(event){
+              var reader = new FileReader();
+        if(this.files[0].size>2097152){
+            alert("Image Size should not be greater than 2Mb");
+            $("#menu_image").attr("src","blank");
+            $("#menu_image").hide();  
+            $('#menu_images').wrap('<form>').closest('form').get(0).reset();
+            $('#menu_images').unwrap();     
+            return false;
+        }
+        if(this.files[0].type.indexOf("image")==-1){
+            alert("Invalid Type");
+            $("#menu_image").attr("src","blank");
+            $("#menu_image").hide();  
+            $('#menu_images').wrap('<form>').closest('form').get(0).reset();
+            $('#menu_images').unwrap();         
+            return false;
+        }   
+        reader.onload = function (e) {
+            // get loaded data and render thumbnail.
+            $("#menu_images").src = e.target.result;
+            $("#menu_images").show(); 
+        };
 
+        // read the image file as a data URL.
+        reader.readAsDataURL(this.files[0]);
         var data = new FormData();
         var count = {{ count }};
 
@@ -115,7 +146,7 @@ $(function(){
 					count++;
 					var  file = response.imagesName[i];
 					var folder = '/'+response.targetDirectory+'/'+file;
-					var newImageContainer = $('<div class="image-container" data-id='+count+'> <img class="image" data-id='+count+' src='+folder+'> <div class="icon-container delete-image" data-id='+count+'> <i class="fa-solid fa-x"></i></div></div>');
+					var newImageContainer = $('<div class="image-container" data-id='+count+'> <img class="image" data-id='+count+' src='+folder+' style="max-height: 150px;"> <div class="icon-container delete-image" data-id='+count+'> <i class="fa-solid fa-x"></i></div><div class="btn btn-warning main-image-btn mx-3" data-id='+count+'>Main image</div></div>');
 					$('#image-section').append(newImageContainer);	
 					console.log(response.targetDirectory+'/'+file);
 				}
@@ -123,6 +154,24 @@ $(function(){
         });
     });
 });
+
+$('body').on('click', '.btn-warning', function(){
+    $('.main-exist').removeClass('btn-sucess main-exist').addClass('btn-warning');
+    $(this).removeClass('btn-warning').addClass('btn-success main-exist');
+    var id = $(this).data('id');
+    var tempBool = false;
+    var imgSrc = $('.image[data-id="'+id+'"]').attr('src');
+    var imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+    var imgSrc = imgSrc.substring(0, imgSrc.lastIndexOf('/'));
+    $.ajax({
+        type: 'POST',
+        data: {imgSrc: imgSrc, imgName: imgName, tempBool: tempBool},
+        url: '{{ path('ajax_change_main_image_product') }}',
+         success: function(response) {
+        console.log(response.success);
+        }
+    })
+})
 </script>
 {% endblock %}
 {% endblock %}

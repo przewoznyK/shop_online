@@ -1,10 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello UserPageController!
+{% block title %}Profile {{ username }}
 {% endblock %}
 
 {% block body %}
 	<style>
+		@media(min-width: 768px) {
+			#accordionExample {
+				min-width: 25%;
+			}
+		}
 		@media(min-width: 768px) {
 			#accordionExample {
 				min-width: 25%;
@@ -29,7 +34,7 @@
 				{% if myPageBool %}
 				{{ form_start(editProfile)}}
 					<label for='edit_profile_form_avatar' class='btn label' data-toggle="tooltip" data-placement="top" title="Tooltip on top">
-						<img src="{{ asset('users_data/' ~ userId ~ '/avatar/avatar.jpg') }}" alt="avatar" class="img-fluid img-thumbnail rounded" id='upload-img' width='200px'>
+						<img src="{{ asset('users_data/' ~ userId ~ '/avatar/avatar.jpg') }}" alt="avatar" class="img-fluid img-thumbnail rounded" id='upload-img' width='200px' height='200px'>
 						{{ form_widget(editProfile.avatar, {'attr': {'class': 'visually-hidden'}}) }}
 					</label>
 					<h1>{{ username }}</h1>
@@ -63,7 +68,7 @@
 				</div>
 			{% else %}
 
-				<img src="{{ asset('users_data/' ~ userId ~ '/avatar/avatar.jpg') }}" alt="avatar" class="img-fluid img-thumbnail rounded" width='200px'>
+				<img src="{{ asset('users_data/' ~ userId ~ '/avatar/avatar.jpg') }}" alt="avatar" class="img-fluid img-thumbnail rounded" width='200px' height='200px'>
 				<h1>{{ username }}</h1>
 				{{ description }}
 			{% endif %}
@@ -107,8 +112,10 @@
 					<div
 						class="card h-100">
 						<!-- Product image-->
+						<div class="ratio ratio-4x3">
 						<img
-						src="{{ asset('users_data/' ~ userId ~ '/products/' ~ files[count]['dir'] ~ '/' ~ files[count]['images'][0] ) }}" class="card-img-top" alt="...">
+						src="{{ asset('users_data/' ~ userId ~ '/products/' ~ files[count]['dir'] ~ '/main/' ~ files[count]['images'][0] ) }}" class="card-img-top p-3" alt="{{product.name}}">
+						</div>
 						<!-- Product details-->
 						<div class="card-body p-4">
 							<div
@@ -137,49 +144,41 @@
 			{% endfor %}
 		</div>
 	</div>
-</div></div>{# <h2>My Offerts</h2><br><div class="d-inline-flex p-2">
-											{% set count = 0 %}
-											{% for product in productUser %}
-												<div class="card offer-field" data-id='{{ product.id }}' style="width: 14rem; margin-right: 1rem">
-													<img src="{{ asset('users_data/' ~ userId ~ '/products/' ~ files[count]['dir'] ~ '/' ~ files[count]['images'][0] ) }}" class="card-img-top" alt="...">
-													<div class="card-body">
-														<h5 class="card-title">{{ product.name }}</h5>
-														<p class="card-text">Price:
-															{{ product.price }}</p>
-														<a href="{{ path('app_check_product', { 'id': product.id }) }}" class="btn btn-primary">Check product</a>
-														{% if myPageBool %}
-															<div data-id={{ product.id }} class="btn btn-error delete-product">Delete product</div>
-											
-														{% endif %}
-													</div>
-												</div>
-												{% set count = count + 1 %}
-											{% endfor %}
-											{% if myPageBool %}
-											</div></div>{{ myCartsInfo|length }}<br><h2>My Carts</h2><div class="d-inline-flex p-2">
-											{% set count = 0 %}
-											{% for cartInfo in myCartsInfo %}
-												<div class="card" style="width: 14rem; margin-right: 1rem">
-													<img src="{{ asset('users_data/' ~ myCartsDirImages[count]['id'] ~ '/products/' ~ myCartsDirImages[count]['dir'] ~ '/' ~ myCartsDirImages[count]['images'][0] ) }}" class="card-img-top" alt="...">
-													<div class="card-body">
-														<h5 class="card-title">{{ cartInfo.name }}</h5>
-														<p class="card-text">Price:
-															{{ cartInfo.price }}</p>
-														<a href="{{ path('app_check_product', { 'id': cartInfo.id }) }}" class="btn btn-primary">Check product</a>
-													</div>
-												</div>
-												{% set count = count + 1 %}
-											{% endfor %}{% else %} 
-											<i class="bi bi-person-circle">ss</i>{% endif %}</div>#}
+</div></div> 
+
 {% block javascripts %}
 <script type="text/javascript"> 
 
 $(function(){
 	$('#edit_profile_form_avatar').change(function(event){
+		              var reader = new FileReader();
+        if(this.files[0].size>528385){
+            alert("Image Size should not be greater than 500Kb");
+            $("#menu_image").attr("src","blank");
+            $("#menu_image").hide();  
+            $('#menu_images').wrap('<form>').closest('form').get(0).reset();
+            $('#menu_images').unwrap();     
+            return false;
+        }
+        if(this.files[0].type.indexOf("image")==-1){
+            alert("Invalid Type");
+            $("#menu_image").attr("src","blank");
+            $("#menu_image").hide();  
+            $('#menu_images').wrap('<form>').closest('form').get(0).reset();
+            $('#menu_images').unwrap();         
+            return false;
+        }   
+        reader.onload = function (e) {
+            // get loaded data and render thumbnail.
+            document.getElementById("menu_image").src = e.target.result;
+            $("#menu_image").show(); 
+        };
+
+        // read the image file as a data URL.
+        reader.readAsDataURL(this.files[0]);
 		var update = URL.createObjectURL(event.target.files[0]);
 		$('#upload-img').attr('src', update);
 		$('#avatar-nav').attr('src', update);
-		console.log(event);
 	})
 })
 

@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+{% block title %}Verify email{% endblock %}
+
+{% block body %}
+    {% if verify %}
+    <div class='container border border-info rounded py-5 my-5 text-center'>
+        Successfully verified your email. <i class="fas fa-smile-wink"></i>
+    </div>
+    {% else %}
+    <div class='container border border-warning rounded py-5 my-5 text-center'>
+        Token doesn't exist. <i class="fas fa-frown"></i>
+    </div>
+    {% endif %}
+{% block javascripts %}
+<script type="text/javascript">
+
+
+</script>
+{% endblock %}
+{% endblock %}

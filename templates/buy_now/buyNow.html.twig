@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello BuyNowController!{% endblock %}
+{% block title %}Buy now!{% endblock %}
 
 {% block body %}
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,16 +29,6 @@
       {{ form_row(OrderProductFormType.phone_number, {'attr': {'class': 'form-control'}}) }}
       {{ form_row(OrderProductFormType.address, {'attr': {'class': 'form-control'}}) }}
       {{ form_row(OrderProductFormType.comment, {'attr': {'class': 'form-control'}}) }}
-      {# {% for productAndQuantity in productAndQuantityArray %}
-        <section class='deliveryFull' data-id='{{ delivery.id }}'>
-          <input data-type='{{ delivery.type }}' data-location='{{ delivery.getPersonalPickup() }}' id="delivery-{{ delivery.id }}" class="form-check-input" type="radio" name="deliveryOption" value="{{ delivery.id }}">
-          <label class="form-check-label" for="delivery-{{ delivery.id }}">
-          {{ delivery.type }}
-          {{ delivery.price }}
-          {{ delivery.getPersonalPickup() }}
-          </label>
-        </section>
-      {% endfor %} #}
     </div>
     <input type='hidden' name='summary' value=''>
     
@@ -80,13 +70,13 @@
       {% set count = 0 %}
       {% if (avalibleDelivery) %}
         {% for delivery in avalibleDelivery %}
-          <label>
+          <label class='mt-2'>
             <input type="radio" class='delivery-type-checkbox' name="delivery-type-checkbox" value="{{ delivery.type }}"  data-id='{{ count }}'
-              {% if delivery.type == 'personal_pickup' %} data-price="0" data-location='{{delivery.personal_pickup}}'
-              {% elseif delivery.type == 'parcel_locker' %} data-price="5" 
-              {% elseif delivery.type == 'courier' %} data-price="10" 
-              {% endif %}>
-              {{ delivery.type }} {{ delivery.personal_pickup }}<div class='delivery-price' data-id='{{ count }}'></div>
+              {% if delivery.type == 'personal_pickup' %} data-price="0" data-location='{{delivery.personal_pickup}}'> Personal pickup
+              {% elseif delivery.type == 'parcel_locker' %} data-price="5"> Parcel locker 
+              {% elseif delivery.type == 'courier' %} data-price="10" > Courier
+              {% endif %}
+              {{ delivery.personal_pickup }}<div class='delivery-price' data-id='{{ count }}'></div>
           </label><br>
             
           {% set count = count + 1 %}
@@ -103,11 +93,13 @@
               <div id='popup-content'></div>
             </div>
           </section>
-          Payment method <br>
-          <label><input type='radio' class='payment-method ' name='payment-method' value='My wallet'>  My wallet</label><br>
+          <br>
+          <hr>
+          Payment method: <br>
+          <label><input type='radio' class='payment-method ' name='payment-method' value='My wallet'>  My wallet ( ${{ app.user.wallet }} )</label><br>
           <label><input type='radio' class='payment-method ' name='payment-method' value='Cash on Delivery'>  Cash on Delivery</label>
-          
-          Your wallet: ${{ app.user.wallet }}<br>
+          <hr>
+   
           Summary: <div class='h5' id='summary'></div>
    
         </section>
@@ -140,7 +132,9 @@ $(document).ready()
 function checkRadioStatus()
 {
   if ($('input[name=delivery-type-checkbox]:checked').length > 0 &&
-        $('input[name=payment-method]:checked').length > 0)
+        $('input[name=payment-method]:checked').length > 0
+     
+        )
    {
         $('#order_product_form_submit').attr('disabled', false);
 
@@ -149,14 +143,6 @@ function checkRadioStatus()
           $('#order_product_form_submit').attr('disabled', true);
 
   }
-  //$('input[type="radio"]').each(function() {
-  
-    //$('#order_product_form_submit').attr('disabled', false);
-    //if (!$(this).is(':checked')) {
-      //$('#order_product_form_submit').attr('disabled', true);
-      //console.log('www');
-    //}
- // });
 }
 
 $('input[type="radio"]').click(function(){
@@ -215,7 +201,6 @@ $('input[name="delivery-type-checkbox"]').change(function() {
   $('#final_location_place').removeClass('d-none');
   if(deliveryId=='personal_pickup')
   {
-    console.log(deliveryLocation);
     $('#map').empty();
     $('#map').css({
       'height': '0px',
@@ -284,13 +269,13 @@ function createMap()
     })
   });
 
-  const Airports = new ol.layer.Vector({
+  const Parcels = new ol.layer.Vector({
       source: new ol.source.Vector({
-          url: 'https://api.maptiler.com/data/9874a5e8-c0f7-4a7f-989a-c5f44fd25e26/features.json?key=dWCVxevJpUtedw46MjwC',
+          url: 'https://api.maptiler.com/data/f67d2883-3b7a-4bc0-a2a0-56eb0979edf3/features.json?key=dWCVxevJpUtedw46MjwC',
           format: new ol.format.GeoJSON(),
       })
   })
-  map.addLayer(Airports);
+  map.addLayer(Parcels);
 
   var container = $('#popup');
   var content = $('#popup-content');
@@ -316,7 +301,7 @@ function createMap()
         parcel_locker_choosed = name;
 
         overlaydet.setPosition(coord);
-        $('#popup-content').html(content + '<button class="choose-parcel-locker" >Choose</button>');
+        $('#popup-content').html(content + '<button class="choose-parcel-locker bg-primary text-white" >Choose</button>');
       }
   })
 }

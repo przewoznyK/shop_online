@@ -10,15 +10,15 @@
                 <h3>Add Delivery</h3>
 
                 <input type='checkbox' id='personal_pickup' name='personal_pickup' value='personal_pickup'>
-                <label for='personal_pickup'>  personal_pickup </label><br>
+                <label for='personal_pickup'>  Personal pickup </label><br>
                 <div  id='location'></div>
                 <div class='my-1' id='button'></div>
                 <div id='notification'></div>
             
                 <input type='checkbox' id='parcel_locker' name='parcel_locker' value='parcel_locker'>
-                <label for='parcel_locker'>  parcel_locker 5$ </label><br>
+                <label for='parcel_locker'>  Parcel locker $5 </label><br>
                 <input type='checkbox' id='courier' name='courier' value='courier'>
-                <label for='courier'>  courier 10$ </label><br>
+                <label for='courier'>  Courier $10 </label><br>
                 <input type="hidden" name="my_array[]" id="my_array" value="" />
             </div>
             <div class='col-lg-5 col-md-12 border border-secondary rounded p-5 my-md-2'>
@@ -73,7 +73,7 @@ $(document).ready(function(){
 
 $('input[type=checkbox]#personal_pickup').click(function(){
     if($(this).is(':checked')){
-        $('#location').html('Pickup Location<input id="location-text" type="text">');
+        $('#location').html('Pickup Location <input id="location-text" type="text">');
         $('#button').html('<div class="btn btn-secondary ">Add Pickup Location</div>');
     }
     else
@@ -85,13 +85,16 @@ $('input[type=checkbox]#personal_pickup').click(function(){
 
 $('#button').click(function(){
     var add = $('#location-text').val();
-    if(addedLocation.includes(add))
+    if (add.includes(',')) {
+        showNotification('<div class="alert alert-warning">Please do not use comma.</div>');
+    }
+    else if(addedLocation.includes(add))
     {
-        showNotification('<div class="alert alert-warning">Location exist</div>');
+        showNotification('<div class="alert alert-warning">Location exist.</div>');
     }
     else if(add=='')
     {
-        showNotification('<div class="alert alert-warning">Location cannot be empty</div>');
+        showNotification('<div class="alert alert-warning">Location cannot be empty.</div>');
     }
     else
     {

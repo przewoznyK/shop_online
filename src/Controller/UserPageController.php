@@ -30,14 +30,18 @@ class UserPageController extends AbstractController
     #[Route('/user/{id}', name: 'app_user_profile')]
     public function showProfile(EntityManagerInterface $entityManager, int $id, Request $request, SessionInterface $session): Response
     {
+   
         $myPageBool = false;
         $user = $entityManager->getRepository(User::class)->find($id);
         
         if (!$user) {
-            throw $this->createNotFoundException(
-                'No user found for id ' . $id
-            );
+            return new RedirectResponse('/');
         }
+        if($user->getDeletedAt()) {
+            return new RedirectResponse('/');
+
+        }
+
         /** @var $user User */
         $myUser = $this->getUser();
         if ($myUser) {
@@ -61,25 +65,31 @@ class UserPageController extends AbstractController
             $newAvatar = $form->get('avatar')->getData();
             if($newAvatar)
             {
-                       $directionAvatar = 'users_data/' . $user->getId() . '/avatar/';
+            $directionAvatar = 'users_data/' . $user->getId() . '/avatar/';
             $filename = 'avatar.jpg';
             $newAvatar->move(
                 $directionAvatar,
                 $filename
             );
             }
-     
+            $this->addFlash('success', 'Your changes have been successfully saved');
         }
 
         //Send my offerts products data
-        $productsUser = $entityManager->getRepository(Product::class)->findBy(array('user_id' => $id, 'is_deleted' => false));
+        if($myPageBool)
+        {
+            $productsUser = $entityManager->getRepository(Product::class)->findBy(array('user_id' => $id, 'is_deleted' => false));
+        }
+        else 
+        $productsUser = $entityManager->getRepository(Product::class)->findBy(array('user_id' => $id, 'is_deleted' => false, 'is_public' => 1));
+
 
         $productImagesDirection  = array();
         $i = 0;
         foreach ($productsUser as $product) {
             $productImagesDirection[$i]['dir'] = $product->getImagesDir();
             foreach ($productImagesDirection[$i] as $images) {
-                $dir = scandir('users_data/' . $user->getId() . '/products/' . $images);
+                $dir = scandir('users_data/' . $user->getId() . '/products/' . $images . '/main/');
                 foreach ($dir as $file) {
                     if ($file != '.' && $file != '..') {
                         $productImagesDirection[$i]['images'][] = $file;
@@ -143,10 +153,12 @@ class UserPageController extends AbstractController
     #[Route('/user/{id}/{productId}', name: 'app_user_profile_cart')]
     public function addCart(Request $request, int $id, $productId, EntityManagerInterface $entityManager, SessionInterface $session)
     {
+
         if ($request->getMethod() == 'POST') {
             $someParametr = $request->request->get('addCart');
             /** @var $myUser User */
             $myUser = $this->getUser();
+        
             if ($myUser) {
                 if ($myUser->getCarts()) {
                     $carts = $myUser->getCarts() . ',' . $productId;
@@ -191,6 +203,7 @@ class UserPageController extends AbstractController
         }
         $now = new \DateTimeImmutable();
         $myUser->setDeletedAt($now);
+        $myUser->removeEmail();
         $entityManager->persist($myUser);
         $entityManager->flush();
         session_destroy();

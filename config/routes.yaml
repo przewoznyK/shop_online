@@ -68,3 +68,14 @@ ajax_add_image_product:
     controller: App\Controller\SessionController::addImageProduct
     methods: [POST]
     
+ajax_change_main_image_product:
+    path: /ajax/change_main_image_product
+    controller: App\Controller\SessionController::changeMainImageProduct
+    methods: [POST]
+
+ajax_execute_my_command:
+    path: /ajax/execute_my_command
+    controller: App\Controller\SessionController::executeMyCommand
+    methods: [POST]
+    
+

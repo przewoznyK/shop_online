@@ -10,13 +10,24 @@
 			class="row justify-content-center">
 			{# Side bar #}
 			<div class="col-xxl-2 col-xl-10 col-lg-10 col-md-10  ps-5 border rounded">
-				<h4 class='mt-5'>Categories</h4>
-				{% for category in categories %}
+			<h2 class="accordion-header" id="headingOne">
+								<button class="accordion-button collapsed btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+									<h4 class='mt-5 change-arrow-down'>Categories <i class="fas fa-angle-down"></i></h4> 
+								</button>
+							</h2>
+							<div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+								<div class="accordion-body">
+											{% for category in categories %}
 					<a class="text-decoration-none {% if (actualCategory) and category.id == actualCategory.id %}active font-weight-bold text-danger{% endif %}" href="{{ path('app_category', { 'name': category.name }) }}">
 						{{ category.name }}
 						<i class="fas fa-light fa-angle-right"></i>
 					</a><br>
 				{% endfor %}
+									
+								</div>
+							</div>
+			
+		
 				<form action="{% if actualCategory %} {{ path('app_category', { 'name': actualCategory.name }) }} {% else %} {{ path('app_listening') }} {% endif %}" method="GET">
 					<div class="input-group mt-3">
 						<input type="text" class="form-control" placeholder="Search..." name="searchName">
@@ -64,8 +75,10 @@
 								<div
 									class="card h-100">
 									<!-- Product image-->
+									<div class='ratio ratio-4x3'>
 									<img
-									src="{{ asset('users_data/' ~ allOfferDirImages[count]['id'] ~ '/products/' ~ allOfferDirImages[count]['dir'] ~ '/' ~ allOfferDirImages[count]['images'][0] ) }}" class="card-img-top" alt="...">
+									src="{{ asset('users_data/' ~ allOfferDirImages[count]['id'] ~ '/products/' ~ allOfferDirImages[count]['dir'] ~ '/main/' ~ allOfferDirImages[count]['images'][0] ) }}" class="card-img-top p-4" alt="{{ offerInfo.name }}">
+									</div>
 									<!-- Product details-->
 									<div class="card-body p-4">
 										<div
@@ -79,10 +92,39 @@
 									<!-- Product actions-->
 									<div class="card-footer p-4 pt-0 border-top-0 bg-transparent d-flex align-items-center justify-content-center">
 										<a href="{{ path('app_check_product', { 'id': offerInfo.id }) }}" class="btn btn-primary flex-fill mx-2">Check product</a>
+										{% if is_granted('IS_AUTHENTICATED_FULLY') %}
 										{% if offerInfo.id in app.session.get('cartsId', '') %}
-											<button class="remove-cart-button btn  btn-secondary text-center flex-fill" data-cart-id="{{ offerInfo.id }}">Remove product</button>
+												<button class="remove-cart-button btn  btn-secondary text-center flex-fill" data-cart-id="{{ offerInfo.id }}">Remove product</button>
+											{% else %}
+												<button class="add-cart-button btn  btn-success flex-fill" data-cart-id="{{ offerInfo.id }}">Add to cart</button>
+											{% endif %}
 										{% else %}
-											<button class="add-cart-button btn  btn-success flex-fill" data-cart-id="{{ offerInfo.id }}">Add to cart</button>
+											<button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal" >Add to cart</button>
+
+											<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+											<div class="modal-dialog modal-dialog-centered">
+												<div class="modal-content">
+												<div class="modal-header m-auto">
+													<h3>You must be logged in to do this</h3>
+												</div>
+												<div class="modal-body">
+										
+												<a href="{{ path('app_login') }}">
+													<div class="btn btn-primary mt-2 w-100">
+														Login
+													</div>
+												</a>
+													<div class='text-center mt-2'>Or</div>
+												<a href="{{ path('app_register') }}">
+													<div class="btn btn-success mt-2 w-100">
+														Register now
+													</div>
+												</a>
+												</div>
+												</div>
+											</div>
+											</div>
+											
 										{% endif %}
 									</div>
 								</div>
@@ -153,6 +195,15 @@ $(document).on('click', '.remove-cart-button', function (event) {
 		});
 	}
 });
+
+$(document).on('click', '.change-arrow-down', function()
+{
+	$(this).removeClass('change-arrow-down').addClass('change-arrow-up').html('Categories <i class="fas fa-angle-up"></i>')
+})
+$(document).on('click', '.change-arrow-up', function()
+{
+	$(this).removeClass('change-arrow-up').addClass('change-arrow-down').html('Categories <i class="fas fa-angle-down"></i>')
+})
 </script>
 {% endblock %}
 

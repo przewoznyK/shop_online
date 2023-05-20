@@ -2,37 +2,84 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
+        
+        <style>
+
+table, td, th {
+    border: 1px solid black;
+    text-align: center;
+    margin: auto;
+}
+
+
+td {
+    padding: 15px;
+}
+</style>
 	</head>
 	<body>
-		<div>
+
+    
+    <div style='text-align: center; margin: auto; margin-bottom: 20px; border: solid; border-radius: 25px; border-color: red; padding: 20px; font-size: 25px; width: 80%;'>
+        <h2>Warning</h2> 
+        This message is from my project, it's just a simulation and this order doesn't exist, if you haven't used my site and you see this email, it means someone entered your email into the form. You can just delete this email, nothing will happen to it.
+
+    </div>
+
+
+		<div style='text-align: center; margin: auto; border: solid; border-radius: 25px; padding: 20px; font-size: 25px; width: 80%;'>
+            
 			{% for order in orderArray %}
-				Hi
-				{{ order.name }}
-				{{ order.lastName }}
+				
+				<h2>
+                    Hi
+                    {{ order.name }}
+				    {{ order.lastName }}
+                </h2>
 				<br>
-				Your delivery is ready to pick up in
-				{{ order.finalLocation }}
+				<h4>
+                    Your delivery is ready to pick up in
+                    {{ order.finalLocation }}
+                </h4>
 				<br>
 
 				<div>
 					{% for product in productsInfoArray %}
-						<img src="{{ product.images }}" alt="1" width="150px" height="150px">
-                        Price: {{ product.productPrice }}    Quantity: {{ product.productQuantity }}
-
+                    <table>
+                        <tr>
+                            <td>
+                                {{ product.productName }}
+                            </td>
+              
+                            <td>
+                                Price: ${{ product.productPrice }}   
+                            </td>
+                            <td>
+                                
+                                Quantity: {{ product.productQuantity }}
+                            </td>
+                            <td>
+                                 <img src="{{ product.images }}" alt="1" width="150px" height="150px">
+                            </td>
+                        </tr>
+                    </table>
 					{% endfor %}
+                    <br>
                         Delivery price: {% if order.deliveryType == 'personal_pickup' %}
-                                        0 $
+                                        $0
                                         {% elseif order.deliveryType == 'percel_locker' %}
-                                        5 $
+                                        $5
                                         {% elseif order.deliveryType == 'courier' %}
-                                        10 $
+                                        $10
                                         {% endif %}
                     <hr>
-                    Summary {{ order.price }} <br>
+                    Summary ${{ order.price }} <br>
                     <a href='{{ feedbackUrl }}'>Feedback</a> 
+                    
 				</div>
 			</div>
 
 		{% endfor %}
+
 	</body>
 </html>
