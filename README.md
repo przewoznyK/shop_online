@@ -177,10 +177,10 @@ Zamówienia są podzielone na 6 grup:
 Jeśli zamawiający anulował zamówienie, a zostało ono opłacone, to środki wrócą na konto kupującego.
 Jeśli sprzedawca zmienił status na shipped lub Ready to pick up środki trafią do jego wirtualnego portfela (jeśli zamówienie zostało opłacone)
 
-> Shipped: czyli zamówienie jest wysłane do kupującego
-> Waiting for feedback: czyli gdy zamówienie dotarło do miejsca docelowego ale użytkownik nie przesłał jeszcze informacji zwrotnej
-> Problem: trafiają tam zamówienia, które zostały oznaczone przez kupującego w wiadomości zwrotnej inną opcją niż 'Everything ok'.
+- Shipped: czyli zamówienie jest wysłane do kupującego
+- Waiting for feedback: czyli gdy zamówienie dotarło do miejsca docelowego ale użytkownik nie przesłał jeszcze informacji zwrotnej
+- Problem: trafiają tam zamówienia, które zostały oznaczone przez kupującego w wiadomości zwrotnej inną opcją niż 'Everything ok'.
 
-> Complete: trafiają tam zamówienia, które zostały oznaczone przez kupującego w wiadomości zwrotnej opcją 'Everything ok'.
+- Complete: trafiają tam zamówienia, które zostały oznaczone przez kupującego w wiadomości zwrotnej opcją 'Everything ok'.
 
 - my_wallet - na tej stronie można dodać się $ do swojego konta, oczywiście nie są to prawdziwe pieniądze, ma to tylko symulować wirtualny portfel.
