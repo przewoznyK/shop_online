@@ -149,15 +149,15 @@ Przyciskiem Submit tworzymy zamówienie.
 	      
 Zamówienia podzielone są na 4 grupy:
 In progess: znajdują się w nim statusy:
-> pending - zamówienie powstało ale nie zostało one potwierdzone przez sprzedawcę
-> progressing - zamówienie jest przygotowywane do wysyłki
+<pre> pending - zamówienie powstało ale nie zostało one potwierdzone przez sprzedawcę</pre>
+<pre> progressing - zamówienie jest przygotowywane do wysyłki</pre>
 Przy dwóch powyższych statusach zamówienie można nadal anulować (jeśli zamówienie zostało opłacone, pełna kwota wróci na konto kupującego)
-> shipped - zamówienie zostało wysłane do kupującego
+<pre> shipped - zamówienie zostało wysłane do kupującego</pre>
 		
 Ready to pick up: zamówienia gotowe do odbioru
-> Your delivery is ready, check your email - oznacza to, że wiadomość email została wysłana
-> Your delivery is ready to pick up. - oznacza to, że zamówienie jest gotowe do odbioru ale 
-wiadomość email nie została wysłana.
+<pre> Your delivery is ready, check your email - oznacza to, że wiadomość email została wysłana</pre>
+<pre> Your delivery is ready to pick up. - oznacza to, że zamówienie jest gotowe do odbioru ale 
+wiadomość email nie została wysłana.</pre>
 
 CRON co 30 minut uruchamia komende, która sprawdza status zamówienia, jeśli status to: ready_to_pick_up do zamawiającego jest wysyłana wiadomość email, sprawdza ona również różnicę w 
 czasie pomiędzy uruchomieniem komendy, a zamówień o status shipped, jeśli różnica wynosi przynajmniej 15 minut, zamówienia te również trafiają do grupy Ready to pick up i wiadomość email zostaje wysłana.
@@ -170,9 +170,9 @@ Complete: trafiają tam zamówienia, które zostały oznaczone przez kupującego
 - my_sell - znajdują się tutaj zamówienia produktów, które użytkownik chce sprzedać, produkty wyświetlane są w taki sam sposób jak na stronie my_orders. 
 Zamówienia są podzielone na 6 grup: 
 
-> Waiting for accept: sprzedawca może zaakceptować lub odrzucić zamówienie, jeśli je odrzuci zamówienie zostanie usunięte, jeśli je zaakceptuje u kupującego status tego zamówienia zmieni się na progressing.
-> In progress: Nadal sprzedawca ma możliwość anulowania zamówienia ale ma także możliwość zmienienia statusu zamówienia na shipped (jeśli sposób dostawy to kurier lub paczkomat), informując przy tym kupującego,
-  że jego przesyłka została wysłana lub na Ready to pick up gdy kupujący wybrał opcję osobistego odbioru.
+<pre> Waiting for accept: sprzedawca może zaakceptować lub odrzucić zamówienie, jeśli je odrzuci zamówienie zostanie usunięte, jeśli je zaakceptuje u kupującego status tego zamówienia zmieni się na progressing.</pre>
+<pre> In progress: Nadal sprzedawca ma możliwość anulowania zamówienia ale ma także możliwość zmienienia statusu zamówienia na shipped (jeśli sposób dostawy to kurier lub paczkomat), informując przy tym kupującego,
+  że jego przesyłka została wysłana lub na Ready to pick up gdy kupujący wybrał opcję osobistego odbioru.</pre>
 
 Jeśli zamawiający anulował zamówienie, a zostało ono opłacone, to środki wrócą na konto kupującego.
 Jeśli sprzedawca zmienił status na shipped lub Ready to pick up środki trafią do jego wirtualnego portfela (jeśli zamówienie zostało opłacone)
