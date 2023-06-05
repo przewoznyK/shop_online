@@ -32,7 +32,7 @@ Jest to projekt sklepu internetowego, który pozwala użytkownikom na:
 
 3. Ogólny opis stron
 
-- index - Na tej stronie znajdują się wszystkie publiczne produkty użytkowników, których liczba sztuk jest większa od 0. Wyświetlane są nazwa, cena i zdjęcie produktu. Można kliknąć Check product", 
+- index - Na tej stronie znajdują się wszystkie publiczne produkty użytkowników, których liczba sztuk jest większa od 0. Wyświetlane są nazwa, cena i zdjęcie produktu. Można kliknąć "Check product", 
           aby zobaczyć szczegóły, lub dodać produkt do koszyka lub usunąć go z koszyka. Strona umożliwia wyszukiwanie produktów po nazwie, kategorii, cenie od-do, oraz sortowanie według ceny i popularności.
 
 - check_product - Jest to strona umożliwiająca sprawdzenie szczegółów produktu takich jak:
@@ -93,7 +93,7 @@ Zdjęcia są dodawane i wyświetlane asynchronicznie,trafiają one do specjalneg
 kolejnych zdjęć lub ich usunięcia za pomocą ikony X. Także jest możliwość wybrania zdjęcia głównego (jeśli użytkownik go nie wybierze zdjęciem głównym będzie pierwsze dodane zdjęcie produktu)
 tzn. jest to zdjęcie które będzie odpowiadać za prezentacje produktu, np. na stronie głównej lub w wiadomości email. Zdjęcie główne trafia do tymczasowego katalogu użytkownika w katalogu main. 
 Jeśli użytkownik zapisze produkt, nazwa katalogu zostanie zmieniona. Wszystkie zapisane informacje trafiają do bazy danych (także nazwa katalogu produktu). 
-Jeśli użytkownik nie wrzuci żadnych zdjęć powstanie katalog produktu z domyślnym zdjęciem (zdjęcie domyślne również trafi main).
+Jeśli użytkownik nie wrzuci żadnych zdjęć powstanie katalog produktu z domyślnym zdjęciem (zdjęcie domyślne również trafi do katalogu main).
 
 - add_delivery - Następny etap dodawania produktu, wybieramy w nim możliwości dostawy.
 Można dodać 3 typy dostawy:
@@ -108,7 +108,7 @@ Dostawy są zapisywane w bazie danych, przy zakupie produktu zamawiający będzi
 
 - carts - W nim znajdują się dodane do koszyka produkty, są one podzielone zależnie od sprzedawcy, tzn. jeśli dwa produkty są od jednego sprzedawcy będą one w jednej ramce. 
           W jednym zamówieniu można wybrać kilka produktów pod warunkiem, że są one od tego samego sprzedawcy. Można usunąć produkt z koszyka za pomocą X. Aby zamówić dany produkt trzeba go zaznaczyć, 
-          a później kliknąć buy aby rozpocząć tworzenie zamówienia
+          a później kliknąć "Buy" aby rozpocząć tworzenie zamówienia
 
 - buy_now - Mamy tutaj formularz:
 > imię,
